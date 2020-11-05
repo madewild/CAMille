@@ -14,7 +14,8 @@ for f in files:
     for line in lines:
         content = re.findall(r'CONTENT="(.*?)"', line)
         if content:
-            word = content[0]
-            words.append(word)
+            wordlist = content
+            for word in wordlist:
+                words.append(word)
     extracted_text = " ".join(words)
     output.write(extracted_text)
