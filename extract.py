@@ -2,6 +2,7 @@
 
 import os
 import re
+import html
 
 data_path = "data/xml/"
 files = os.listdir(data_path)
@@ -16,6 +17,6 @@ for f in files:
         if content:
             wordlist = content
             for word in wordlist:
-                words.append(word)
+                words.append(html.unescape(word))
     extracted_text = " ".join(words)
     output.write(extracted_text)
