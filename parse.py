@@ -1,8 +1,8 @@
 """Parse XML files and retrieve formatted text"""
 
-import os
-import re
 import html
+import os
+
 from bs4 import BeautifulSoup as bs
 
 data_path = "data/xml/"
