@@ -58,4 +58,6 @@ for obj in s3.list_objects(Bucket=bucket_name, Prefix=prefix)["Contents"]:
     payload = {"page": raw_file_name, "date": date, "text": extracted_text}
     data = json.dumps(payload)
     r = requests.post(es_url, auth=(username, password), headers=headers, data=data)
-    print(r.status_code)
+    if r.status_code != 201:
+        print(r.status_code)
+        sys.exit()
