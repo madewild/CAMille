@@ -1,6 +1,7 @@
 data
 venv
 .vscode
+es_credentials
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
