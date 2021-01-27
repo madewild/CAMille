@@ -1,4 +1,4 @@
-"""Parse XML files and retrieve formatted text"""
+"""Parse XML files from local data and retrieve text"""
 
 import html
 import os
