@@ -21,16 +21,17 @@ def hello():
         password = cred["password"]
         headers = {"Content-Type": "application/json; charset=utf8"}
         size = 10
+        fuzzy = request.args.get("fuzzy")
+        if fuzzy == "true":
+            query_dic = {"fuzzy": {"text": {"value": query}}}
+        else:
+            query_dic = {"query_string": {"query": query}}
         data =  {
                     "size": size,
                     "sort": [
                         {"date": {"order": "asc"}}
                     ],
-                    "query": {
-                        "query_string": {
-                            "query": query
-                        }
-                    },
+                    "query": query_dic,
                     "highlight": {
                         "fields": {
                             "text": {}
@@ -65,16 +66,27 @@ def hello():
                 html += "</p>"
             if len(pages) == size:
                 html += "<p>...</p>"
-            html += '<p><form><input type="submit" value="Retour"></form></p>'
+            html += f'<p><form><input type="hidden" name="term" value="{query}">'
+            if fuzzy:
+                html += '<input type="hidden" name="fuzzy" value="true">'
+            html += '<input type="submit" value="Retour"></form></p>'
         else:
             html = f"HTTP Error: {r.status_code}"
 
     else:
-        html = """<h1>CAMILLE</h1>
+        term = request.args.get("term")
+        if not term:
+            term = ""
+        fuzzy = request.args.get("fuzzy")
+        if not fuzzy:
+            fuzzy = "false"
+        html = f"""<h1>CAMILLE</h1>
                 <h2>Centre d'Archives sur les Médias et l'Information</h2>
                 <p><form>
                 <label for="query">Faites une recherche :</label> 
-                <input type="text" id="query" name="query"> 
+                <input type="text" id="query" name="query" value="{term}"><br><br>
+                <label for="fuzzy">Inclure les termes proches ?</label> 
+                <input type="checkbox" id="fuzzy" name="fuzzy" value="true" checked="{fuzzy}"><br><br>
                 <input type="submit" value="OK">
                 </form></p>
             """
