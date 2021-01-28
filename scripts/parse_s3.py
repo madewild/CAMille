@@ -15,7 +15,10 @@ bucket_name = "camille-data"
 year = sys.argv[1]
 prefix = f"XML/JB421/{year}"
 
-cred = json.load(open("../es_credentials.json"))
+try:
+    cred = json.load(open("../es_credentials.json"))
+except FileNotFoundError:
+    cred = json.load(open("/var/www/camille/es_credentials.json"))
 endpoint = cred["endpoint"]
 es_url = f"{endpoint}/pages/_doc"
 username = cred["username"]
