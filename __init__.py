@@ -8,7 +8,10 @@ import requests
 app = Flask(__name__)
 @app.route("/")
 def hello():
-    cred = json.load(open("es_credentials.json"))
+    try:
+        cred = json.load(open("es_credentials.json"))
+    except FileNotFoundError:
+        cred = json.load(open("/var/www/camille/es_credentials.json"))
     endpoint = cred["endpoint"]
     es_url = f"{endpoint}/pages/_search"
     username = cred["username"]
