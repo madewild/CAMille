@@ -78,15 +78,17 @@ def hello():
         if not term:
             term = ""
         fuzzy = request.args.get("fuzzy")
-        if not fuzzy:
-            fuzzy = "false"
+        if fuzzy:
+            checked = "checked"
+        else:
+            checked = ""
         html = f"""<h1>CAMILLE</h1>
                 <h2>Centre d'Archives sur les Médias et l'Information</h2>
                 <p><form>
                 <label for="query">Faites une recherche :</label> 
                 <input type="text" id="query" name="query" value="{term}"><br><br>
                 <label for="fuzzy">Inclure les termes proches ?</label> 
-                <input type="checkbox" id="fuzzy" name="fuzzy" value="true" checked="{fuzzy}"><br><br>
+                <input type="checkbox" id="fuzzy" name="fuzzy" value="true" {checked}><br><br>
                 <input type="submit" value="OK">
                 </form></p>
             """
