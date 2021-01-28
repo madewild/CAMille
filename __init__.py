@@ -21,7 +21,7 @@ def hello():
         password = cred["password"]
         headers = {"Content-Type": "application/json; charset=utf8"}
         data =  {
-                    "size": 20,
+                    "size": 10,
                     "sort": [
                         {"date": {"order": "asc"}}
                     ],
