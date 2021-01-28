@@ -12,7 +12,8 @@ s3 = boto3.client('s3')
 s3r = boto3.resource('s3')
 
 bucket_name = "camille-data"
-prefix = "XML/JB421/1899"
+year = sys.argv[1]
+prefix = f"XML/JB421/{year}"
 
 cred = json.load(open("../es_credentials.json"))
 endpoint = cred["endpoint"]
@@ -30,8 +31,6 @@ for obj in s3.list_objects(Bucket=bucket_name, Prefix=prefix)["Contents"]:
     xml = s3r.Object(bucket_name, key)
     body = xml.get()['Body'].read()
     soup = bs(body, "lxml")
-    out_path = f"data/txt/{raw_file_name}.txt"
-    output = open(out_path, "w", encoding="utf-8")
     extracted_lines = []
     lines = soup.find_all("textline")
     for line in lines:
@@ -54,7 +53,6 @@ for obj in s3.list_objects(Bucket=bucket_name, Prefix=prefix)["Contents"]:
         extracted_line = " ".join(words)
         extracted_lines.append(extracted_line)
     extracted_text = " ".join(extracted_lines)
-    output.write(extracted_text)
     payload = {"page": raw_file_name, "date": date, "text": extracted_text}
     data = json.dumps(payload)
     r = requests.post(es_url, auth=(username, password), headers=headers, data=data)
