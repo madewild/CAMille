@@ -22,6 +22,9 @@ def hello():
         headers = {"Content-Type": "application/json; charset=utf8"}
         data =  {
                     "size": 20,
+                    "sort": [
+                        {"date": {"order": "asc"}}
+                    ],
                     "query": {
                         "query_string": {
                             "query": query
