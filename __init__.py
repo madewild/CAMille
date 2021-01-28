@@ -32,6 +32,9 @@ def hello():
                 pages.append(page)
             for i, pid in enumerate(sorted(pages)):
                 html += f"{i+1}. {pid}<br>"
+            if len(pages) == 10:
+                html += "..."
+            html += '<p><form><input type="submit" value="Retour"></form></p>'
         else:
             html = f"HTTP Error: {r.status_code}"
 
