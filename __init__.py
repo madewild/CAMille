@@ -8,19 +8,35 @@ import requests
 app = Flask(__name__)
 @app.route("/")
 def hello():
-    try:
-        cred = json.load(open("es_credentials.json"))
-    except FileNotFoundError:
-        cred = json.load(open("/var/www/camille/es_credentials.json"))
-    endpoint = cred["endpoint"]
-    es_url = f"{endpoint}/pages/_search"
-    username = cred["username"]
-    password = cred["password"]
     query = request.args.get("query")
     if query:
         html = f"<p>Vous avez cherché <b>{query}</b></p>"
-        full_es_url = f"{es_url}?q={query}"
-        r = requests.get(full_es_url, auth=(username, password))
+        try:
+            cred = json.load(open("es_credentials.json"))
+        except FileNotFoundError:
+            cred = json.load(open("/var/www/camille/es_credentials.json"))
+        endpoint = cred["endpoint"]
+        es_url = f"{endpoint}/pages/_search"
+        username = cred["username"]
+        password = cred["password"]
+        headers = {"Content-Type": "application/json; charset=utf8"}
+        data =  {
+                    "size": 20,
+                    "query": {
+                        "query_string": {
+                            "query": query
+                        }
+                    },
+                    "highlight": {
+                        "fields": {
+                            "text": {}
+                        },
+                        "pre_tags": "<strong>",
+                        "post_tags": "</strong>",
+                        "fragment_size": 200
+                    }
+                }
+        r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data))
         if r.status_code == 200:
             results = json.loads(r.text)
             number = results["hits"]["total"]["value"]
@@ -28,12 +44,17 @@ def hello():
             hits = results["hits"]
             pages = []
             for hit in hits["hits"]:
-                page = hit["_source"]["page"]
+                page_id = hit["_source"]["page"]
+                matches = hit["highlight"]["text"]
+                page = {"page_id": page_id, "matches": matches}
                 pages.append(page)
-            for i, pid in enumerate(sorted(pages)):
-                html += f"{i+1}. {pid}<br>"
-            if len(pages) == 10:
-                html += "..."
+            for i, page in enumerate(pages):
+                html += f"<p>{i+1}. {page['page_id']}<br><br>"
+                for match in page["matches"]:
+                    html += f"{match}<br>"
+                html += "</p>"
+            if len(pages) == 20:
+                html += "<p>...</p>"
             html += '<p><form><input type="submit" value="Retour"></form></p>'
         else:
             html = f"HTTP Error: {r.status_code}"
