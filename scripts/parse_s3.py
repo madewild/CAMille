@@ -16,7 +16,7 @@ start = int(sys.argv[1])
 try:
     end = int(sys.argv[2])
 except IndexError:
-    end = 2020
+    end = start
 years = range(start, end+1)
 
 try:
@@ -24,7 +24,7 @@ try:
 except FileNotFoundError:
     cred = json.load(open("/var/www/camille/es_credentials.json"))
 endpoint = cred["endpoint"]
-es_url = f"{endpoint}/pages/_doc"
+es_url = f"{endpoint}/pages2/_doc"
 username = cred["username"]
 password = cred["password"]
 headers = {"Content-Type": "application/json; charset=utf8"}
@@ -68,8 +68,13 @@ for year in years:
             extracted_text = " ".join(extracted_lines)
             payload = {"page": raw_file_name, "date": date, "text": extracted_text}
             data = json.dumps(payload)
-            r = requests.post(es_url, auth=(username, password), headers=headers, data=data)
-            if r.status_code != 201:
+            full_es_url = f"{es_url}/{raw_file_name}"
+            r = requests.put(full_es_url, auth=(username, password), headers=headers, data=data)
+            if r.status_code == 201:
+                continue
+            elif r.status_code == 200:
+                print("  Already present, skipping")
+            else:
                 print(r.status_code)
                 sys.exit()
     except KeyError:
