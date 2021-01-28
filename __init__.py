@@ -5,15 +5,14 @@ import json
 from flask import Flask, request
 import requests
 
-cred = json.load(open("es_credentials.json"))
-endpoint = cred["endpoint"]
-es_url = f"{endpoint}/pages/_search"
-username = cred["username"]
-password = cred["password"]
-
 app = Flask(__name__)
 @app.route("/")
 def hello():
+    cred = json.load(open("es_credentials.json"))
+    endpoint = cred["endpoint"]
+    es_url = f"{endpoint}/pages/_search"
+    username = cred["username"]
+    password = cred["password"]
     query = request.args.get("query")
     if query:
         html = f"<p>Vous avez cherché <b>{query}</b></p>"
@@ -29,7 +28,7 @@ def hello():
                 page = hit["_source"]["page"]
                 pages.append(page)
             for i, pid in enumerate(sorted(pages)):
-                html += f"{i+1} {pid}<br>"
+                html += f"{i+1}. {pid}<br>"
         else:
             html = f"HTTP Error: {r.status_code}"
 
