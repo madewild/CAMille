@@ -40,7 +40,13 @@ def hello():
         if r.status_code == 200:
             results = json.loads(r.text)
             number = results["hits"]["total"]["value"]
-            html += f"<p>{number} résultats trouvés :</p>"
+            if number == 0:
+                found_string = "Aucun résultat trouvé."
+            elif number == 1:
+                found_string = "Un seul résultat trouvé :"
+            else:
+                found_string = f"{number} résultats trouvés :"
+            html += f"<p>{found_string}</p>"
             hits = results["hits"]
             pages = []
             for hit in hits["hits"]:
