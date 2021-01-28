@@ -12,8 +12,11 @@ s3 = boto3.client('s3')
 s3r = boto3.resource('s3')
 
 bucket_name = "camille-data"
-start = sys.argv[1]
-end = sys.argv[2]
+start = int(sys.argv[1])
+try:
+    end = int(sys.argv[2])
+except IndexError:
+    end = 2020
 years = range(start, end+1)
 
 try:
