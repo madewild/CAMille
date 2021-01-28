@@ -12,9 +12,9 @@ s3 = boto3.client('s3')
 s3r = boto3.resource('s3')
 
 bucket_name = "camille-data"
-prefix = "XML/JB421/1900"
+prefix = "XML/JB421/1899"
 
-cred = json.load(open("es_credentials.json"))
+cred = json.load(open("../es_credentials.json"))
 endpoint = cred["endpoint"]
 es_url = f"{endpoint}/pages/_doc"
 username = cred["username"]
