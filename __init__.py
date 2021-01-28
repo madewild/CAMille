@@ -20,8 +20,9 @@ def hello():
         username = cred["username"]
         password = cred["password"]
         headers = {"Content-Type": "application/json; charset=utf8"}
+        size = 10
         data =  {
-                    "size": 10,
+                    "size": size,
                     "sort": [
                         {"date": {"order": "asc"}}
                     ],
@@ -62,7 +63,7 @@ def hello():
                 for match in page["matches"]:
                     html += f"{match}<br>"
                 html += "</p>"
-            if len(pages) == 20:
+            if len(pages) == size:
                 html += "<p>...</p>"
             html += '<p><form><input type="submit" value="Retour"></form></p>'
         else:
