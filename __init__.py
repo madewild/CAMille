@@ -16,7 +16,7 @@ def hello():
         except FileNotFoundError:
             cred = json.load(open("/var/www/camille/es_credentials.json"))
         endpoint = cred["endpoint"]
-        es_url = f"{endpoint}/pages2/_search"
+        es_url = f"{endpoint}/pages/_search"
         username = cred["username"]
         password = cred["password"]
         headers = {"Content-Type": "application/json; charset=utf8"}
