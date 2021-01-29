@@ -25,7 +25,7 @@ try:
 except FileNotFoundError:
     cred = json.load(open("/var/www/camille/es_credentials.json"))
 endpoint = cred["endpoint"]
-es_url = f"{endpoint}/pages2/_doc"
+es_url = f"{endpoint}/pages/_doc"
 username = cred["username"]
 password = cred["password"]
 headers = {"Content-Type": "application/json; charset=utf8"}
@@ -42,8 +42,10 @@ for year in years:
                 key = obj["Key"]
                 file_name = key.split("/")[-1]
                 raw_file_name = file_name[:-4]
-                date = raw_file_name.split("_")[2]
-                print(file_name)
+                print(raw_file_name)
+                elements = raw_file_name.split("_")
+                journal = elements[1]
+                date = elements[2]
                 xml = s3r.Object(bucket_name, key)
                 body = xml.get()['Body'].read()
                 soup = bs(body, "lxml")
@@ -69,7 +71,7 @@ for year in years:
                     extracted_line = " ".join(words)
                     extracted_lines.append(extracted_line)
                 extracted_text = " ".join(extracted_lines)
-                payload = {"page": raw_file_name, "date": date, "text": extracted_text}
+                payload = {"page": raw_file_name, "journal": journal, "year": year, "date": date, "text": extracted_text}
                 data = json.dumps(payload)
                 full_es_url = f"{es_url}/{raw_file_name}"
                 r = requests.put(full_es_url, auth=(username, password), headers=headers, data=data)
