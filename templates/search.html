@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>CAMILLE</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+
+<body>
+    <main>
+        <div class="main-wrapper">
+            <section class="content-top">
+                <div class="site-img">
+                    <img src="{{ url_for('static', filename='images/camille.png') }}" alt="">
+                </div>
+                <form class="search-form">
+                    <input type="text" class="search-box" placeholder="Recherchez un ou plusieurs termes" 
+                        id="query" name="query" value="{{term}}">
+                    <button type="submit" class="search-btn">
+                    <img src="{{ url_for('static', filename='images/loupe.svg') }}">
+                    </button>
+                    <!--
+                    <label for="fuzzy">Inclure les termes proches ?</label> 
+                    <input type="checkbox" id="fuzzy" name="fuzzy" value="true" {{checked}}>
+                    -->
+                </form>
+            </section>
+        </div>
+    </main>		
+</body>
+</html>
