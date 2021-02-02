@@ -2,7 +2,7 @@
 
 import json
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 import requests
 
 app = Flask(__name__)
@@ -82,16 +82,7 @@ def hello():
             checked = "checked"
         else:
             checked = ""
-        html = f"""<h1>CAMILLE</h1>
-                <h2>Centre d'Archives sur les Médias et l'Information</h2>
-                <p><form>
-                <label for="query">Faites une recherche :</label> 
-                <input type="text" id="query" name="query" value="{term}"><br><br>
-                <label for="fuzzy">Inclure les termes proches ?</label> 
-                <input type="checkbox" id="fuzzy" name="fuzzy" value="true" {checked}><br><br>
-                <input type="submit" value="OK">
-                </form></p>
-            """
+        html = render_template("search.html", term=term, checked=checked)
     return html
 if __name__ == "__main__":
     app.run(debug=True)
