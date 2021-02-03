@@ -55,7 +55,7 @@ headers = {"Content-Type": "application/json; charset=utf8"}
 for year in years:
     print(f"Processing {year}...")
     prefix = f"XML/{code}/{year}"
-    prefix = f"XML/{code}/{year}/KB_{code}_{year}-1"
+    #prefix = f"XML/{code}/{year}/KB_{code}_{year}-1"
     
     pages = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
     for page in pages:
