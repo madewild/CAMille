@@ -8,7 +8,7 @@ import boto3
 from bs4 import BeautifulSoup as bs
 import requests
 from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+from requests.packages.urllib3.util import Retry
 
 def requests_retry_session(
     retries=3,
