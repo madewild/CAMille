@@ -30,7 +30,6 @@ def requests_retry_session(
     return session
 
 s3 = boto3.client('s3')
-s3r = boto3.resource('s3')
 paginator = s3.get_paginator('list_objects')
 
 bucket_name = "camille-data"
@@ -69,8 +68,8 @@ for year in years:
                 elements = raw_file_name.split("_")
                 journal = elements[1]
                 date = elements[2]
-                xml = s3r.Object(bucket_name, key)
-                body = xml.get()['Body'].read()
+                new_obj = s3.get_object(Bucket=bucket_name, Key=key)
+                body = new_obj['Body'].read()
                 soup = bs(body, "lxml")
                 extracted_lines = []
                 lines = soup.find_all("textline")
