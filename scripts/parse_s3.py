@@ -7,15 +7,37 @@ import sys
 import boto3
 from bs4 import BeautifulSoup as bs
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+
+def requests_retry_session(
+    retries=3,
+    backoff_factor=0.3,
+    status_forcelist=(500, 502, 503, 504),
+    session=None,
+):
+    session = session or requests.Session()
+    retry = Retry(
+        total=retries,
+        read=retries,
+        connect=retries,
+        backoff_factor=backoff_factor,
+        status_forcelist=status_forcelist,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
 
 s3 = boto3.client('s3')
 s3r = boto3.resource('s3')
 paginator = s3.get_paginator('list_objects')
 
 bucket_name = "camille-data"
-start = int(sys.argv[1])
+code = sys.argv[1]
+start = int(sys.argv[2])
 try:
-    end = int(sys.argv[2])
+    end = int(sys.argv[3])
 except IndexError:
     end = start
 years = range(start, end+1)
@@ -32,8 +54,8 @@ headers = {"Content-Type": "application/json; charset=utf8"}
 
 for year in years:
     print(f"Processing {year}...")
-    prefix = f"XML/JB421/{year}"
-    #prefix = f"XML/JB421/{year}/KB_JB421_{year}-1"
+    prefix = f"XML/{code}/{year}"
+    prefix = f"XML/{code}/{year}/KB_{code}_{year}-1"
     
     pages = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
     for page in pages:
@@ -75,13 +97,20 @@ for year in years:
                 payload = {"page": raw_file_name, "journal": journal, "year": year, "date": date, "text": extracted_text}
                 data = json.dumps(payload)
                 full_es_url = f"{es_url}/{raw_file_name}"
-                r = requests.put(full_es_url, auth=(username, password), headers=headers, data=data)
-                if r.status_code == 201:
-                    continue
-                elif r.status_code == 200:
-                    print("  Already present, skipping")
-                else:
-                    print(r.status_code)
+                s = requests.Session()
+                s.auth = (username, password)
+                s.headers.update(headers)
+                try:
+                    r = requests_retry_session(session=s).put(full_es_url, data=data, timeout=5)
+                    if r.status_code == 201:
+                        continue
+                    elif r.status_code == 200:
+                        print("   Already present, skipping")
+                    else:
+                        print(f"Error {r.status_code}")
+                        sys.exit()
+                except Exception as x:
+                    print(f"It failed: {x.__class__.__name__}")
                     sys.exit()
         except KeyError:
             print(f"{year} has not been found, skipping")
