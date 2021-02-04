@@ -97,8 +97,8 @@ for year in years:
                 date = elements[2]
                 new_obj = s3.get_object(Bucket=bucket_name, Key=key)
                 body = new_obj['Body'].read()
-                soup = extract_text(body)
-                payload = {"page": raw_file_name, "journal": journal, "year": year, "date": date, "text": extracted_text}
+                text = extract_text(body)
+                payload = {"page": raw_file_name, "journal": journal, "year": year, "date": date, "text": text}
                 data = json.dumps(payload)
                 full_es_url = f"{es_url}/{raw_file_name}"
                 s = requests.Session()
