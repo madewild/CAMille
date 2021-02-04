@@ -29,6 +29,33 @@ def requests_retry_session(
     session.mount('https://', adapter)
     return session
 
+def extract_text(xml_body):
+    """Extract text from XML"""
+    soup = bs(xml_body, "lxml")
+    extracted_lines = []
+    lines = soup.find_all("textline")
+    for line in lines:
+        words = []
+        strings = line.find_all("string")
+        for string in strings:
+            subs_type = string.get("subs_type")
+            if subs_type:
+                if subs_type == "HypPart1":
+                    word = string.get("subs_content")
+                elif subs_type == "HypPart2":
+                    word = None
+                else:
+                    print(f"Unknown SUBS_TYPE: {subs_type}")
+                    sys.exit()
+            else:
+                word = string.get("content")
+            if word:
+                words.append(html.unescape(word))
+        extracted_line = " ".join(words)
+        extracted_lines.append(extracted_line)
+    extracted_text = " ".join(extracted_lines)
+    return extracted_text
+
 s3 = boto3.client('s3')
 paginator = s3.get_paginator('list_objects')
 
@@ -70,29 +97,7 @@ for year in years:
                 date = elements[2]
                 new_obj = s3.get_object(Bucket=bucket_name, Key=key)
                 body = new_obj['Body'].read()
-                soup = bs(body, "lxml")
-                extracted_lines = []
-                lines = soup.find_all("textline")
-                for line in lines:
-                    words = []
-                    strings = line.find_all("string")
-                    for string in strings:
-                        subs_type = string.get("subs_type")
-                        if subs_type:
-                            if subs_type == "HypPart1":
-                                word = string.get("subs_content")
-                            elif subs_type == "HypPart2":
-                                word = None
-                            else:
-                                print(f"Unknown SUBS_TYPE: {subs_type}")
-                                sys.exit()
-                        else:
-                            word = string.get("content")
-                        if word:
-                            words.append(html.unescape(word))
-                    extracted_line = " ".join(words)
-                    extracted_lines.append(extracted_line)
-                extracted_text = " ".join(extracted_lines)
+                soup = extract_text(body)
                 payload = {"page": raw_file_name, "journal": journal, "year": year, "date": date, "text": extracted_text}
                 data = json.dumps(payload)
                 full_es_url = f"{es_url}/{raw_file_name}"
