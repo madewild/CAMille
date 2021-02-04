@@ -1,5 +1,5 @@
 data
-venv
+venv*
 .vscode
 *credentials*
 s3-to-es
