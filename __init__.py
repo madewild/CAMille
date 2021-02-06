@@ -19,7 +19,6 @@ app.config['FLASK_AUTH_ALL'] = True
 htpasswd = HtPasswdAuth(app)
 
 @app.route("/")
-@htpasswd.required
 def hello():
     query = request.args.get("query")
     if query:
