@@ -3,18 +3,27 @@
 import json
 
 from flask import Flask, request, render_template
+from flask_htpasswd import HtPasswdAuth
+
 import requests
 
+try:
+    cred = json.load(open("credentials.json"))
+except FileNotFoundError:
+    cred = json.load(open("/var/www/camille/credentials.json"))
+
 app = Flask(__name__)
+app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
+app.config['FLASK_SECRET'] = cred["flask_secret"]
+
+htpasswd = HtPasswdAuth(app)
+
 @app.route("/")
+@htpasswd.required
 def hello():
     query = request.args.get("query")
     if query:
         html = f"<p>Vous avez cherché <b>{query}</b></p>"
-        try:
-            cred = json.load(open("es_credentials.json"))
-        except FileNotFoundError:
-            cred = json.load(open("/var/www/camille/es_credentials.json"))
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
         username = cred["username"]
@@ -84,5 +93,6 @@ def hello():
             checked = ""
         html = render_template("search.html", term=term, checked=checked)
     return html
+
 if __name__ == "__main__":
     app.run(debug=True)
