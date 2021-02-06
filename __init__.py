@@ -15,7 +15,6 @@ except FileNotFoundError:
 app = Flask(__name__)
 app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
 app.config['FLASK_AUTH_ALL'] = True
-app.config['FLASK_AUTH_REALM'] = "Restricted Content"
 
 htpasswd = HtPasswdAuth(app)
 
