@@ -51,3 +51,5 @@ new_es_ids = set([hit["_id"] for hit in resp["hits"]["hits"]])
 nb_new_es_ids = len(new_es_ids)
 if nb_new_es_ids > nb_es_ids:
     print(f"Now {nb_new_es_ids} docs found for journal {code} and year {year}")
+else:
+    print("Nothing missing")
