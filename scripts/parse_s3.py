@@ -56,65 +56,72 @@ def extract_text(xml_body):
     extracted_text = " ".join(extracted_lines)
     return extracted_text
 
-s3 = boto3.client('s3')
-paginator = s3.get_paginator('list_objects')
+def write_to_es(client, bucket_name, key, cred):
+    """writing payload to Elasticsearch"""
+    file_name = key.split("/")[-1]
+    raw_file_name = file_name[:-4]
+    print(f"Processing {raw_file_name}")
+    elements = raw_file_name.split("_")
+    journal = elements[1]
+    date = elements[2]
+    docyear = date.split("-")[0]
+    new_obj = client.get_object(Bucket=bucket_name, Key=key)
+    body = new_obj['Body'].read()
+    text = extract_text(body)
+    payload = {"page": raw_file_name, "journal": journal, "year": docyear, "date": date, "text": text}
+    data = json.dumps(payload)
+    endpoint = cred["endpoint"]
+    es_url = f"{endpoint}/pages/_doc"
+    username = cred["username"]
+    password = cred["password"]
+    headers = {"Content-Type": "application/json; charset=utf8"}
+    full_es_url = f"{es_url}/{raw_file_name}"
+    s = requests.Session()
+    s.auth = (username, password)
+    s.headers.update(headers)
+    try:
+        r = requests_retry_session(session=s).put(full_es_url, data=data, timeout=5)
+        if r.status_code == 201:
+            print("   Done")
+        elif r.status_code == 200:
+            print("   Already present, skipping")
+        else:
+            print(f"Error {r.status_code}")
+            sys.exit()
+    except Exception as x:
+        print(f"It failed: {x.__class__.__name__}")
+        sys.exit()
 
-bucket_name = "camille-data"
-code = sys.argv[1]
-start = int(sys.argv[2])
-try:
-    end = int(sys.argv[3])
-except IndexError:
-    end = start
-years = range(start, end+1)
+if __name__ == "__main__":
+    s3 = boto3.client('s3')
+    paginator = s3.get_paginator('list_objects')
 
-try:
-    cred = json.load(open("../es_credentials.json"))
-except FileNotFoundError:
-    cred = json.load(open("/var/www/camille/es_credentials.json"))
-endpoint = cred["endpoint"]
-es_url = f"{endpoint}/pages/_doc"
-username = cred["username"]
-password = cred["password"]
-headers = {"Content-Type": "application/json; charset=utf8"}
+    bucket_name = "camille-data"
+    code = sys.argv[1]
+    start = int(sys.argv[2])
+    try:
+        end = int(sys.argv[3])
+    except IndexError:
+        end = start
+    years = range(start, end+1)
 
-for year in years:
-    print(f"Processing {year}...")
-    prefix = f"XML/{code}/{year}"
-    #prefix = f"XML/{code}/{year}/KB_{code}_{year}-1"
-    
-    pages = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
-    for page in pages:
-        try:
-            objects = page["Contents"]
-            for obj in objects:
-                key = obj["Key"]
-                file_name = key.split("/")[-1]
-                raw_file_name = file_name[:-4]
-                print(raw_file_name)
-                elements = raw_file_name.split("_")
-                journal = elements[1]
-                date = elements[2]
-                new_obj = s3.get_object(Bucket=bucket_name, Key=key)
-                body = new_obj['Body'].read()
-                text = extract_text(body)
-                payload = {"page": raw_file_name, "journal": journal, "year": year, "date": date, "text": text}
-                data = json.dumps(payload)
-                full_es_url = f"{es_url}/{raw_file_name}"
-                s = requests.Session()
-                s.auth = (username, password)
-                s.headers.update(headers)
-                try:
-                    r = requests_retry_session(session=s).put(full_es_url, data=data, timeout=5)
-                    if r.status_code == 201:
-                        continue
-                    elif r.status_code == 200:
-                        print("   Already present, skipping")
-                    else:
-                        print(f"Error {r.status_code}")
-                        sys.exit()
-                except Exception as x:
-                    print(f"It failed: {x.__class__.__name__}")
-                    sys.exit()
-        except KeyError:
-            print(f"{year} has not been found, skipping")
+    try:
+        credentials = json.load(open("../credentials.json"))
+    except FileNotFoundError:
+        credentials = json.load(open("/var/www/camille/credentials.json"))
+
+    for year in years:
+        print(f"Processing {year}...")
+        prefix = f"XML/{code}/{year}"
+        #prefix = f"XML/{code}/{year}/KB_{code}_{year}-1"
+        
+        pages = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
+        for page in pages:
+            try:
+                objects = page["Contents"]
+                for obj in objects:
+                    key = obj["Key"]
+                    write_to_es(s3, bucket_name, key, credentials)
+                    
+            except KeyError:
+                print(f"{year} has not been found, skipping")
