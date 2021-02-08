@@ -3,4 +3,5 @@ lxml==4.6.2
 boto3==1.16.60
 requests==2.25.1
 Flask==1.1.2
-requests-aws4auth==1.0.1
+flask-htpasswd==0.4.0
+flask-paginate==0.8.1
