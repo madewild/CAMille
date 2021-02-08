@@ -21,7 +21,53 @@ htpasswd = HtPasswdAuth(app)
 @app.route("/")
 def hello():
     query = request.args.get("query")
-    if query:
+    if query and query == "test":
+        query_dic = {"query_string": {"query": query}}
+        endpoint = cred["endpoint"]
+        es_url = f"{endpoint}/pages/_search"
+        username = cred["username"]
+        password = cred["password"]
+        headers = {"Content-Type": "application/json; charset=utf8"}
+        size = 10
+        data =  {
+                    "size": size,
+                    "sort": [
+                        {"date": {"order": "asc"}}
+                    ],
+                    "query": query_dic,
+                    "highlight": {
+                        "fields": {
+                            "text": {}
+                        },
+                        "pre_tags": "<span class='serp__match'>",
+                        "post_tags": "</span>",
+                        "fragment_size": 200
+                    }
+                }
+        r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data))
+        if r.status_code == 200:
+            results = json.loads(r.text)
+            number = results["hits"]["total"]["value"]
+            timing = '{0:.2f}'.format(results["took"]/1000).replace('.', ',')
+            if number == 0:
+                found_string = "Aucun résultat"
+            elif number == 1:
+                found_string = "Un seul résultat"
+            else:
+                nb = '{:,}'.format(number).replace(',', ' ')
+                found_string = f"Environ {nb} résultats"
+            nbstr = f"{found_string} ({timing} secondes)"
+            hits = results["hits"]
+            pages = []
+            for hit in hits["hits"]:
+                page_id = hit["_source"]["page"]
+                matches = hit["highlight"]["text"]
+                page = {"page_id": page_id, "matches": matches}
+                pages.append(page)
+            html = render_template("results.html", query=query, nbstr=nbstr, pages=pages)
+        else:
+            html = f"HTTP Error: {r.status_code}"
+    elif query:
         html = f"<p>Vous avez cherché <b>{query}</b></p>"
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
