@@ -30,6 +30,7 @@ payload = {
 resp = requests.request("POST", es_url, auth=(username, password), data=json.dumps(payload), headers=headers)
 resp = json.loads(resp.text)
 es_ids = set([hit["_id"] for hit in resp["hits"]["hits"]])
+print(f"{len(es_ids)} docs found for journal {code} and year {year}")
 
 prefix = f"XML/{code}/{year}"
 pages = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
@@ -42,3 +43,9 @@ for page in pages:
         if raw_file_name not in es_ids:
             print(f"{raw_file_name} is missing")
             write_to_es(s3, bucket_name, key, cred)
+
+resp = requests.request("POST", es_url, auth=(username, password), data=json.dumps(payload), headers=headers)
+resp = json.loads(resp.text)
+new_es_ids = set([hit["_id"] for hit in resp["hits"]["hits"]])
+if new_es_ids > es_ids:
+    print(f"Now {len(es_ids)} docs found for journal {code} and year {year}")
