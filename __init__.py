@@ -23,12 +23,18 @@ htpasswd = HtPasswdAuth(app)
 def hello():
     query = request.args.get("query")
     if query:
+
         fuzzy = request.args.get("fuzzy")
         if fuzzy == "true":
             query_dic = {"fuzzy": {"text": {"value": query}}}
         else:
             fuzzy = "false"
             query_dic = {"query_string": {"query": query}}
+
+        complex = "false"
+        if any([term in query for term in ['"', ' ', '-']]):
+            complex = "true"
+
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
         username = cred["username"]
@@ -85,7 +91,7 @@ def hello():
             maxp = math.ceil(number/10)
             firstp = max(1, min(p-4, maxp-9))
             lastp = min(firstp+10, maxp+1)
-            html = render_template("results.html", query=query, fuzzy=fuzzy, stats=stats, results=results, p=p, firstp=firstp, lastp=lastp, maxp=maxp)
+            html = render_template("results.html", query=query, fuzzy=fuzzy, complex=complex, stats=stats, results=results, p=p, firstp=firstp, lastp=lastp, maxp=maxp)
         else:
             html = f"HTTP Error: {r.status_code}"
     else:
