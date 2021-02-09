@@ -27,6 +27,7 @@ def hello():
         if fuzzy == "true":
             query_dic = {"fuzzy": {"text": {"value": query}}}
         else:
+            fuzzy = "false"
             query_dic = {"query_string": {"query": query}}
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
@@ -59,9 +60,9 @@ def hello():
                 }
         r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data))
         if r.status_code == 200:
-            results = json.loads(r.text)
-            number = results["hits"]["total"]["value"]
-            timing = '{0:.2f}'.format(results["took"]/1000).replace('.', ',')
+            resdic = json.loads(r.text)
+            number = resdic["hits"]["total"]["value"]
+            timing = '{0:.2f}'.format(resdic["took"]/1000).replace('.', ',')
             if number == 0:
                 found_string = "Aucun résultat"
             elif number == 1:
@@ -72,31 +73,26 @@ def hello():
             else:
                 nb = '{:,}'.format(number).replace(',', ' ')
                 found_string = f"Page {p} sur {nb} résultats"
-            nbstr = f"{found_string} ({timing} secondes)"
-            hits = results["hits"]
-            pages = []
+            stats = f"{found_string} ({timing} secondes)"
+            hits = resdic["hits"]
+            results = []
             for hit in hits["hits"]:
-                page_id = hit["_source"]["page"]
+                result_id = hit["_source"]["page"]
                 matches = hit["highlight"]["text"]
-                page = {"page_id": page_id, "matches": " ... ".join(matches)}
-                pages.append(page)
+                result = {"id": result_id, "matches": " ... ".join(matches)}
+                results.append(result)
 
             maxp = math.ceil(number/10)
             firstp = max(1, min(p-4, maxp-9))
             lastp = min(firstp+10, maxp+1)
-            html = render_template("results.html", query=query, nbstr=nbstr, pages=pages, p=p, firstp=firstp, lastp=lastp, maxp=maxp)
+            html = render_template("results.html", query=query, fuzzy=fuzzy, stats=stats, results=results, p=p, firstp=firstp, lastp=lastp, maxp=maxp)
         else:
             html = f"HTTP Error: {r.status_code}"
     else:
         term = request.args.get("term")
         if not term:
             term = ""
-        fuzzy = request.args.get("fuzzy")
-        if fuzzy:
-            checked = "checked"
-        else:
-            checked = ""
-        html = render_template("search.html", term=term, checked=checked)
+        html = render_template("search.html", term=term)
     return html
 
 if __name__ == "__main__":
