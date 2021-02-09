@@ -29,7 +29,12 @@ def hello():
         password = cred["password"]
         headers = {"Content-Type": "application/json; charset=utf8"}
         size = 10
+        p = int(request.args.get("p"))
+        if not p:
+            p = 1
+        fromp = (int(p)-1)*10
         data =  {
+                    "from": fromp,
                     "size": size,
                     "sort": [
                         {"date": {"order": "asc"}}
@@ -64,7 +69,8 @@ def hello():
                 matches = hit["highlight"]["text"]
                 page = {"page_id": page_id, "matches": matches}
                 pages.append(page)
-            html = render_template("results.html", query=query, nbstr=nbstr, pages=pages)
+
+            html = render_template("results.html", query=query, nbstr=nbstr, pages=pages, p=p, total=number)
         else:
             html = f"HTTP Error: {r.status_code}"
     elif query:
