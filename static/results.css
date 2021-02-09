@@ -74,24 +74,6 @@
     }
   }
   
-  .serp__sidebar {
-    display: none;
-    padding: 0 16px 0 0;
-  }
-  
-  @media (min-width:990px) {
-    .serp__sidebar {
-      display: block;
-      flex: 34%;
-      max-width: 34%;
-    }
-  }
-  
-  .serp__footer {
-    margin: 30px 0 0;
-    width: 100%;
-  }
-  
   .serp__header {
     background-color: var(--header-color);
     display: flex;
@@ -223,51 +205,6 @@
     outline: 0 none;
   }
   
-  .serp__nav {
-    color: var(--text-light-color);
-    display: flex;
-    font-size: 14px;
-    justify-content: space-around;
-    line-height: 1;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  @media (min-width:600px) {
-    .serp__nav {
-      justify-content: flex-start;
-      justify-content: start;
-    }
-  }
-  
-  .serp__nav li {
-    margin-left: 1em;
-  }
-  
-  .serp__nav li:first-child {
-    margin-left: 0;
-  }
-  
-  @media (min-width:600px) {
-    .serp__nav li {
-      margin-left: 3em;
-    }
-  }
-  
-  .serp__nav a {
-    color: inherit;
-    display: block;
-    padding: 12px 0 8px;
-    text-decoration: none;
-  }
-  
-  .serp__nav .serp__active {
-    border-bottom: 3px solid var(--color);
-    color: var(--text-color);
-    font-weight: 700;
-  }
-  
   .serp__results {
     background: var(--border-color);
     padding: 5px 0 5px 0;
@@ -363,6 +300,11 @@
   .serp__description {
     color: var(--text-color);
     line-height: normal;
+  }
+
+  .serp__match {	
+    color: var(--color);	
+    font-weight: bold;	
   }
   
   /* ------- PAGINATION ------- */
