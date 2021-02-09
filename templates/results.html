@@ -54,7 +54,7 @@
                         {% else %}
                         <li><a href="/?query={{query}}&p={{p-1}}"></a></li>
                         {% endif %}
-                        {% for i in range(firstp, firstp+10) %}
+                        {% for i in range(firstp, lastp) %}
                         {% if i==p %}
                         <li class="serp__pagination-active">
                         {% else %}
@@ -62,7 +62,7 @@
                         {% endif %}
                         <a href="/?query={{query}}&p={{i}}"></a></li>
                         {% endfor %}
-                        {% if p==lastp %}
+                        {% if p==maxp %}
                         <li><a class="serp__disabled"></a></li>
                         {% else %}
                         <li><a href="/?query={{query}}&p={{p+1}}"></a></li>
