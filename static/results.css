@@ -70,7 +70,7 @@
   @media (min-width:990px) {
     .serp__main {
       flex: 66%;
-      max-width: 66%;
+      max-width: 80%;
     }
   }
   
@@ -655,10 +655,6 @@
     content: "◄";
     line-height: 17px;
     font-size: 17px;
-  }
-  
-  .serp__pagination li:nth-child(2) {
-    counter-reset: pagination; /* DONT USE IF .serp__short-pagi IS USED */
   }
   
   .serp__pagination li:last-child a:after {
