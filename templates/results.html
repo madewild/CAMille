@@ -5,64 +5,72 @@
   <title>CAMILLE</title>
   <meta name="description" content="Centre d'archives sur les médias et l'information">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="./css/colors.css">
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
   <link rel="stylesheet" href="{{ url_for('static', filename='results.css') }}">
 </head>
 <body>
-  <div class="serp">
-    <div class="serp__layout">
-      <div class="serp__header">
-        <div class="serp__search">
-          <form class="serp__form" action="/" methode="GET">
-            <div>
-              <input name="query" type="search" value="{{query}}"
-                     class="serp__query" 
-                     maxlength="512"
-                     autocomplete="off"
-                     title="Search"
-                     aria-label="Search"
-                     dir="ltr"
-                     spellcheck="true"
-                     autofocus="autofocus"
-              >
+    <div class="serp">
+        <div class="serp__layout">
+            <div class="serp__header">
+                <div class="serp__search">
+                    <form class="serp__form" action="/" methode="GET">
+                    <div>
+                        <input name="query" type="search" value="{{query}}"
+                            class="serp__query" 
+                            maxlength="512"
+                            autocomplete="off"
+                            title="Search"
+                            aria-label="Search"
+                            dir="ltr"
+                            spellcheck="true"
+                            autofocus="autofocus"
+                        >
+                    </div>
+                    <button class="serp__button" aria-label="Search" type="submit">
+                        <div class="serp__ico"></div>
+                    </button>
+                    </form>
+                </div>
+                <a class="serp__logo" href="/"></a>
             </div>
-            <button class="serp__button" aria-label="Search" type="submit">
-              <div class="serp__ico"></div>
-            </button>
-          </form>
         </div>
-        <a class="serp__logo" href="/"></a>
-      </div>
+        <div class="serp__body">
+            <div class="serp__main serp__results">
+                <span class="stats">{{nbstr}}</span>
+                <div class="serp__web">
+                    {% for page in pages %}
+                    <div class="serp__result">
+                        <a href="/">
+                            <div class="serp__title">{{page['page_id']}}</div>
+                        </a>
+                        <span class="serp__description">{{page['matches'][0]|safe}}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="serp__pagination">
+                    <ul style="counter-reset: pagination {{firstp-2}};">
+                        {% if p==1 %}
+                        <li><a class="serp__disabled"></a></li>
+                        {% else %}
+                        <li><a href="/?query={{query}}&p={{p-1}}"></a></li>
+                        {% endif %}
+                        {% for i in range(firstp, firstp+10) %}
+                        {% if i==p %}
+                        <li class="serp__pagination-active">
+                        {% else %}
+                        <li>
+                        {% endif %}
+                        <a href="/?query={{query}}&p={{i}}"></a></li>
+                        {% endfor %}
+                        {% if p==lastp %}
+                        <li><a class="serp__disabled"></a></li>
+                        {% else %}
+                        <li><a href="/?query={{query}}&p={{p+1}}"></a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="serp__body">
-      <div class="serp__main serp__results">
-        <span class="stats">{{nbstr}}</span>
-        <div class="serp__web">
-          {% for page in pages %}
-          <div class="serp__result">
-            <a href="/">
-              <div class="serp__title">{{page['page_id']}}</div>
-            </a>
-            <span class="serp__description">{{page['matches'][0]|safe}}</span>
-          </div>
-          {% endfor %}
-        </div>
-        <div class="serp__pagination">
-            <ul>
-                <li><a class="serp__disabled"></a></li>
-                {% for i in range(1,6) %}
-                {% if i==p %}
-                <li class="serp__pagination-active">
-                {% else %}
-                <li>
-                {% endif %}
-                <a href="/?query={{query}}&p={{i}}"></a></li>
-                {% endfor %}
-                <li><a href="#"></a></li>
-              </ul>
-        </div>
-      </div>
-  </div>
 </body>
 </html>
