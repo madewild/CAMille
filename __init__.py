@@ -1,6 +1,7 @@
 """Basis Flask app"""
 
 import json
+import math
 
 from flask import Flask, request, render_template
 from flask_htpasswd import HtPasswdAuth
@@ -29,8 +30,10 @@ def hello():
         password = cred["password"]
         headers = {"Content-Type": "application/json; charset=utf8"}
         size = 10
-        p = int(request.args.get("p"))
-        if not p:
+        p = request.args.get("p")
+        if p:
+            p = int(p)
+        else:
             p = 1
         fromp = (int(p)-1)*10
         data =  {
@@ -70,7 +73,9 @@ def hello():
                 page = {"page_id": page_id, "matches": matches}
                 pages.append(page)
 
-            html = render_template("results.html", query=query, nbstr=nbstr, pages=pages, p=p, total=number)
+            lastp = math.ceil(number/10)
+            firstp = min(max(1, p-4), lastp-9)
+            html = render_template("results.html", query=query, nbstr=nbstr, pages=pages, p=p, firstp=firstp, lastp=lastp)
         else:
             html = f"HTTP Error: {r.status_code}"
     elif query:
