@@ -44,6 +44,7 @@ def hello():
                     "from": fromp,
                     "size": size,
                     "sort": [
+                        "_score",
                         {"date": {"order": "asc"}}
                     ],
                     "query": query_dic,
@@ -77,7 +78,7 @@ def hello():
             for hit in hits["hits"]:
                 page_id = hit["_source"]["page"]
                 matches = hit["highlight"]["text"]
-                page = {"page_id": page_id, "matches": matches}
+                page = {"page_id": page_id, "matches": " ... ".join(matches)}
                 pages.append(page)
 
             maxp = math.ceil(number/10)
