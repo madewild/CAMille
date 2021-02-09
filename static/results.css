@@ -155,6 +155,17 @@
       width: 100%;
     }
   }
+
+  .custom_form {
+    display: flex;
+  }
+
+  @media (min-width:800px) {
+    .custom_form {
+      max-width: 680px;
+      width: 100%;
+    }
+  }
   
   .serp__form>div {
     flex: 1;
