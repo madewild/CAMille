@@ -47,28 +47,30 @@
                     </div>
                     {% endfor %}
                 </div>
+                {% if maxp > 1 %}
                 <div class="serp__pagination">
                     <ul style="counter-reset: pagination {{firstp-2}};">
-                        {% if p==1 %}
+                        {% if p == 1 %}
                         <li><a class="serp__disabled"></a></li>
                         {% else %}
                         <li><a href="/?query={{query}}&p={{p-1}}"></a></li>
                         {% endif %}
                         {% for i in range(firstp, lastp) %}
-                        {% if i==p %}
+                        {% if i == p %}
                         <li class="serp__pagination-active">
                         {% else %}
                         <li>
                         {% endif %}
                         <a href="/?query={{query}}&p={{i}}"></a></li>
                         {% endfor %}
-                        {% if p==maxp %}
+                        {% if p == maxp %}
                         <li><a class="serp__disabled"></a></li>
                         {% else %}
                         <li><a href="/?query={{query}}&p={{p+1}}"></a></li>
                         {% endif %}
                     </ul>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
