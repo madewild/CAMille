@@ -86,7 +86,7 @@
   @media (min-width:800px) {
     .serp__header {
       align-items: center;
-      min-height: 70px;
+      min-height: 100px;
     }
   }
   
@@ -113,8 +113,8 @@
     background-repeat: no-repeat;
     background-size: contain;
     display: block;
-    flex: 0 0 40px;
-    height: 40px;
+    flex: 0 0 100px;
+    height: 100px;
     margin: 0 0 0 10px;
   }
   
