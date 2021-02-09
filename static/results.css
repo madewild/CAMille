@@ -315,12 +315,16 @@
     justify-content: flex-start;
     text-align: center;
   }
+
+  .serp__pagination ul {
+    padding-inline-start: 0px;
+  }
   
   .serp__pagination ul, 
   .serp__pagination ul li {
     list-style: none;
     display: inline;
-    padding-left: 4px;
+    padding-right: 4px;
   }
   
   .serp__pagination li {
