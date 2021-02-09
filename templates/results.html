@@ -14,9 +14,9 @@
     <div class="serp__layout">
       <div class="serp__header">
         <div class="serp__search">
-          <form class="serp__form" action="##" methode="GET">
+          <form class="serp__form" action="/" methode="GET">
             <div>
-              <input name="q" type="search" value="{{query}}"
+              <input name="query" type="search" value="{{query}}"
                      class="serp__query" 
                      maxlength="512"
                      autocomplete="off"
@@ -41,26 +41,26 @@
         <div class="serp__web">
           {% for page in pages %}
           <div class="serp__result">
-            <a href="##" target="_blank">
+            <a href="/">
               <div class="serp__title">{{page['page_id']}}</div>
             </a>
-            <!--<span class="serp__description">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut <span class="serp__match">labore et dolore</span> magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. </span>-->
             <span class="serp__description">{{page['matches'][0]|safe}}</span>
           </div>
           {% endfor %}
         </div>
         <div class="serp__pagination">
-          <ul>
-            <li><a class="serp__disabled"></a></li>
-            <li class="serp__pagination-active"><a href="#"></a></li>
-            <li><a href="#"></a></li>
-            <li><a href="#"></a></li>
-            <li><a href="#"></a></li>
-            <li><a href="#"></a></li>
-            <li><a href="#"></a></li>
-            <li><a href="#"></a></li>
-            <li><a href="#"></a></li>
-          </ul>
+            <ul>
+                <li><a class="serp__disabled"></a></li>
+                {% for i in range(1,6) %}
+                {% if i==p %}
+                <li class="serp__pagination-active">
+                {% else %}
+                <li>
+                {% endif %}
+                <a href="/?query={{query}}&p={{i}}"></a></li>
+                {% endfor %}
+                <li><a href="#"></a></li>
+              </ul>
         </div>
       </div>
   </div>
