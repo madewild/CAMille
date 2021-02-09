@@ -13,7 +13,7 @@
         <div class="serp__layout">
             <div class="serp__header">
                 <div class="serp__search">
-                    <form class="serp__form" action="/" methode="GET">
+                    <form class="serp__form" action="/" method="GET">
                     <div>
                         <input name="query" type="search" value="{{query}}"
                             class="serp__query" 
@@ -30,20 +30,28 @@
                         <div class="serp__ico"></div>
                     </button>
                     </form>
+                    {% if fuzzy == "false" %}
+                    <form class="custom_form" action="/" method="GET">
+                        <p class="serp__query">Inclure les termes proches ?
+                        <input type="hidden" id="query2" name="query" value="{{query}}">
+                        <input type="hidden" id="fuzzy" name="fuzzy" value="true">
+                        <input type="submit" value="OK"></p>
+                    </form>
+                    {% endif %}
                 </div>
                 <a class="serp__logo" href="/"></a>
             </div>
         </div>
         <div class="serp__body">
             <div class="serp__main serp__results">
-                <span class="stats">{{nbstr}}</span>
+                <span class="stats">{{stats}}</span>
                 <div class="serp__web">
-                    {% for page in pages %}
+                    {% for result in results %}
                     <div class="serp__result">
                         <a href="/">
-                            <div class="serp__title">{{page['page_id']}}</div>
+                            <div class="serp__title">{{result['id']}}</div>
                         </a>
-                        <span class="serp__description">{{page['matches']|safe}}</span>
+                        <span class="serp__description">{{result['matches']|safe}}</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -53,7 +61,7 @@
                         {% if p == 1 %}
                         <li><a class="serp__disabled"></a></li>
                         {% else %}
-                        <li><a href="/?query={{query}}&p={{p-1}}"></a></li>
+                        <li><a href="/?query={{query}}&fuzzy={{fuzzy}}&p={{p-1}}"></a></li>
                         {% endif %}
                         {% for i in range(firstp, lastp) %}
                         {% if i == p %}
@@ -61,12 +69,12 @@
                         {% else %}
                         <li>
                         {% endif %}
-                        <a href="/?query={{query}}&p={{i}}"></a></li>
+                        <a href="/?query={{query}}&fuzzy={{fuzzy}}&p={{i}}"></a></li>
                         {% endfor %}
                         {% if p == maxp %}
                         <li><a class="serp__disabled"></a></li>
                         {% else %}
-                        <li><a href="/?query={{query}}&p={{p+1}}"></a></li>
+                        <li><a href="/?query={{query}}&fuzzy={{fuzzy}}&p={{p+1}}"></a></li>
                         {% endif %}
                     </ul>
                 </div>
