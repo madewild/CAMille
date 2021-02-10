@@ -18,7 +18,7 @@ try:
     years = [sys.argv[2]]
 except IndexError:
     #years = os.listdir(f"/run/media/max/Backup plus/Belgica Press XML/{code}/")
-    years = range(1885, 1971)
+    years = range(1848, 1971)
 
 cred = json.load(open("../credentials.json"))
 endpoint = cred["endpoint"]
