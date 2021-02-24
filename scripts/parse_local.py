@@ -1,27 +1,25 @@
 """Parse XML files from local data and retrieve text"""
 
-import html
 import os
+import sys
 
-from bs4 import BeautifulSoup as bs
+from parse_s3 import extract_text
 
-data_path = "data/xml/"
-files = os.listdir(data_path)
+journal = sys.argv[1]
 
-for f in sorted(files):
-    print(f"Processing {f}")
-    xml_string = open(data_path+f, encoding="utf-8").read()
-    soup = bs(xml_string, "lxml")
-    out_path = f"data/txt/{f[:-4]}.txt"
-    output = open(out_path, "w", encoding="utf-8")
-    extracted_text = ""
-    lines = soup.find_all("textline")
-    for line in lines:
-        words = []
-        strings = line.find_all("string")
-        for string in strings:
-            word = string.get("content")
-            words.append(html.unescape(word))
-        extracted_line = " ".join(words) + "\n"
-        extracted_text += extracted_line
-    output.write(extracted_text)
+data_path = f"/run/media/max/Backup Plus/BelgicaPress XML/{journal}/"
+dirs = os.listdir(data_path)
+
+for dir in dirs:
+    print(f"Year {dir}")
+    files = os.listdir(data_path+dir)
+    for f in sorted(files):
+        print(f"Processing {f}")
+        xml_string = open(data_path+dir+"/"+f, encoding="utf-8").read()
+        out_path = f"data/txt/{journal}/{dir}/"
+        if not os.path.exists(out_path):
+            os.makedirs(out_path)
+        full_out_path = f"{out_path}{f[:-4]}.txt"
+        output = open(full_out_path, "w", encoding="utf-8")
+        extracted_text = extract_text(xml_string)
+        output.write(extracted_text)
