@@ -16,7 +16,7 @@ for dir in dirs:
     for f in sorted(files):
         print(f"Processing {f}")
         xml_string = open(data_path+dir+"/"+f, encoding="utf-8").read()
-        out_path = f"data/txt/{journal}/{dir}/"
+        out_path = f"/run/media/max/Backup Plus/BelgicaPress TXT/{journal}/{dir}/"
         if not os.path.exists(out_path):
             os.makedirs(out_path)
         full_out_path = f"{out_path}{f[:-4]}.txt"
