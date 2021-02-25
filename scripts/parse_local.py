@@ -10,7 +10,7 @@ journal = sys.argv[1]
 data_path = f"/run/media/max/Backup Plus/BelgicaPress XML/{journal}/"
 dirs = os.listdir(data_path)
 
-for dir in dirs:
+for dir in sorted(dirs):
     print(f"Year {dir}")
     files = os.listdir(data_path+dir)
     for f in sorted(files):
