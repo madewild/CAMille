@@ -14,7 +14,7 @@ for dir in sorted(dirs):
     print(f"Year {dir}")
     files = os.listdir(data_path+dir)
     for f in sorted(files):
-        print(f"Processing {f}")
+        #print(f"Processing {f}")
         xml_string = open(data_path+dir+"/"+f, encoding="utf-8").read()
         out_path = f"/run/media/max/Backup Plus/BelgicaPress TXT/{journal}/{dir}/"
         if not os.path.exists(out_path):
