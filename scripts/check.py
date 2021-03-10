@@ -1,7 +1,6 @@
 """Find missing texts in ES"""
 
 import json
-import os
 import sys
 
 import boto3
@@ -17,7 +16,6 @@ code = sys.argv[1]
 try:
     years = [sys.argv[2]]
 except IndexError:
-    #years = os.listdir(f"/run/media/max/Backup plus/Belgica Press XML/{code}/")
     years = range(1831, 1971)
 
 cred = json.load(open("../credentials.json"))
