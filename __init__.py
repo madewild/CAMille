@@ -91,8 +91,7 @@ def hello():
             hits = resdic["hits"]
             results = []
             path = Path(__file__).parent / "static/newspapers.json"
-            print(path)
-            with open(path) as f:
+            with open(path, encoding="utf-8") as f:
                 names = json.load(f)
             papers = [{"code": code, "name": names[code]} for code in names]
             for hit in hits["hits"]:
