@@ -2,6 +2,7 @@ data
 venv*
 .vscode
 *credentials*
+static/temp/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
