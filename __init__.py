@@ -3,6 +3,8 @@
 import json
 import math
 
+import boto3
+
 from flask import Flask, request, render_template
 from flask_htpasswd import HtPasswdAuth
 
@@ -25,8 +27,11 @@ def hello():
     if query:
 
         fuzzy = request.args.get("fuzzy")
+        journal = request.args.get("journal")
         if fuzzy == "true":
             query_dic = {"fuzzy": {"text": {"value": query}}}
+        elif journal:
+            query_dic = {"bool": {"must": [{"query_string": {"query": query}}], "filter": [{"match": {"journal": journal}}]}}
         else:
             fuzzy = "false"
             query_dic = {"query_string": {"query": query}}
@@ -54,6 +59,7 @@ def hello():
                         "_score",
                         {"date": {"order": "asc"}}
                     ],
+                    "track_total_hits": "true",
                     "query": query_dic,
                     "highlight": {
                         "fields": {
@@ -82,16 +88,49 @@ def hello():
             stats = f"{found_string} ({timing} secondes)"
             hits = resdic["hits"]
             results = []
+            with open("newspapers.json") as f:
+                names = json.load(f)
+            papers = [{"code": code, "name": names[code]} for code in names]
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
+                elements = result_id.split("_")
+                journal = elements[1]
+                name = names[journal]
+                date = elements[2]
+                dates = date.split("-")
+                year = dates[0]
+                month = dates[1]
+                day = dates[2]
+                edpage = elements[3]
+                page = int(edpage.split("-")[1])
+                display = f"{name} ({day}/{month}/{year} - p. {page})"                
                 matches = hit["highlight"]["text"]
-                result = {"id": result_id, "matches": " ... ".join(matches)}
+                result = {"id": result_id, "display": display, "matches": " ... ".join(matches)}
                 results.append(result)
 
             maxp = math.ceil(number/10)
             firstp = max(1, min(p-4, maxp-9))
             lastp = min(firstp+10, maxp+1)
-            html = render_template("results.html", query=query, fuzzy=fuzzy, complex=complex, stats=stats, results=results, p=p, firstp=firstp, lastp=lastp, maxp=maxp)
+
+            doc = request.args.get("doc")
+            if doc:
+                s3 = boto3.client('s3')
+                bucket_name = "camille-data"
+                elements = doc.split("_")
+                journal = elements[1]
+                date = elements[2]
+                year = date.split("-")[0]
+                key = f"PDF/{journal}/{year}/{doc}.pdf"
+                s3.download_file(bucket_name, key, f"static/temp/{doc}.pdf")
+            else:
+                doc = "false"
+            url = request.url
+            if "&p=" in url:
+                url = url.split("&p=")[0]
+            html = render_template("results.html", query=query, fuzzy=fuzzy, complex=complex, 
+                                   stats=stats, results=results, p=p, firstp=firstp, lastp=lastp, 
+                                   maxp=maxp, doc=doc, url=url,papers=papers
+                                  )
         else:
             html = f"HTTP Error: {r.status_code}"
     else:

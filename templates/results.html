@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
   <link rel="stylesheet" href="{{ url_for('static', filename='results.css') }}">
+  <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
 </head>
 <body>
     <div class="serp">
@@ -33,11 +34,21 @@
                     {% if (fuzzy == "false") and (complex == "false") %}
                     <form class="custom_form" action="/" method="GET">
                         <p class="serp__query">Inclure les termes proches ?
-                        <input type="hidden" id="query2" name="query" value="{{query}}">
+                        <input type="hidden" id="query" name="query" value="{{query}}">
                         <input type="hidden" id="fuzzy" name="fuzzy" value="true">
                         <input type="submit" value="OK"></p>
                     </form>
                     {% endif %}
+                    <form class="custom_form" action="/" method="GET">
+                        <p class="serp__query">Restreindre à un journal :
+                        <select id="journal" name="journal">
+                            {% for paper in papers %}
+                            <option value="{{paper['code']}}">{{paper['name']}}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" id="query" name="query" value="{{query}}">
+                        <input type="submit" value="OK"></p>
+                    </form>
                 </div>
                 <a class="serp__logo" href="/"></a>
             </div>
@@ -48,8 +59,8 @@
                 <div class="serp__web">
                     {% for result in results %}
                     <div class="serp__result">
-                        <a href="/">
-                            <div class="serp__title">{{result['id']}}</div>
+                        <a href="{{url}}&p={{p}}&doc={{result['id']}}">
+                            <div class="serp__title">{{result['display']}}</div>
                         </a>
                         <span class="serp__description">{{result['matches']|safe}}</span>
                     </div>
@@ -61,7 +72,7 @@
                         {% if p == 1 %}
                         <li><a class="serp__disabled"></a></li>
                         {% else %}
-                        <li><a href="/?query={{query}}&fuzzy={{fuzzy}}&p={{p-1}}"></a></li>
+                        <li><a href="{{url}}&p={{p-1}}"></a></li>
                         {% endif %}
                         {% for i in range(firstp, lastp) %}
                         {% if i == p %}
@@ -69,17 +80,23 @@
                         {% else %}
                         <li>
                         {% endif %}
-                        <a href="/?query={{query}}&fuzzy={{fuzzy}}&p={{i}}"></a></li>
+                        <a href="{{url}}&p={{i}}"></a></li>
                         {% endfor %}
                         {% if p == maxp %}
                         <li><a class="serp__disabled"></a></li>
                         {% else %}
-                        <li><a href="/?query={{query}}&fuzzy={{fuzzy}}&p={{p+1}}"></a></li>
+                        <li><a href="{{url}}&p={{p+1}}"></a></li>
                         {% endif %}
                     </ul>
                 </div>
                 {% endif %}
             </div>
+            {% if (doc != "false") %}
+            <div class="pdf">
+                <canvas id="the-canvas"></canvas>
+                <script src="{{ url_for('static', filename='pdfjs.js') }}"></script>
+            </div>
+            {% endif %}
         </div>
     </div>
 </body>
