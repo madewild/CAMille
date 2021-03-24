@@ -124,7 +124,8 @@ def hello():
                 date = elements[2]
                 year = date.split("-")[0]
                 key = f"PDF/{journal}/{year}/{doc}.pdf"
-                s3.download_file(bucket_name, key, f"static/temp/{doc}.pdf")
+                temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
+                s3.download_file(bucket_name, key, str(temp_path))
             else:
                 doc = "false"
             url = request.url
