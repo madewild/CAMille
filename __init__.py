@@ -2,6 +2,8 @@
 
 import json
 import math
+from pathlib import Path
+
 
 import boto3
 
@@ -88,7 +90,9 @@ def hello():
             stats = f"{found_string} ({timing} secondes)"
             hits = resdic["hits"]
             results = []
-            with open("static/newspapers.json") as f:
+            path = Path(__file__).parent / "static/newspapers.json"
+            print(path)
+            with open(path) as f:
                 names = json.load(f)
             papers = [{"code": code, "name": names[code]} for code in names]
             for hit in hits["hits"]:
