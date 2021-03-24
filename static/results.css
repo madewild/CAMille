@@ -410,3 +410,10 @@ a .serp__title:hover {
     color: #70757a;
     font-size: 14px;
 }
+
+.pdf {
+    z-index: 10;  
+    position: absolute;  
+    right: 0;  
+    max-width: 50%;
+}
