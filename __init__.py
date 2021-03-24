@@ -88,7 +88,7 @@ def hello():
             stats = f"{found_string} ({timing} secondes)"
             hits = resdic["hits"]
             results = []
-            with open("newspapers.json") as f:
+            with open("static/newspapers.json") as f:
                 names = json.load(f)
             papers = [{"code": code, "name": names[code]} for code in names]
             for hit in hits["hits"]:
