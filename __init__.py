@@ -64,6 +64,7 @@ def hello():
                     "track_total_hits": "true",
                     "query": query_dic,
                     "highlight": {
+                        "type": "plain",
                         "fields": {
                             "text": {}
                         },
