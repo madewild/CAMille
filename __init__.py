@@ -64,13 +64,12 @@ def hello():
                     "track_total_hits": "true",
                     "query": query_dic,
                     "highlight": {
-                        "type": "plain",
                         "fields": {
                             "text": {}
                         },
                         "pre_tags": "<span class='serp__match'>",
                         "post_tags": "</span>",
-                        "fragment_size": 200
+                        "fragment_size": 350
                     }
                 }
         r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data))
