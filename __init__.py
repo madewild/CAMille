@@ -108,7 +108,7 @@ def hello():
                 page = int(edpage.split("-")[1])
                 display = f"{name} ({day}/{month}/{year} - p. {page})"                
                 matches = hit["highlight"]["text"]
-                result = {"id": result_id, "display": display, "matches": " ... ".join(matches)}
+                result = {"id": result_id, "display": display, "matches": " [...] ".join(matches)}
                 results.append(result)
 
             maxp = math.ceil(number/10)
