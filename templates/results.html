@@ -31,14 +31,6 @@
                         <div class="serp__ico"></div>
                     </button>
                     </form>
-                    {% if (fuzzy == "false") and (complex == "false") %}
-                    <form class="custom_form" action="/" method="GET">
-                        <p class="serp__query">Inclure les termes proches ?
-                        <input type="hidden" id="query" name="query" value="{{query}}">
-                        <input type="hidden" id="fuzzy" name="fuzzy" value="true">
-                        <input type="submit" value="OK"></p>
-                    </form>
-                    {% endif %}
                     <form class="custom_form" action="/" method="GET">
                         <p class="serp__query">Restreindre à un journal :
                         <select id="journal" name="journal">

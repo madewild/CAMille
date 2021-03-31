@@ -28,14 +28,10 @@ def hello():
     query = request.args.get("query")
     if query:
 
-        fuzzy = request.args.get("fuzzy")
         journal = request.args.get("journal")
-        if fuzzy == "true":
-            query_dic = {"fuzzy": {"text": {"value": query}}}
-        elif journal:
+        if journal:
             query_dic = {"bool": {"must": [{"query_string": {"query": query}}], "filter": [{"match": {"journal": journal}}]}}
         else:
-            fuzzy = "false"
             query_dic = {"query_string": {"query": query}}
 
         complex = "false"
@@ -131,7 +127,7 @@ def hello():
             url = request.url
             if "&p=" in url:
                 url = url.split("&p=")[0]
-            html = render_template("results.html", query=query, fuzzy=fuzzy, complex=complex, 
+            html = render_template("results.html", query=query, complex=complex, 
                                    stats=stats, results=results, p=p, firstp=firstp, lastp=lastp, 
                                    maxp=maxp, doc=doc, url=url,papers=papers
                                   )
