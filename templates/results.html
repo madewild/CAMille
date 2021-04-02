@@ -15,21 +15,32 @@
             <div class="serp__header">
                 <div class="serp__search">
                     <form class="serp__form" action="/" method="GET">
-                    <div>
-                        <input name="query" type="search" value="{{query}}"
-                            class="serp__query" 
-                            maxlength="512"
-                            autocomplete="off"
-                            title="Search"
-                            aria-label="Search"
-                            dir="ltr"
-                            spellcheck="true"
-                            autofocus="autofocus"
-                        >
-                    </div>
-                    <button class="serp__button" aria-label="Search" type="submit">
-                        <div class="serp__ico"></div>
-                    </button>
+                        <div>
+                            <input name="query" type="search" value="{{query}}"
+                                class="serp__query" 
+                                maxlength="512"
+                                autocomplete="off"
+                                title="Search"
+                                aria-label="Search"
+                                dir="ltr"
+                                spellcheck="true"
+                                autofocus="autofocus"
+                            >
+                        </div>
+                        <button class="serp__button" aria-label="Search" type="submit">
+                            <div class="serp__ico"></div>
+                        </button>
+                        <button class="serp__button" aria-label="Help" type="button" id="help">
+                            <div class="serp__help"></div>
+                        </button>
+                        <div id="searchModal" class="modal">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <span class="close">&times;</span>
+                                    {% include 'help.html' %}
+                                </div>
+                            </div>
+                        </div>
                     </form>
                     <form class="custom_form" action="/" method="GET">
                         <p class="serp__query">Restreindre à un journal :
@@ -91,5 +102,6 @@
             {% endif %}
         </div>
     </div>
+    <script src="{{ url_for('static', filename='modal.js') }}"></script>
 </body>
 </html>
