@@ -1,0 +1,47 @@
+<h4>Aide pour les recherches avancées</h4>
+<hr>
+<table class="help">
+    <tr>
+        <td><b>Phrase search</b></td>
+        <td>When you want to query a document for multiple terms appearing next to each other, you can add quotes. 
+            For example, the query "washington dc" will match documents containing those two terms next to each other, 
+            in the same order. The phrase search can be combined with the following search functions.
+        </td>
+    </tr>
+    <tr>
+        <td><b>Wildcards</b></td>
+        <td>'?' matches a single character. For example, wom?n will match documents containing "women" or "woman". 
+            '*' matches one or several characters. For example, balti* will match documents containing "baltic", "baltique" or "baltikum". 
+            This tool may or may not work as it is very expensive to run.
+        </td>
+    </tr>
+    <tr>
+        <td><b>Fuzzy search</b></td>
+        <td>It is based on the Damereau-Levenshtein distance and allows the querying of syntaxically similar terms. 
+            The maximum default distance is set to 2. For example, the query roam~ will match documents containing terms 
+            like "roam" and "foam" but not "roast". The distance between "roast" and "roam" is 3 (two deletions and one addition). 
+            It is possible to set the maximum distance to 1 using the following syntax : roam~1
+        </td>
+    </tr>
+    <tr>
+        <td><b>Proximity search</b></td>
+        <td>It is sometimes useful to query documents for words appearing close to one another. 
+            For example, the query "woman pants"~10 will match documents containing those two terms, separated by 10 words at most.
+        </td>
+    </tr>
+    <tr>
+        <td><b>Term boosting</b></td>
+        <td>You can affect the way the pertinence of documents is computed (and thus the order of the results) 
+            by specifying the importance of the terms in the query. For example, the query president roosevelt^2 
+            will affect the score by giving the term "roosevelt" twice as much importance as the term "president". 
+            It is also possible to negatively affect the importance of a term by specifying a number between 0 and 1 
+            (for example president^0.5 roosevelt is the equivalent to the previous query).
+        </td>
+    </tr>
+    <tr>
+        <td><b>Boolean NOT</b></td>
+        <td>To query for documents that should not contain a particular term or phrase, you can prepend it with the '-' symbol. 
+            For example, the query president -roosevelt will return documents containing the term "president" but not the term "roosevelt".
+        </td>
+    </tr>
+</table>
