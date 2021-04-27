@@ -2,46 +2,58 @@
 <hr>
 <table class="help">
     <tr>
-        <td><b>Phrase search</b></td>
-        <td>When you want to query a document for multiple terms appearing next to each other, you can add quotes. 
-            For example, the query "washington dc" will match documents containing those two terms next to each other, 
-            in the same order. The phrase search can be combined with the following search functions.
+        <td><b>Expression exacte</b></td>
+        <td>Si vous souhaitez rechercher une expression exacte (plusieurs 
+            mots en suivant), utilisez des guillemets. Par exemple, la 
+            requête <span class="code">"la hulpe"</span> renverra les documents contenant ces 
+            deux termes en suivant dans cet ordre exact. La recherche 
+            exacte peut être combinée avec les opérateurs suivants.
         </td>
     </tr>
     <tr>
-        <td><b>Wildcards</b></td>
-        <td>'?' matches a single character. For example, wom?n will match documents containing "women" or "woman". 
-            '*' matches one or several characters. For example, balti* will match documents containing "baltic", "baltique" or "baltikum". 
-            This tool may or may not work as it is very expensive to run.
+        <td><b>Masque et troncature (jokers)</b></td>
+        <td>Le symbole ? correspond à un seul caractère. Ainsi, 
+            <span class="code">a?tiste</span> renverra les documents contenant "artiste" et/ou 
+            "autiste". En revanche, * correspond à un ou plusieurs 
+            caractères. Par exemple, <span class="code">gouvern*</span> renverra les documents 
+            contenant "gouverner", "gouverneur", "gouvernement", etc.
         </td>
     </tr>
     <tr>
-        <td><b>Fuzzy search</b></td>
-        <td>It is based on the Damereau-Levenshtein distance and allows the querying of syntaxically similar terms. 
-            The maximum default distance is set to 2. For example, the query roam~ will match documents containing terms 
-            like "roam" and "foam" but not "roast". The distance between "roast" and "roam" is 3 (two deletions and one addition). 
-            It is possible to set the maximum distance to 1 using the following syntax : roam~1
+        <td><b>Recherche approximative</b></td>
+        <td>Celle-ci est basée sur la distance de Levenshtein et permet de 
+            retrouver des termes similaires. La distance maximale par 
+            défaut est fixée à 2. Par exemple, la requête <span class="code">faucon~</span> 
+            renverra les documents contenant les termes "faucon" 
+            (distance 0), "falcon" (distance 1) et "aucun" (distance 2) mais 
+            pas "aucune" (distance 3). Il est possible de fixer la distance 
+            maximale à 1 en utilisant la syntaxe suivante : <span class="code">faucon~1</span>.
         </td>
     </tr>
     <tr>
-        <td><b>Proximity search</b></td>
-        <td>It is sometimes useful to query documents for words appearing close to one another. 
-            For example, the query "woman pants"~10 will match documents containing those two terms, separated by 10 words at most.
+        <td><b>Recherche de proximité</b></td>
+        <td>Il est parfois utile de retrouver des mots qui apparaissent l'un 
+            près de l'autre dans le texte. La requête <span class="code">"vote femme"~2</span> 
+            renverra les documents contenant ces deux termes
+            dans n'importe quel ordre, séparés par deux mots maximum.
         </td>
     </tr>
     <tr>
-        <td><b>Term boosting</b></td>
-        <td>You can affect the way the pertinence of documents is computed (and thus the order of the results) 
-            by specifying the importance of the terms in the query. For example, the query president roosevelt^2 
-            will affect the score by giving the term "roosevelt" twice as much importance as the term "president". 
-            It is also possible to negatively affect the importance of a term by specifying a number between 0 and 1 
-            (for example president^0.5 roosevelt is the equivalent to the previous query).
+        <td><b>Pondération des termes</b></td>
+        <td>On peut influencer le score de pertinence (et donc l'ordre des 
+            résultats) en pondérant les termes de la recherche. Par 
+            exemple, la requête <span class="code">roi léopold^2</span> donnera deux fois plus 
+            de poids au terme "léopold" qu'au terme "roi". On peut aussi 
+            pondérer négativement avec un nombre entre 0 et 1 
+            (<span class="code">roi^0.5 léopold</span> est équivalent à la requête précédente).
         </td>
     </tr>
     <tr>
-        <td><b>Boolean NOT</b></td>
-        <td>To query for documents that should not contain a particular term or phrase, you can prepend it with the '-' symbol. 
-            For example, the query president -roosevelt will return documents containing the term "president" but not the term "roosevelt".
+        <td><b>Négation</b></td>
+        <td>Pour retrouver les documents qui ne contiennent PAS un 
+            certain terme, faites le précéder du symbole moins (-). Par 
+            exemple, la requête <span class="code">roi -léopold</span> renverra les documents 
+            contenant le terme "roi" mais pas le terme "léopold".
         </td>
     </tr>
 </table>
