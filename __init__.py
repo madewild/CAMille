@@ -1,4 +1,4 @@
-"""Basis Flask app"""
+"""Basic Flask app"""
 
 import json
 import math
