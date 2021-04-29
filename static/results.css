@@ -450,7 +450,7 @@ a .serp__title:hover {
     padding: 0;
     border: 1px solid #555;
     border-radius: 7px;
-    width: 23%;
+    width: 750px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
     -webkit-animation-name: animatetop;
     -webkit-animation-duration: 0.4s;
@@ -494,7 +494,6 @@ a .serp__title:hover {
     font-family: Helvetica Neue, Arial, sans-serif;
     font-size: 15px;
     color: #444;
-    line-height: normal;
     vertical-align: top;
     line-height: 115%;
 }

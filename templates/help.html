@@ -3,11 +3,24 @@
 <table class="help">
     <tr>
         <td><b>Expression exacte</b></td>
-        <td>Si vous souhaitez rechercher une expression exacte (plusieurs 
-            mots en suivant), utilisez des guillemets. Par exemple, la 
-            requête <span class="code">"la hulpe"</span> renverra les documents contenant ces 
-            deux termes en suivant dans cet ordre exact. La recherche 
-            exacte peut être combinée avec les opérateurs suivants.
+        <td>Si vous souhaitez rechercher une expression exacte (plusieurs mots en suivant), 
+            utilisez des guillemets. Par exemple, la requête <span class="code">"histoire du journalisme"</span> 
+            renverra les documents contenant ces trois termes en suivant dans cet ordre exact.
+        </td>
+    </tr>
+    <tr>
+        <td><b>Opérateurs logiques AND, OR et NOT</b></td>
+        <td>Si vous recherchez des documents qui contiennent plusieurs termes, utilisez l'opérateur AND. 
+            La requête <span class="code">histoire AND journalisme</span> vous permettra 
+            donc d'écarter les pages qui contiendraient "histoire" mais pas "journalisme" et vice versa.
+            Si vous recherchez des documents qui contiennent un terme OU un autre, utilisez l'opérateur OR. 
+            Les opérateurs peuvent être combinés grâce à des parenthèses. La requête 
+            <span class="code">histoire AND (journalisme OR médias)</span> vous permettra de trouver des documents 
+            qui contiennent "histoire" mais aussi soit "journalisme" soit "médias".
+            Si vous souhaitez exclure des termes, utilisez l'opérateur NOT, qui peut aussi être remplacé par « - ». 
+            Si vous effectuez une recherche sur le métier de gardien sans vous intéresser aux sports, 
+            vous pouvez exclure les documents qui contiennent "gardien de but" 
+            grâce à la requête <span class="code">gardien -"gardien de but"</span>.
         </td>
     </tr>
     <tr>
@@ -46,14 +59,6 @@
             de poids au terme "léopold" qu'au terme "roi". On peut aussi 
             pondérer négativement avec un nombre entre 0 et 1 
             (<span class="code">roi^0.5 léopold</span> est équivalent à la requête précédente).
-        </td>
-    </tr>
-    <tr>
-        <td><b>Négation</b></td>
-        <td>Pour retrouver les documents qui ne contiennent PAS un 
-            certain terme, faites le précéder du symbole moins (-). Par 
-            exemple, la requête <span class="code">roi -léopold</span> renverra les documents 
-            contenant le terme "roi" mais pas le terme "léopold".
         </td>
     </tr>
 </table>
