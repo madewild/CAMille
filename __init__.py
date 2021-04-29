@@ -142,7 +142,7 @@ def hello():
                             text = hit["_source"]["text"]
                             arcpath = f"{result_id}.txt"
                             abspath = Path(__file__).parent / f"static/temp/{arcpath}"
-                            with open(abspath, "w") as f:
+                            with open(abspath, "w", encoding="utf-8") as f:
                                 f.write(text)
                             myzip.write(abspath, arcpath)
                             abspath.unlink()
