@@ -140,11 +140,12 @@ def hello():
                         for hit in hits2["hits"]:
                             result_id = hit["_source"]["page"]
                             text = hit["_source"]["text"]
-                            path = Path(f"{result_id}.txt")
-                            with open(path, "w") as f:
+                            arcpath = f"{result_id}.txt"
+                            abspath = Path(__file__).parent / f"static/temp/{arcpath}"
+                            with open(abspath, "w") as f:
                                 f.write(text)
-                            myzip.write(path)
-                            path.unlink()
+                            myzip.write(abspath, arcpath)
+                            abspath.unlink()
                     return send_file(zippath, as_attachment=True)
 
             html = render_template("results.html", query=query,stats=stats,
