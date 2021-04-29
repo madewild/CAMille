@@ -3,11 +3,11 @@
 import json
 import math
 from pathlib import Path
-
+from zipfile import ZipFile
 
 import boto3
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_file
 from flask_htpasswd import HtPasswdAuth
 
 import requests
@@ -33,10 +33,6 @@ def hello():
             query_dic = {"bool": {"must": [{"query_string": {"query": query}}], "filter": [{"match": {"journal": journal}}]}}
         else:
             query_dic = {"query_string": {"query": query}}
-
-        complex = "false"
-        if any([term in query for term in ['"', ' ', '-']]):
-            complex = "true"
 
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
@@ -124,11 +120,35 @@ def hello():
                 s3.download_file(bucket_name, key, str(temp_path))
             else:
                 doc = "false"
+
             url = request.url
             if "&p=" in url:
                 url = url.split("&p=")[0]
-            html = render_template("results.html", query=query, complex=complex, 
-                                   stats=stats, results=results, p=p, firstp=firstp, lastp=lastp, 
+
+            export = request.args.get("export")
+            if export:
+                data2 =  {
+                    "size": 500,
+                    "query": query_dic,
+                }
+                r2 = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data2))
+                if r2.status_code == 200:
+                    resdic2 = json.loads(r2.text)
+                    hits2 = resdic2["hits"]
+                    zippath = Path(__file__).parent / "static/temp/camille.zip"
+                    with ZipFile(zippath, 'w') as myzip:
+                        for hit in hits2["hits"]:
+                            result_id = hit["_source"]["page"]
+                            text = hit["_source"]["text"]
+                            path = Path(f"{result_id}.txt")
+                            with open(path, "w") as f:
+                                f.write(text)
+                            myzip.write(path)
+                            path.unlink()
+                    return send_file(zippath, as_attachment=True)
+
+            html = render_template("results.html", query=query,stats=stats,
+                                   results=results, p=p, firstp=firstp, lastp=lastp, 
                                    maxp=maxp, doc=doc, url=url,papers=papers
                                   )
         else:
