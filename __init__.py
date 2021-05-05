@@ -151,9 +151,10 @@ def hello():
                             abspath.unlink()
                     return send_file(zippath, as_attachment=True)
 
-            html = render_template("results.html", query=query,stats=stats,
+            html = render_template("results.html", query=query, stats=stats,
                                    results=results, p=p, firstp=firstp, lastp=lastp, 
-                                   maxp=maxp, doc=doc, url=url,papers=papers
+                                   maxp=maxp, doc=doc, url=url, papers=papers,
+                                   number=number
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"
