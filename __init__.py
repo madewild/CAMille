@@ -3,6 +3,7 @@
 import json
 import math
 from pathlib import Path
+from unidecode import unidecode
 from zipfile import ZipFile
 
 import boto3
@@ -135,7 +136,9 @@ def hello():
                 if r2.status_code == 200:
                     resdic2 = json.loads(r2.text)
                     hits2 = resdic2["hits"]
-                    zippath = Path(__file__).parent / "static/temp/camille.zip"
+                    query_norm = unidecode(query).replace(" ", "_")
+                    query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
+                    zippath = Path(__file__).parent / f"static/temp/camille_{query_norm}.zip"
                     with ZipFile(zippath, 'w') as myzip:
                         for hit in hits2["hits"]:
                             result_id = hit["_source"]["page"]
