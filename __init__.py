@@ -29,6 +29,18 @@ def hello():
     query = request.args.get("query")
     if query:
 
+        sortcrit = request.args.get("sortcrit")
+        if sortcrit:
+            if sortcrit == "datedesc":
+                sort = [{"date": {"order": "desc"}}]
+            elif sortcrit =="dateasc":
+                sort = [{"date": {"order": "asc"}}]
+            else:
+                sort = []
+        else:
+            sortcrit = "relevance"
+            sort = []
+
         journal = request.args.get("journal")
         if journal:
             query_dic = {"bool": {"must": [{"query_string": {"query": query}}], "filter": [{"match": {"journal": journal}}]}}
@@ -56,6 +68,7 @@ def hello():
                     ],
                     "track_total_hits": "true",
                     "query": query_dic,
+                    "sort": sort,
                     "highlight": {
                         "fields": {
                             "text": {}
@@ -131,6 +144,7 @@ def hello():
                 data2 =  {
                     "size": 500,
                     "query": query_dic,
+                    "sort": sort
                 }
                 r2 = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data2))
                 if r2.status_code == 200:
@@ -156,7 +170,7 @@ def hello():
             html = render_template("results.html", query=query, stats=stats,
                                    results=results, p=p, firstp=firstp, lastp=lastp, 
                                    maxp=maxp, doc=doc, url=url, papers=papers,
-                                   number=number
+                                   number=number, sortcrit=sortcrit
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"
