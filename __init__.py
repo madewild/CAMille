@@ -175,10 +175,19 @@ def hello():
         else:
             html = f"HTTP Error: {r.status_code}"
     else:
-        term = request.args.get("term")
-        if not term:
-            term = ""
-        html = render_template("search.html", term=term)
+        page = request.args.get("page")
+        if page:
+            if page == "about":
+                html = render_template("about.html")
+            elif page == "contact":
+                html = render_template("contact.html")
+            else:
+                html = render_template("404.html")
+        else:
+            term = request.args.get("term")
+            if not term:
+                term = ""
+            html = render_template("search.html", term=term)
     return html
 
 if __name__ == "__main__":
