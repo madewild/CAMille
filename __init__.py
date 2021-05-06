@@ -140,6 +140,8 @@ def hello():
                     query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
                     zippath = Path(__file__).parent / f"static/temp/camille_{query_norm}.zip"
                     with ZipFile(zippath, 'w') as myzip:
+                        readme = abspath = Path(__file__).parent / f"static/README.txt"
+                        myzip.write(abspath, "README.txt")
                         for hit in hits2["hits"]:
                             result_id = hit["_source"]["page"]
                             text = hit["_source"]["text"]
