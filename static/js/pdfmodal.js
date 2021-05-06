@@ -12,13 +12,21 @@ $(function () {
             modal: true,
             title: docid,
             width: "50%",
-            height: h
+            height: h,
+            close: function () { 
+                document.body.style.overflow = "auto";
+                document.body.style.height = "auto";
+            },
         });
+        document.body.style.overflow = "hidden";
+        document.body.style.height = "100%";
     };
 });
 
 $(document).keydown(function(event) { 
     if (event.keyCode == 27) { 
-      $('#pdfmodal').hide();
+        $('#pdfmodal').hide();
+        document.body.style.overflow = "auto";
+        document.body.style.height = "auto";
     }
   });
