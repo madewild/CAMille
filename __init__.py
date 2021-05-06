@@ -179,6 +179,8 @@ def hello():
         if page:
             if page == "about":
                 html = render_template("about.html")
+            elif page == "resources":
+                html = render_template("resources.html")
             elif page == "contact":
                 html = render_template("contact.html")
             else:
