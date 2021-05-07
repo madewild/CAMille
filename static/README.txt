@@ -5,7 +5,7 @@ Les documents de ce dossier ont été téléchargés sur la plateforme CAMille (
 
 Toute publication de résultats de recherche devra faire mention explicite de la plateforme CAMille et des deux institutions qui soutiennent le projet : KBR et l'Université libre de Bruxelles.
 
-L'équipe de CAMille invite les chercheurs et chercheuses à partager avec elle tout éventuel enrichissement apporté aux données brutes (contact@camille.be).
+L'équipe de CAMille invite les chercheurs et chercheuses à partager avec elle tout éventuel enrichissement apporté aux données brutes (contact@camille-ulb-kbr.be).
 
 ### CONTENU DU DOSSIER ###
 Ce dossier contient les fichiers textes des pages correspondant aux résultats de la requête lancée sur la plateforme. Lorsque les résultats de la requête excèdent 500 résultats, le dossier téléchargé ne contient que les 500 premiers documents selon l'ordre de pertinence sélectionné. Les noms de fichiers livrent des informations importantes sur la nature des documents (voir la section NOMS DE FICHIERS).
