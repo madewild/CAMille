@@ -21,6 +21,7 @@ except FileNotFoundError:
 app = Flask(__name__)
 app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
 app.config['FLASK_AUTH_ALL'] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 htpasswd = HtPasswdAuth(app)
 
