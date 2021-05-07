@@ -184,6 +184,8 @@ def hello():
                 html = render_template("resources.html")
             elif page == "contact":
                 html = render_template("contact.html")
+            elif page == "help":
+                html = render_template("help.html")
             else:
                 html = render_template("404.html")
         else:

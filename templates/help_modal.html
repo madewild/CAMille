@@ -1,0 +1,64 @@
+<h4>Aide pour les recherches avancées</h4>
+<hr>
+<table class="help">
+    <tr>
+        <td><b>Expression exacte</b></td>
+        <td>Si vous souhaitez rechercher une expression exacte (plusieurs mots en suivant), 
+            utilisez des guillemets. Par exemple, la requête <span class="code">"histoire du journalisme"</span> 
+            renverra les documents contenant ces trois termes en suivant dans cet ordre exact.
+        </td>
+    </tr>
+    <tr>
+        <td><b>Opérateurs logiques AND, OR et NOT</b></td>
+        <td>Si vous recherchez des documents qui contiennent plusieurs termes, utilisez l'opérateur AND. 
+            La requête <span class="code">histoire AND journalisme</span> vous permettra 
+            donc d'écarter les pages qui contiendraient "histoire" mais pas "journalisme" et vice versa.
+            Si vous recherchez des documents qui contiennent un terme OU un autre, utilisez l'opérateur OR. 
+            Les opérateurs peuvent être combinés grâce à des parenthèses. La requête 
+            <span class="code">histoire AND (journalisme OR médias)</span> vous permettra de trouver des documents 
+            qui contiennent "histoire" mais aussi soit "journalisme" soit "médias".
+            Si vous souhaitez exclure des termes, utilisez l'opérateur NOT, qui peut aussi être remplacé par « - ». 
+            Si vous effectuez une recherche sur le métier de gardien sans vous intéresser aux sports, 
+            vous pouvez exclure les documents qui contiennent "gardien de but" 
+            grâce à la requête <span class="code">gardien -"gardien de but"</span>.
+        </td>
+    </tr>
+    <tr>
+        <td><b>Masque et troncature (jokers)</b></td>
+        <td>Le symbole ? correspond à un seul caractère. Ainsi, 
+            <span class="code">a?tiste</span> renverra les documents contenant "artiste" et/ou 
+            "autiste". En revanche, * correspond à un ou plusieurs 
+            caractères. Par exemple, <span class="code">gouvern*</span> renverra les documents 
+            contenant "gouverner", "gouverneur", "gouvernement", etc.
+        </td>
+    </tr>
+    <tr>
+        <td><b>Recherche approximative</b></td>
+        <td>Celle-ci est basée sur la distance de Levenshtein et permet de 
+            retrouver des termes similaires. La distance maximale par 
+            défaut est fixée à 2. Par exemple, la requête <span class="code">faucon~</span> 
+            renverra les documents contenant les termes "faucon" 
+            (distance 0), "falcon" (distance 1) et "aucun" (distance 2) mais 
+            pas "aucune" (distance 3). Il est possible de fixer la distance 
+            maximale à 1 en utilisant la syntaxe suivante : <span class="code">faucon~1</span>.
+        </td>
+    </tr>
+    <tr>
+        <td><b>Recherche de proximité</b></td>
+        <td>Il est parfois utile de retrouver des mots qui apparaissent l'un 
+            près de l'autre dans le texte. La requête <span class="code">"vote femme"~2</span> 
+            renverra les documents contenant ces deux termes
+            dans n'importe quel ordre, séparés par deux mots maximum.
+        </td>
+    </tr>
+    <tr>
+        <td><b>Pondération des termes</b></td>
+        <td>On peut influencer le score de pertinence (et donc l'ordre des 
+            résultats) en pondérant les termes de la recherche. Par 
+            exemple, la requête <span class="code">roi léopold^2</span> donnera deux fois plus 
+            de poids au terme "léopold" qu'au terme "roi". On peut aussi 
+            pondérer négativement avec un nombre entre 0 et 1 
+            (<span class="code">roi^0.5 léopold</span> est équivalent à la requête précédente).
+        </td>
+    </tr>
+</table>

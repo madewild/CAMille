@@ -254,3 +254,22 @@ button{
 .about img {
     width: 25%;
 }
+
+.help {
+    border-spacing: 10px;
+}
+
+.help td  {
+    color: #444;
+    vertical-align: top;
+    line-height: 115%;
+}
+
+span.code {
+    padding: 0px 2px 0px 2px;
+    background-color: whitesmoke;
+    border-style: solid;
+    border-width: 1px;
+    font-family: 'Courier New', Courier, monospace;
+    white-space: nowrap;
+}
