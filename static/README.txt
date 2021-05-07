@@ -1,7 +1,7 @@
 CAMille (Centre d'archives sur les médias et l'information, ULB-KBR)
 
 ### USAGES AUTORISÉS ###
-Les documents de ce dossier ont été téléchargés sur la plateforme CAMille (https://camille-ulb-kbr.be/). L'usage de ces documents est exclusivement réservé à des fins scientifiques ou d'illustration de l'enseignement.
+Les documents de ce dossier ont été téléchargés sur la plateforme CAMille ( https://camille-ulb-kbr.be/ ). L'usage de ces documents est exclusivement réservé à des fins scientifiques ou d'illustration de l'enseignement.
 
 Toute publication de résultats de recherche devra faire mention explicite de la plateforme CAMille et des deux institutions qui soutiennent le projet : KBR et l'Université libre de Bruxelles.
 
