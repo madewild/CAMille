@@ -1,5 +1,6 @@
 """Basic Flask app"""
 
+from collections import defaultdict
 import json
 import math
 from pathlib import Path
@@ -37,16 +38,21 @@ def hello():
             elif sortcrit =="dateasc":
                 sort = [{"date": {"order": "asc"}}]
             else:
-                sort = []
+                sort = ["_score", {"date": {"order": "asc"}}]
         else:
             sortcrit = "relevance"
-            sort = []
+            sort = ["_score", {"date": {"order": "asc"}}]
 
-        journal = request.args.get("journal")
-        if journal:
-            query_dic = {"bool": {"must": [{"query_string": {"query": query}}], "filter": [{"match": {"journal": journal}}]}}
-        else:
-            query_dic = {"query_string": {"query": query}}
+        query_dic = {"bool": {"must": [{"query_string": {"query": query}}]}}
+
+        paper = request.args.get("paper")
+        if paper:
+            query_dic["bool"]["filter"] = [{"match": {"journal": paper}}]
+
+        year_from = request.args.get("year_from")
+        year_to = request.args.get("year_to")
+        if year_from:
+            query_dic["bool"]["must"].append({"range": {"year": {"gte": year_from, "lte": year_to}}})
 
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
@@ -63,13 +69,9 @@ def hello():
         data =  {
                     "from": fromp,
                     "size": size,
-                    "sort": [
-                        "_score",
-                        {"date": {"order": "asc"}}
-                    ],
+                    "sort": sort,
                     "track_total_hits": "true",
                     "query": query_dic,
-                    "sort": sort,
                     "highlight": {
                         "fields": {
                             "text": {}
@@ -79,6 +81,7 @@ def hello():
                         "fragment_size": 500
                     }
                 }
+
         r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data))
         if r.status_code == 200:
             resdic = json.loads(r.text)
@@ -101,11 +104,16 @@ def hello():
             with open(path, encoding="utf-8") as f:
                 names = json.load(f)
             papers = [{"code": code, "name": names[code]} for code in names]
+            if paper:
+                matched_papers = [p for p in papers if p["code"] == paper]
+            else:
+                matched_papers = papers
+            
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
                 elements = result_id.split("_")
-                journal = elements[1]
-                name = names[journal]
+                np = elements[1]
+                name = names[np]
                 date = elements[2]
                 dates = date.split("-")
                 year = dates[0]
@@ -122,15 +130,35 @@ def hello():
             firstp = max(1, min(p-4, maxp-9))
             lastp = min(firstp+10, maxp+1)
 
+            """databis = {
+                    "size": number,
+                    "track_total_hits": "true",
+                    "query": query_dic,
+                }
+
+            rbis = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(databis))
+            if rbis.status_code == 200:
+                resdicbis = json.loads(rbis.text)
+                hitsbis = resdicbis["hits"]
+                matched = defaultdict(int)
+                for hit in hitsbis["hits"]:
+                    np = hit["_source"]["journal"]
+                    matched[np] += 1
+                matched_papers = [p for p in papers if p["code"] in matched]
+                for np in matched_papers:
+                    np["count"] = matched[np["code"]]
+            else:
+                print("error")"""
+
             doc = request.args.get("doc")
             if doc:
                 s3 = boto3.client('s3')
                 bucket_name = "camille-data"
                 elements = doc.split("_")
-                journal = elements[1]
+                np = elements[1]
                 date = elements[2]
                 year = date.split("-")[0]
-                key = f"PDF/{journal}/{year}/{doc}.pdf"
+                key = f"PDF/{np}/{year}/{doc}.pdf"
                 temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
                 s3.download_file(bucket_name, key, str(temp_path))
             else:
@@ -170,8 +198,9 @@ def hello():
 
             html = render_template("results.html", query=query, stats=stats,
                                    results=results, p=p, firstp=firstp, lastp=lastp, 
-                                   maxp=maxp, doc=doc, url=url, papers=papers,
-                                   number=number, sortcrit=sortcrit
+                                   maxp=maxp, doc=doc, url=url, papers=matched_papers,
+                                   number=number, sortcrit=sortcrit, paper=paper,
+                                   year_from=year_from, year_to=year_to
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"

@@ -6,12 +6,16 @@
   <meta name="description" content="Centre d'archives sur les médias et l'information">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
+  
   <link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/filters.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
   <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <script src="{{ url_for('static', filename='js/filters.js') }}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
   <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/jquery-ui.js" type="text/javascript"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
+  
 </head>
 <body>
     <div class="serp">
@@ -41,7 +45,7 @@
                         <button class="serp__button" aria-label="Search" type="submit">
                             <div class="serp__ico"></div>
                         </button>
-                        <button class="serp__button" aria-label="Help" type="button" id="help">
+                        <button class="serp__button" aria-label="Help" type="button" id="help" title="Aide">
                             <div class="serp__help"></div>
                         </button>
                         <div id="searchModal" class="modal">
@@ -53,28 +57,122 @@
                             </div>
                         </div>
                     </form>
-                    <!--<form class="custom_form" action="/" method="GET">
-                        <p class="serp__query">Restreindre à un journal :
-                        <select id="journal" name="journal">
-                            {% for paper in papers %}
-                            <option value="{{paper['code']}}">{{paper['name']}}</option>
-                            {% endfor %}
-                        </select>
-                        <input type="hidden" id="query" name="query" value="{{query}}">
-                        <input type="submit" value="OK"></p>
-                    </form>-->
                     <form class="custom_form" action="/" method="GET">
                         <p class="serp__query">Trier par :
                         <select id="sortcrit" name="sortcrit">
                             <option value="relevance">pertinence</option>
-                            <option value="datedesc" {% if sortcrit == "datedesc" %}selected="selected"{% endif %}>date (décroissante)</option>
                             <option value="dateasc" {% if sortcrit == "dateasc" %}selected="selected"{% endif %}>date (croissante)</option>
+                            <option value="datedesc" {% if sortcrit == "datedesc" %}selected="selected"{% endif %}>date (décroissante)</option>
                         </select>
-                        <input type="hidden" id="query" name="query" value="{{query}}">
+                        <input type="hidden" name="query" value="{{query}}">
+                        {% if paper != None %}
+                        <input type="hidden" name="paper" value="{{paper}}">
+                        {% endif %}
+                        {% if year_from != None %}
+                        <input type="hidden" name="year_from" value="{{year_from}}">
+                        <input type="hidden" name="year_to" value="{{year_to}}">
+                        {% endif %}
                         <input type="submit" value="OK"></p>
                     </form>
                 </div>
                 <a class="serp__logo" href="/"></a>
+            </div>
+        </div>
+        <div id="sidebar" class="col-md-3 col-sm-4">
+            <div id="facets" class="facets sidenav">
+                <div class="top-panel-heading panel-heading">
+                <button type="button" class="facets-toggle" data-toggle="collapse" data-target="#facet-panel-collapse">
+                    <span class="sr-only">Toggle facets</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            
+                <h2 class='facets-heading'>
+                    Filtres
+                </h2>
+                </div>
+                {% if paper == None %}
+                <div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim ">
+                    <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-member_of_collection_ids_ssim">
+                    <h3 class="panel-title facet-field-heading">
+                        <a data-turbolinks="false" data-no-turbolink="true" href="#">Journal</a>
+                    </h3>
+                    </div>
+                    <div id="facet-member_of_collection_ids_ssim" class="panel-collapse facet-content collapse">
+                        <div class="panel-body">
+                            <ul class="facet-values list-unstyled">
+                                {% for paper in papers %}
+                                <li>
+                                    <span class="facet-label"><a class="facet_select" href="{{url}}&paper={{paper['code']}}">{{paper['name']}}</a></span>
+                                    <!--<span class="selected facet-count" style="width: 8px;">{{paper['count']}}</span>-->
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim facet_limit-active">
+                    <div class=" collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-member_of_collection_ids_ssim">
+                      <h3 class="panel-title facet-field-heading">
+                        <a data-turbolinks="false" data-no-turbolink="true" href="#">Journal</a>
+                      </h3>
+                    </div>
+                    <div id="facet-member_of_collection_ids_ssim" class="panel-collapse facet-content in">
+                        <div class="panel-body">
+                            <ul class="facet-values list-unstyled">
+                                <li>
+                                    <span class="facet-label"><span class="selected">{{papers[0]['name']}}</span>
+                                    {% set base_url = url.split("&")[0] %}
+                                    <a class="remove" href="{{base_url}}">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if year_from == None %}
+                <div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim ">
+                    <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-year">
+                    <h3 class="panel-title facet-field-heading">
+                        <a data-turbolinks="false" data-no-turbolink="true" href="#">Année</a>
+                    </h3>
+                    </div>
+                    <div id="facet-year" class="panel-collapse facet-content collapse">
+                        <div class="panel-body">
+                            <p><input type="text" id="amount" readonly style="border:0;"></p>
+                            <form action="{{url}}" method="GET">
+                                <input type="hidden" name="query" value="{{query}}">
+                                <input type="hidden" id="year_from" name="year_from">
+                                <input type="hidden" id="year_to" name="year_to">
+                                <div id="slider-range" style="width:90%;display:inline-block;"></div>
+                                <span style="float:right;"><input type="submit" value="OK"></span>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim facet_limit-active">
+                    <div class=" collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-year">
+                      <h3 class="panel-title facet-field-heading">
+                        <a data-turbolinks="false" data-no-turbolink="true" href="#">Année</a>
+                      </h3>
+                    </div>
+                    <div id="facet-year" class="panel-collapse facet-content in">
+                        <div class="panel-body" style="overflow:hidden;">
+                            <p><input type="text" id="amount" readonly style="border:0;"></p>
+                            <div id="slider-range" style="width:90%;display:inline-block;"></div>
+                            {% set base_url = url.split("&")[0] %}
+                            <a class="remove" href="{{base_url}}">
+                                <span class="glyphicon glyphicon-remove" style="float:right;"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
         <div class="serp__body">
@@ -124,5 +222,6 @@
     </div>
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/pdfmodal.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/slider.js') }}"></script>
 </body>
 </html>
