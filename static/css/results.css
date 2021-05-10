@@ -50,7 +50,6 @@ body {
 @media (min-width:990px) {
     .serp__body {
     display: flex;
-    margin-left: 500px;
     max-width: 1040px;
     }
 }
