@@ -150,6 +150,9 @@
                                         {% if paper != None %}
                                         <input type="hidden" name="paper" value="{{paper}}">
                                         {% endif %}
+                                        {% if sortcrit != None %}
+                                        <input type="hidden" name="sortcrit" value="{{sortcrit}}">
+                                        {% endif %}
                                         <input type="hidden" id="year_from" name="year_from">
                                         <input type="hidden" id="year_to" name="year_to">
                                         <div id="slider-range" style="width:90%;display:inline-block;"></div>
