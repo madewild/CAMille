@@ -155,8 +155,8 @@
                                         {% endif %}
                                         <input type="hidden" id="year_from" name="year_from">
                                         <input type="hidden" id="year_to" name="year_to">
-                                        <div id="slider-range" style="width:90%;display:inline-block;"></div>
-                                        <span style="float:right;"><input type="submit" value="OK"></span>
+                                        <div id="slider-range" style="width:80%;display:inline-block;"></div>
+                                        <span class="ok_btn"><input type="submit" value="OK"></span>
                                     </form>
                                 </li>
                             </ul>
@@ -175,12 +175,24 @@
                             <ul class="facet-values list-unstyled">
                                 <li>
                                     <p><input type="text" id="amount" readonly style="border:0;"></p>
-                                    <div id="slider-range" style="width:90%;display:inline-block;"></div>
-                                    {% set year_from_param = "&year_from=" + year_from %}
-                                    {% set year_to_param = "&year_to=" + year_to %}
-                                    <a class="remove" href="{{url|strip_param(year_from_param)|strip_param(year_to_param)}}">
-                                        <span class="glyphicon glyphicon-remove" style="float:right;"></span>
-                                    </a>
+                                    <form action="{{url}}" method="GET">
+                                        <input type="hidden" name="query" value="{{query}}">
+                                        {% if paper != None %}
+                                        <input type="hidden" name="paper" value="{{paper}}">
+                                        {% endif %}
+                                        {% if sortcrit != None %}
+                                        <input type="hidden" name="sortcrit" value="{{sortcrit}}">
+                                        {% endif %}
+                                        <input type="hidden" id="year_from" name="year_from">
+                                        <input type="hidden" id="year_to" name="year_to">
+                                        <div id="slider-range" style="width:80%;display:inline-block;"></div>
+                                        <span class="ok_btn"><input type="submit" value="OK"></span>
+                                        {% set year_from_param = "&year_from=" + year_from %}
+                                        {% set year_to_param = "&year_to=" + year_to %}
+                                        <a class="remove" href="{{url|strip_param(year_from_param)|strip_param(year_to_param)}}">
+                                            <span class="glyphicon glyphicon-remove" style="float:right;"></span>
+                                        </a>
+                                    </form>
                                 </li>
                             </ul>
                         </div>
