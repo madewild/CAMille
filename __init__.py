@@ -135,26 +135,6 @@ def hello():
             firstp = max(1, min(p-4, maxp-9))
             lastp = min(firstp+10, maxp+1)
 
-            """databis = {
-                    "size": number,
-                    "track_total_hits": "true",
-                    "query": query_dic,
-                }
-
-            rbis = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(databis))
-            if rbis.status_code == 200:
-                resdicbis = json.loads(rbis.text)
-                hitsbis = resdicbis["hits"]
-                matched = defaultdict(int)
-                for hit in hitsbis["hits"]:
-                    np = hit["_source"]["journal"]
-                    matched[np] += 1
-                matched_papers = [p for p in papers if p["code"] in matched]
-                for np in matched_papers:
-                    np["count"] = matched[np["code"]]
-            else:
-                print("error")"""
-
             doc = request.args.get("doc")
             if doc:
                 s3 = boto3.client('s3')
@@ -223,10 +203,7 @@ def hello():
             else:
                 html = render_template("404.html")
         else:
-            term = request.args.get("term")
-            if not term:
-                term = ""
-            html = render_template("search.html", term=term)
+            html = render_template("search.html")
     return html
 
 if __name__ == "__main__":
