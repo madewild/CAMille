@@ -105,7 +105,6 @@
                                 {% for paper in papers %}
                                 <li>
                                     <span class="facet-label"><a class="facet_select" href="{{url}}&paper={{paper['code']}}">{{paper['name']}}</a></span>
-                                    <!--<span class="selected facet-count" style="width: 8px;">{{paper['count']}}</span>-->
                                 </li>
                                 {% endfor %}
                             </ul>
@@ -124,8 +123,8 @@
                             <ul class="facet-values list-unstyled">
                                 <li>
                                     <span class="facet-label"><span class="selected">{{papers[0]['name']}}</span>
-                                    {% set base_url = url.split("&")[0] %}
-                                    <a class="remove" href="{{base_url}}">
+                                    {% set paper_param = "&paper=" + paper %}
+                                    <a class="remove" href="{{url|strip_param(paper_param)}}">
                                         <span class="glyphicon glyphicon-remove"></span>
                                     </a>
                                 </li>
@@ -143,14 +142,21 @@
                     </div>
                     <div id="facet-year" class="panel-collapse facet-content collapse">
                         <div class="panel-body">
-                            <p><input type="text" id="amount" readonly style="border:0;"></p>
-                            <form action="{{url}}" method="GET">
-                                <input type="hidden" name="query" value="{{query}}">
-                                <input type="hidden" id="year_from" name="year_from">
-                                <input type="hidden" id="year_to" name="year_to">
-                                <div id="slider-range" style="width:90%;display:inline-block;"></div>
-                                <span style="float:right;"><input type="submit" value="OK"></span>
-                            </form>
+                            <ul class="facet-values list-unstyled">
+                                <li>
+                                    <p><input type="text" id="amount" readonly style="border:0;"></p>
+                                    <form action="{{url}}" method="GET">
+                                        <input type="hidden" name="query" value="{{query}}">
+                                        {% if paper != None %}
+                                        <input type="hidden" name="paper" value="{{paper}}">
+                                        {% endif %}
+                                        <input type="hidden" id="year_from" name="year_from">
+                                        <input type="hidden" id="year_to" name="year_to">
+                                        <div id="slider-range" style="width:90%;display:inline-block;"></div>
+                                        <span style="float:right;"><input type="submit" value="OK"></span>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -163,12 +169,17 @@
                     </div>
                     <div id="facet-year" class="panel-collapse facet-content in">
                         <div class="panel-body" style="overflow:hidden;">
-                            <p><input type="text" id="amount" readonly style="border:0;"></p>
-                            <div id="slider-range" style="width:90%;display:inline-block;"></div>
-                            {% set base_url = url.split("&")[0] %}
-                            <a class="remove" href="{{base_url}}">
-                                <span class="glyphicon glyphicon-remove" style="float:right;"></span>
-                            </a>
+                            <ul class="facet-values list-unstyled">
+                                <li>
+                                    <p><input type="text" id="amount" readonly style="border:0;"></p>
+                                    <div id="slider-range" style="width:90%;display:inline-block;"></div>
+                                    {% set year_from_param = "&year_from=" + year_from %}
+                                    {% set year_to_param = "&year_to=" + year_to %}
+                                    <a class="remove" href="{{url|strip_param(year_from_param)|strip_param(year_to_param)}}">
+                                        <span class="glyphicon glyphicon-remove" style="float:right;"></span>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>

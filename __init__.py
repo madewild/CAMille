@@ -26,6 +26,11 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 htpasswd = HtPasswdAuth(app)
 
+@app.template_filter()
+def strip_param(long_url, param):
+    new_url = long_url.replace(param, "")
+    return new_url
+
 @app.route("/")
 def hello():
     query = request.args.get("query")
