@@ -6,6 +6,7 @@ import sys
 
 import boto3
 from bs4 import BeautifulSoup as bs
+import pandas as pd
 import requests
 
 def extract_text(xml_body):
@@ -56,14 +57,35 @@ def handler(event, context):
         elements = raw_file_name.split("_")
         journal = elements[1]
         date = elements[2]
-        year = date.split("-")[0]
+        date_elems = date.split("-")
+        year = date_elems[0]
+        month = date_elems[1]
+        day = date_elems[2]
+        ts = pd.Timestamp(date)
+        dow = str(ts.dayofweek + 1)
+        ed_page = elements[3]
+        ep_elems = ed_page.split("-")
+        edition = ep_elems[0]
+        pagenb = ep_elems[1]
 
         # Process XML
         obj = s3.get_object(Bucket=bucket, Key=key)
         body = obj['Body'].read()
         text = extract_text(body)
 
-        payload = {"page": raw_file_name, "journal": journal, "year": year, "date": date, "text": text}
+        payload = {
+            "page": raw_file_name, 
+            "journal": journal,
+            "date": date,
+            "year": year, 
+            "month": month,
+            "day": day,
+            "dow": dow,
+            "edition": edition,
+            "pagenb": pagenb,
+            "language": "fr-BE",
+            "text": text
+        }
         data = json.dumps(payload)
         full_es_url = f"{url}/{raw_file_name}"
         r = requests.put(full_es_url, auth=auth, data=data, headers=headers)
