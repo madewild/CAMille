@@ -126,8 +126,11 @@ def hello():
                 day = dates[2]
                 edpage = elements[3]
                 page = int(edpage.split("-")[1])
-                display = f"{name} ({day}/{month}/{year} - p. {page})"                
-                matches = hit["highlight"]["text"]
+                display = f"{name} ({day}/{month}/{year} - p. {page})"
+                try:            
+                    matches = hit["highlight"]["text"]
+                except KeyError: # no matches (wildcard), defaulting to 500 first chars
+                    matches = [hit["_source"]["text"][:500] + "..."]
                 result = {"id": result_id, "display": display, "matches": " [...] ".join(matches)}
                 results.append(result)
 
