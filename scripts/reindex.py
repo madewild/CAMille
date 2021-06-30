@@ -2,6 +2,7 @@
 
 import json
 import sys
+import time
 
 import pandas as pd
 import requests
@@ -88,6 +89,7 @@ if __name__ == "__main__":
     }
 
     for year in years:
+        time.sleep(5)
         es_url = f"{endpoint}/pages/_search?track_total_hits=true&q=journal:{code}%20AND%20year:{year}"
         resp = requests.request("POST", es_url, auth=(username, password), data=json.dumps(payload), headers=headers)
         resp = json.loads(resp.text)
@@ -120,3 +122,6 @@ if __name__ == "__main__":
                 }
                 es_url = f"{endpoint}/pages/_update/{es_id}"
                 resp = requests.request("POST", es_url, auth=(username, password), data=json.dumps(payload), headers=headers)
+                if resp.status_code != 200:
+                    print(resp.text)
+                    sys.exit()
