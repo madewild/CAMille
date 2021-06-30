@@ -67,10 +67,12 @@ if __name__ == "__main__":
 
     bucket_name = "camille-data"
     code = sys.argv[1]
+    start = int(sys.argv[2])
     try:
-        years = [sys.argv[2]]
+        end = int(sys.argv[3])
     except IndexError:
-        years = range(1831, 1971)
+        end = start
+    years = range(start, end+1)
 
     try:
         cred = json.load(open("../credentials.json"))
