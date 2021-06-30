@@ -81,7 +81,7 @@ if __name__ == "__main__":
                     ep_elems = ed_page.split("-")
                     edition = ep_elems[0]
                     pagenb = ep_elems[1]
-                    payload = {
+                    payload2 = {
                         "doc" : {
                             "month": month,
                             "day": day,
@@ -92,7 +92,7 @@ if __name__ == "__main__":
                         }
                     }
                     es_url_update = f"{endpoint}/pages/_update/{es_id}"
-                    r2 = requests.request("POST", es_url_update, auth=(username, password), data=json.dumps(payload), headers=headers)
+                    r2 = requests.request("POST", es_url_update, auth=(username, password), data=json.dumps(payload2), headers=headers)
                     if r2.status_code != 200:
                         print(es_id, r2.text)
                         sys.exit()
