@@ -2,7 +2,6 @@
 
 import json
 import sys
-import time
 
 import pandas as pd
 import requests
@@ -89,11 +88,14 @@ if __name__ == "__main__":
     }
 
     for year in years:
-        time.sleep(5)
         es_url = f"{endpoint}/pages/_search?track_total_hits=true&q=journal:{code}%20AND%20year:{year}"
         resp = requests.request("POST", es_url, auth=(username, password), data=json.dumps(payload), headers=headers)
         resp = json.loads(resp.text)
-        es_ids = set([hit["_id"] for hit in resp["hits"]["hits"]])
+        try:
+            es_ids = set([hit["_id"] for hit in resp["hits"]["hits"]])
+        except KeyError:
+            print(resp)
+            sys.exit()
         nb_es_ids = len(es_ids)
         print(f"{nb_es_ids} docs found for journal {code} and year {year}")
         if nb_es_ids:
