@@ -11,7 +11,7 @@ from requests.packages.urllib3.util import Retry
 def requests_retry_session(
     retries=10,
     backoff_factor=0.3,
-    status_forcelist=(500, 502, 503, 504),
+    status_forcelist=(500, 502, 503, 504, 400),
     session=None,
 ):
     session = session or requests.Session()
@@ -46,17 +46,18 @@ if __name__ == "__main__":
     username = cred["username"]
     password = cred["password"]
     headers = {"Content-Type": "application/json; charset=utf8"}
-    payload = {
-                "size": 10000,
-                "stored_fields": []
-    }
+
     s = requests.Session()
     s.auth = (username, password)
     s.headers.update(headers)
 
     for year in years:
         es_url = f"{endpoint}/pages/_search?track_total_hits=true&q=journal:{code}%20AND%20year:{year}"
-        r = requests_retry_session(session=s).post(es_url, data=json.dumps(payload), timeout=5)
+        payload = {
+            "size": 10000,
+            "stored_fields": []
+        }
+        r = requests_retry_session(session=s).post(es_url, data=json.dumps(payload), timeout=30)
         if r.status_code == 200:
             resp = json.loads(r.text)
             try:
@@ -99,3 +100,4 @@ if __name__ == "__main__":
             print(f"Error {r.status_code}")
             print(r.text)
             sys.exit()
+        print("Done")
