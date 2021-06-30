@@ -100,7 +100,6 @@ if __name__ == "__main__":
         print(f"{nb_es_ids} docs found for journal {code} and year {year}")
         if nb_es_ids:
             for es_id in sorted(es_ids):
-                print(es_id)
                 elems = es_id.split("_")
                 date = elems[2]
                 date_elems = date.split("-")
@@ -125,5 +124,5 @@ if __name__ == "__main__":
                 es_url = f"{endpoint}/pages/_update/{es_id}"
                 resp = requests.request("POST", es_url, auth=(username, password), data=json.dumps(payload), headers=headers)
                 if resp.status_code != 200:
-                    print(resp.text)
+                    print(es_id, resp.text)
                     sys.exit()
