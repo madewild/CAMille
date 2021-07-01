@@ -131,7 +131,8 @@ def hello():
                     matches = hit["highlight"]["text"]
                 except KeyError: # no matches (wildcard), defaulting to 500 first chars
                     matches = [hit["_source"]["text"][:500] + "..."]
-                result = {"id": result_id, "display": display, "matches": " [...] ".join(matches)}
+                all_matches = " [...] ".join(matches).replace("<", "")
+                result = {"id": result_id, "display": display, "matches": all_matches}
                 results.append(result)
 
             maxp = math.ceil(number/10)
