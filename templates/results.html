@@ -59,7 +59,7 @@
                     </form>
                     <form class="custom_form" action="/" method="GET">
                         <p class="serp__query">Trier par :
-                        <select id="sortcrit" name="sortcrit">
+                        <select id="sortcrit" name="sortcrit" onchange='this.form.submit()'>
                             <option value="relevance">pertinence</option>
                             <option value="dateasc" {% if sortcrit == "dateasc" %}selected="selected"{% endif %}>date (croissante)</option>
                             <option value="datedesc" {% if sortcrit == "datedesc" %}selected="selected"{% endif %}>date (décroissante)</option>
@@ -72,7 +72,8 @@
                         <input type="hidden" name="year_from" value="{{year_from}}">
                         <input type="hidden" name="year_to" value="{{year_to}}">
                         {% endif %}
-                        <input type="submit" value="OK"></p>
+                        <!--<input type="submit" value="OK"></p>-->
+                        <noscript><input type="submit" value="Submit"></noscript>
                     </form>
                 </div>
                 <a class="serp__logo" href="/"></a>
