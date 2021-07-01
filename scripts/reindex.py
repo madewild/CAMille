@@ -2,6 +2,7 @@
 
 import json
 import sys
+import time
 
 import pandas as pd
 import requests
@@ -101,3 +102,4 @@ if __name__ == "__main__":
             print(r.text)
             sys.exit()
         print("Done")
+        time.sleep(60)
