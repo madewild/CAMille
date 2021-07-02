@@ -52,19 +52,24 @@ def hello():
             sort = ["_score", {"date": {"order": "asc"}}]
 
         query_dic = {"bool": {"must": [{"query_string": {"query": query}}]}}
+        query_dic["bool"]["filter"] = []
 
         paper = request.args.get("paper")
         if paper:
-            query_dic["bool"]["filter"] = [{"match": {"journal": paper}}]
+            query_dic["bool"]["filter"].append({"match": {"journal": paper}})
 
         year_from = request.args.get("year_from")
         year_to = request.args.get("year_to")
         if year_from:
             query_dic["bool"]["must"].append({"range": {"year": {"gte": year_from, "lte": year_to}}})
-
+        
         month = request.args.get("month")
         if month:
-            query_dic["bool"]["filter"] = [{"match": {"month": month}}]
+            query_dic["bool"]["filter"].append({"match": {"month": month}})
+
+        dow = request.args.get("dow")
+        if dow:
+            query_dic["bool"]["filter"].append({"match": {"dow": dow}})
 
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
@@ -127,6 +132,12 @@ def hello():
                 matched_months = [x for x in months if x["code"] == month]
             else:
                 matched_months = months
+
+            dows = [{"code": f"{i+1}", "name": calendar.day_name[i]} for i in range(7)]
+            if dow:
+                matched_dows = [x for x in dows if x["code"] == dow]
+            else:
+                matched_dows = dows
             
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
@@ -204,7 +215,7 @@ def hello():
                                    maxp=maxp, doc=doc, url=url, papers=matched_papers,
                                    number=number, sortcrit=sortcrit, paper=paper,
                                    year_from=year_from, year_to=year_to, months=matched_months,
-                                   month=month
+                                   month=month, dows=matched_dows, dow=dow
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"

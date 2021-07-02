@@ -75,6 +75,9 @@
                         {% if month != None %}
                         <input type="hidden" name="month" value="{{month}}">
                         {% endif %}
+                        {% if dow != None %}
+                        <input type="hidden" name="dow" value="{{dow}}">
+                        {% endif %}
                         <noscript><input type="submit" value="Submit"></noscript>
                     </form>
                 </div>
@@ -95,6 +98,7 @@
                 {% include 'filters/paper.html' %}
                 {% include 'filters/year.html' %}
                 {% include 'filters/month.html' %}
+                {% include 'filters/dow.html' %}
             </div>
         </div>
         <div class="serp__body">
