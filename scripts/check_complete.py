@@ -3,7 +3,6 @@
 import json
 import sys
 
-import boto3
 import requests
 
 from parse_s3 import *
@@ -40,3 +39,4 @@ for year in years:
                 lang = hit["_source"]["language"]
             except KeyError:
                 print(f"Missing language field for {hitid}")
+                sys.exit()
