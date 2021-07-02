@@ -72,7 +72,9 @@
                         <input type="hidden" name="year_from" value="{{year_from}}">
                         <input type="hidden" name="year_to" value="{{year_to}}">
                         {% endif %}
-                        <!--<input type="submit" value="OK"></p>-->
+                        {% if month != None %}
+                        <input type="hidden" name="month" value="{{month}}">
+                        {% endif %}
                         <noscript><input type="submit" value="Submit"></noscript>
                     </form>
                 </div>
