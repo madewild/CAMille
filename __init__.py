@@ -1,7 +1,8 @@
 """Basic Flask app"""
 
-from collections import defaultdict
+import calendar
 import json
+import locale
 import math
 from pathlib import Path
 from unidecode import unidecode
@@ -18,6 +19,8 @@ try:
     cred = json.load(open("credentials.json"))
 except FileNotFoundError:
     cred = json.load(open("/var/www/camille/credentials.json"))
+
+locale.setlocale(locale.LC_ALL, 'fr_BE.utf8')
 
 app = Flask(__name__)
 app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
@@ -58,6 +61,10 @@ def hello():
         year_to = request.args.get("year_to")
         if year_from:
             query_dic["bool"]["must"].append({"range": {"year": {"gte": year_from, "lte": year_to}}})
+
+        month = request.args.get("month")
+        if month:
+            query_dic["bool"]["filter"] = [{"match": {"month": month}}]
 
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
@@ -105,28 +112,35 @@ def hello():
             stats = f"{found_string} ({timing} secondes)"
             hits = resdic["hits"]
             results = []
+
             path = Path(__file__).parent / "static/newspapers.json"
             with open(path, encoding="utf-8") as f:
                 names = json.load(f)
             papers = [{"code": code, "name": names[code]} for code in names]
             if paper:
-                matched_papers = [p for p in papers if p["code"] == paper]
+                matched_papers = [x for x in papers if x["code"] == paper]
             else:
                 matched_papers = papers
+
+            months = [{"code": f"{i:02d}", "name": calendar.month_name[i]} for i in range(1, 13)]
+            if month:
+                matched_months = [x for x in months if x["code"] == month]
+            else:
+                matched_months = months
             
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
                 elements = result_id.split("_")
                 np = elements[1]
                 name = names[np]
-                date = elements[2]
-                dates = date.split("-")
-                year = dates[0]
-                month = dates[1]
-                day = dates[2]
+                hit_date = elements[2]
+                hit_dates = hit_date.split("-")
+                hit_year = hit_dates[0]
+                hit_month = hit_dates[1]
+                hit_day = hit_dates[2]
                 edpage = elements[3]
                 page = int(edpage.split("-")[1])
-                display = f"{name} ({day}/{month}/{year} - p. {page})"
+                display = f"{name} ({hit_day}/{hit_month}/{hit_year} - p. {page})"
                 try:            
                     matches = hit["highlight"]["text"]
                 except KeyError: # no matches (wildcard), defaulting to 500 first chars
@@ -145,9 +159,9 @@ def hello():
                 bucket_name = "camille-data"
                 elements = doc.split("_")
                 np = elements[1]
-                date = elements[2]
-                year = date.split("-")[0]
-                key = f"PDF/{np}/{year}/{doc}.pdf"
+                doc_date = elements[2]
+                doc_year = doc_date.split("-")[0]
+                key = f"PDF/{np}/{doc_year}/{doc}.pdf"
                 temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
                 s3.download_file(bucket_name, key, str(temp_path))
             else:
@@ -189,7 +203,8 @@ def hello():
                                    results=results, p=p, firstp=firstp, lastp=lastp, 
                                    maxp=maxp, doc=doc, url=url, papers=matched_papers,
                                    number=number, sortcrit=sortcrit, paper=paper,
-                                   year_from=year_from, year_to=year_to
+                                   year_from=year_from, year_to=year_to, months=matched_months,
+                                   month=month
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"
