@@ -1,0 +1,41 @@
+{% if paper == None %}
+<div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim ">
+    <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-member_of_collection_ids_ssim">
+    <h3 class="panel-title facet-field-heading">
+        <a data-turbolinks="false" data-no-turbolink="true" href="#">Journal</a>
+    </h3>
+    </div>
+    <div id="facet-member_of_collection_ids_ssim" class="panel-collapse facet-content collapse">
+        <div class="panel-body">
+            <ul class="facet-values list-unstyled">
+                {% for paper in papers %}
+                <li>
+                    <span class="facet-label"><a class="facet_select" href="{{url}}&paper={{paper['code']}}">{{paper['name']}}</a></span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim facet_limit-active">
+    <div class=" collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-member_of_collection_ids_ssim">
+      <h3 class="panel-title facet-field-heading">
+        <a data-turbolinks="false" data-no-turbolink="true" href="#">Journal</a>
+      </h3>
+    </div>
+    <div id="facet-member_of_collection_ids_ssim" class="panel-collapse facet-content in">
+        <div class="panel-body">
+            <ul class="facet-values list-unstyled">
+                <li>
+                    <span class="facet-label"><span class="selected">{{papers[0]['name']}}</span>
+                    {% set paper_param = "&paper=" + paper %}
+                    <a class="remove" href="{{url|strip_param(paper_param)}}">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
