@@ -48,11 +48,17 @@
                     <p><input type="text" id="amount" readonly style="border:0;"></p>
                     <form action="{{url}}" method="GET">
                         <input type="hidden" name="query" value="{{query}}">
+                        {% if sortcrit != None %}
+                        <input type="hidden" name="sortcrit" value="{{sortcrit}}">
+                        {% endif %}
                         {% if paper != None %}
                         <input type="hidden" name="paper" value="{{paper}}">
                         {% endif %}
-                        {% if sortcrit != None %}
-                        <input type="hidden" name="sortcrit" value="{{sortcrit}}">
+                        {% if month != None %}
+                        <input type="hidden" name="month" value="{{month}}">
+                        {% endif %}
+                        {% if dow != None %}
+                        <input type="hidden" name="dow" value="{{dow}}">
                         {% endif %}
                         <input type="hidden" id="year_from" name="year_from">
                         <input type="hidden" id="year_to" name="year_to">
