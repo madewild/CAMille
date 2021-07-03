@@ -156,7 +156,9 @@ def hello():
                     matches = hit["highlight"]["text"]
                 except KeyError: # no matches (wildcard), defaulting to 500 first chars
                     matches = [hit["_source"]["text"][:500] + "..."]
-                all_matches = " [...] ".join(matches).replace("<S", "").replace("<i", "").replace("<b", "")
+                all_matches = " [...] ".join(matches)
+                all_matches = all_matches.replace("<span", "##!!##").replace("</span", "!!##!!").replace("<", "")
+                all_matches = all_matches.replace("##!!##", "<span").replace("!!##!!", "</span")
                 result = {"id": result_id, "display": display, "matches": all_matches}
                 results.append(result)
 
