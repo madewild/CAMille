@@ -81,6 +81,9 @@
                         {% if edition != None %}
                         <input type="hidden" name="edition" value="{{edition}}">
                         {% endif %}
+                        {% if language != None %}
+                        <input type="hidden" name="language" value="{{language}}">
+                        {% endif %}
                         <noscript><input type="submit" value="Submit"></noscript>
                     </form>
                 </div>
@@ -103,6 +106,7 @@
                 {% include 'filters/month.html' %}
                 {% include 'filters/dow.html' %}
                 {% include 'filters/edition.html' %}
+                {% include 'filters/language.html' %}
             </div>
         </div>
         <div class="serp__body">

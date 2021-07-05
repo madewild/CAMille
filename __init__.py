@@ -75,6 +75,10 @@ def hello():
         if edition:
             query_dic["bool"]["filter"].append({"match": {"edition": edition}})
 
+        language = request.args.get("language")
+        if language:
+            query_dic["bool"]["filter"].append({"match": {"language": language}})
+
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
         username = cred["username"]
@@ -145,11 +149,16 @@ def hello():
 
             editions = [{"code": f"{i:02d}", "name": f"{i}e édition"} for i in range(1, 6)]
             editions += [{"code": i, "name": f"{i[1]}e édition spéciale"} for i in ["11", "12"]]
-            print(editions)
             if edition:
                 matched_editions = [x for x in editions if x["code"] == edition]
             else:
                 matched_editions = editions
+
+            languages = [{"code": "fr-BE", "name": "français"}]
+            if language:
+                matched_languages = [x for x in languages if x["code"] == language]
+            else:
+                matched_languages = languages
             
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
@@ -230,7 +239,7 @@ def hello():
                                    number=number, sortcrit=sortcrit, paper=paper,
                                    year_from=year_from, year_to=year_to, months=matched_months,
                                    month=month, dows=matched_dows, dow=dow, editions=matched_editions, 
-                                   edition=edition
+                                   edition=edition, languages=matched_languages, language=language
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"
