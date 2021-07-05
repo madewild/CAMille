@@ -75,6 +75,9 @@
                         {% if month != None %}
                         <input type="hidden" name="month" value="{{month}}">
                         {% endif %}
+                        {% if day != None %}
+                        <input type="hidden" name="day" value="{{day}}">
+                        {% endif %}
                         {% if dow != None %}
                         <input type="hidden" name="dow" value="{{dow}}">
                         {% endif %}
@@ -107,6 +110,7 @@
                 {% include 'filters/paper.html' %}
                 {% include 'filters/year.html' %}
                 {% include 'filters/month.html' %}
+                {% include 'filters/day.html' %}
                 {% include 'filters/dow.html' %}
                 {% include 'filters/edition.html' %}
                 {% include 'filters/pagenb.html' %}

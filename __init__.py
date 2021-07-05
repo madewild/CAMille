@@ -67,6 +67,10 @@ def hello():
         if month:
             query_dic["bool"]["filter"].append({"match": {"month": month}})
 
+        day = request.args.get("day")
+        if day:
+            query_dic["bool"]["filter"].append({"match": {"day": day}})
+
         dow = request.args.get("dow")
         if dow:
             query_dic["bool"]["filter"].append({"match": {"dow": dow}})
@@ -144,6 +148,12 @@ def hello():
                 matched_months = [x for x in months if x["code"] == month]
             else:
                 matched_months = months
+
+            days = [{"code": f"{i:02d}", "name": f"{i} du mois"} for i in range(1, 32)]
+            if day:
+                matched_days = [x for x in days if x["code"] == day]
+            else:
+                matched_days = days
 
             dows = [{"code": f"{i+1}", "name": calendar.day_name[i]} for i in range(7)]
             if dow:
@@ -250,7 +260,7 @@ def hello():
                                    year_from=year_from, year_to=year_to, months=matched_months,
                                    month=month, dows=matched_dows, dow=dow, editions=matched_editions, 
                                    edition=edition, languages=matched_languages, language=language,
-                                   pagenbs=matched_pagenbs, pagenb=pagenb
+                                   pagenbs=matched_pagenbs, pagenb=pagenb, days=matched_days, day=day
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"

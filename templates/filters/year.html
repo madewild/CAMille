@@ -21,6 +21,9 @@
                         {% if month != None %}
                         <input type="hidden" name="month" value="{{month}}">
                         {% endif %}
+                        {% if day != None %}
+                        <input type="hidden" name="day" value="{{day}}">
+                        {% endif %}
                         {% if dow != None %}
                         <input type="hidden" name="dow" value="{{dow}}">
                         {% endif %}
@@ -65,6 +68,9 @@
                         {% endif %}
                         {% if month != None %}
                         <input type="hidden" name="month" value="{{month}}">
+                        {% endif %}
+                        {% if day != None %}
+                        <input type="hidden" name="day" value="{{day}}">
                         {% endif %}
                         {% if dow != None %}
                         <input type="hidden" name="dow" value="{{dow}}">
