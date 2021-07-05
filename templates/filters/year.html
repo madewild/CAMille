@@ -27,6 +27,9 @@
                         {% if edition != None %}
                         <input type="hidden" name="edition" value="{{edition}}">
                         {% endif %}
+                        {% if pagenb != None %}
+                        <input type="hidden" name="pagenb" value="{{pagenb}}">
+                        {% endif %}
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
                         {% endif %}
@@ -68,6 +71,9 @@
                         {% endif %}
                         {% if edition != None %}
                         <input type="hidden" name="edition" value="{{edition}}">
+                        {% endif %}
+                        {% if pagenb != None %}
+                        <input type="hidden" name="pagenb" value="{{pagenb}}">
                         {% endif %}
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">

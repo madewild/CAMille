@@ -1,0 +1,41 @@
+{% if pagenb == None %}
+<div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim ">
+    <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-pagenb">
+    <h3 class="panel-title facet-field-heading">
+        <a data-turbolinks="false" data-no-turbolink="true" href="#">Numéro de page</a>
+    </h3>
+    </div>
+    <div id="facet-pagenb" class="panel-collapse facet-content collapse">
+        <div class="panel-body">
+            <ul class="facet-values list-unstyled">
+                {% for pagenb in pagenbs %}
+                <li>
+                    <span class="facet-label"><a class="facet_select" href="{{url}}&pagenb={{pagenb['code']}}">{{pagenb['name']}}</a></span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim facet_limit-active">
+    <div class=" collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-pagenb">
+      <h3 class="panel-title facet-field-heading">
+        <a data-turbolinks="false" data-no-turbolink="true" href="#">Numéro de page</a>
+      </h3>
+    </div>
+    <div id="facet-pagenb" class="panel-collapse facet-content in">
+        <div class="panel-body">
+            <ul class="facet-values list-unstyled">
+                <li>
+                    <span class="facet-label"><span class="selected">{{pagenbs[0]['name']}}</span>
+                    {% set pagenb_param = "&pagenb=" + pagenb %}
+                    <a class="remove" href="{{url|strip_param(pagenb_param)}}">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}

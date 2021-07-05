@@ -75,6 +75,10 @@ def hello():
         if edition:
             query_dic["bool"]["filter"].append({"match": {"edition": edition}})
 
+        pagenb = request.args.get("pagenb")
+        if pagenb:
+            query_dic["bool"]["filter"].append({"match": {"pagenb": pagenb}})
+
         language = request.args.get("language")
         if language:
             query_dic["bool"]["filter"].append({"match": {"language": language}})
@@ -153,6 +157,12 @@ def hello():
                 matched_editions = [x for x in editions if x["code"] == edition]
             else:
                 matched_editions = editions
+
+            pagenbs = [{"code": f"{i:05d}", "name": f"Page {i}"} for i in range(1, 33)]
+            if pagenb:
+                matched_pagenbs = [x for x in pagenbs if x["code"] == pagenb]
+            else:
+                matched_pagenbs = pagenbs
 
             languages = [{"code": "fr-BE", "name": "français"}]
             if language:
@@ -239,7 +249,8 @@ def hello():
                                    number=number, sortcrit=sortcrit, paper=paper,
                                    year_from=year_from, year_to=year_to, months=matched_months,
                                    month=month, dows=matched_dows, dow=dow, editions=matched_editions, 
-                                   edition=edition, languages=matched_languages, language=language
+                                   edition=edition, languages=matched_languages, language=language,
+                                   pagenbs=matched_pagenbs, pagenb=pagenb
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"
