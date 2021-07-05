@@ -71,6 +71,10 @@ def hello():
         if dow:
             query_dic["bool"]["filter"].append({"match": {"dow": dow}})
 
+        edition = request.args.get("edition")
+        if edition:
+            query_dic["bool"]["filter"].append({"match": {"edition": edition}})
+
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
         username = cred["username"]
@@ -138,6 +142,14 @@ def hello():
                 matched_dows = [x for x in dows if x["code"] == dow]
             else:
                 matched_dows = dows
+
+            editions = [{"code": f"{i:02d}", "name": f"{i}e édition"} for i in range(1, 6)]
+            editions += [{"code": i, "name": f"{i[1]}e édition spéciale"} for i in ["11", "12"]]
+            print(editions)
+            if edition:
+                matched_editions = [x for x in editions if x["code"] == edition]
+            else:
+                matched_editions = editions
             
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
@@ -217,7 +229,8 @@ def hello():
                                    maxp=maxp, doc=doc, url=url, papers=matched_papers,
                                    number=number, sortcrit=sortcrit, paper=paper,
                                    year_from=year_from, year_to=year_to, months=matched_months,
-                                   month=month, dows=matched_dows, dow=dow
+                                   month=month, dows=matched_dows, dow=dow, editions=matched_editions, 
+                                   edition=edition
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"

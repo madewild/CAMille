@@ -24,6 +24,9 @@
                         {% if dow != None %}
                         <input type="hidden" name="dow" value="{{dow}}">
                         {% endif %}
+                        {% if edition != None %}
+                        <input type="hidden" name="edition" value="{{edition}}">
+                        {% endif %}
                         <input type="hidden" id="year_from" name="year_from">
                         <input type="hidden" id="year_to" name="year_to">
                         <div id="slider-range" style="width:80%;display:inline-block;"></div>
@@ -59,6 +62,9 @@
                         {% endif %}
                         {% if dow != None %}
                         <input type="hidden" name="dow" value="{{dow}}">
+                        {% endif %}
+                        {% if edition != None %}
+                        <input type="hidden" name="edition" value="{{edition}}">
                         {% endif %}
                         <input type="hidden" id="year_from" name="year_from">
                         <input type="hidden" id="year_to" name="year_to">

@@ -78,6 +78,9 @@
                         {% if dow != None %}
                         <input type="hidden" name="dow" value="{{dow}}">
                         {% endif %}
+                        {% if edition != None %}
+                        <input type="hidden" name="edition" value="{{edition}}">
+                        {% endif %}
                         <noscript><input type="submit" value="Submit"></noscript>
                     </form>
                 </div>
@@ -99,6 +102,7 @@
                 {% include 'filters/year.html' %}
                 {% include 'filters/month.html' %}
                 {% include 'filters/dow.html' %}
+                {% include 'filters/edition.html' %}
             </div>
         </div>
         <div class="serp__body">
