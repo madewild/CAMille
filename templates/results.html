@@ -85,8 +85,9 @@
                         {% if edition != None %}
                         <input type="hidden" name="edition" value="{{edition}}">
                         {% endif %}
-                        {% if pagenb != None %}
-                        <input type="hidden" name="pagenb" value="{{pagenb}}">
+                        {% if page_from != None %}
+                        <input type="hidden" name="page_from" value="{{page_from}}">
+                        <input type="hidden" name="page_to" value="{{page_to}}">
                         {% endif %}
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
@@ -167,5 +168,6 @@
     <script src="{{ url_for('static', filename='js/modal_pdf.js') }}"></script>
     <script src="{{ url_for('static', filename='js/slider_year.js') }}"></script>
     <script src="{{ url_for('static', filename='js/slider_day.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/slider_page.js') }}"></script>
 </body>
 </html>

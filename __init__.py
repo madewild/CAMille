@@ -67,10 +67,6 @@ def hello():
         if month:
             query_dic["bool"]["filter"].append({"match": {"month": month}})
 
-        #day = request.args.get("day")
-        #if day:
-        #    query_dic["bool"]["filter"].append({"match": {"day": day}})
-
         day_from = request.args.get("day_from")
         day_to = request.args.get("day_to")
         if day_from:
@@ -84,9 +80,10 @@ def hello():
         if edition:
             query_dic["bool"]["filter"].append({"match": {"edition": edition}})
 
-        pagenb = request.args.get("pagenb")
-        if pagenb:
-            query_dic["bool"]["filter"].append({"match": {"pagenb": pagenb}})
+        page_from = request.args.get("page_from")
+        page_to = request.args.get("page_to")
+        if page_from:
+            query_dic["bool"]["must"].append({"range": {"pagenb": {"gte": page_from, "lte": page_to}}})
 
         language = request.args.get("language")
         if language:
@@ -154,12 +151,6 @@ def hello():
             else:
                 matched_months = months
 
-            #days = [{"code": f"{i:02d}", "name": f"{i} du mois"} for i in range(1, 32)]
-            #if day:
-            #    matched_days = [x for x in days if x["code"] == day]
-            #else:
-            #    matched_days = days
-
             dows = [{"code": f"{i+1}", "name": calendar.day_name[i]} for i in range(7)]
             if dow:
                 matched_dows = [x for x in dows if x["code"] == dow]
@@ -172,12 +163,6 @@ def hello():
                 matched_editions = [x for x in editions if x["code"] == edition]
             else:
                 matched_editions = editions
-
-            pagenbs = [{"code": f"{i:05d}", "name": f"Page {i}"} for i in range(1, 33)]
-            if pagenb:
-                matched_pagenbs = [x for x in pagenbs if x["code"] == pagenb]
-            else:
-                matched_pagenbs = pagenbs
 
             languages = [{"code": "fr-BE", "name": "français"}]
             if language:
@@ -265,8 +250,7 @@ def hello():
                                    year_from=year_from, year_to=year_to, months=matched_months,
                                    month=month, dows=matched_dows, dow=dow, editions=matched_editions, 
                                    edition=edition, languages=matched_languages, language=language,
-                                   pagenbs=matched_pagenbs, pagenb=pagenb, #days=matched_days, day=day
-                                   day_from=day_from, day_to=day_to
+                                   page_from=page_from, page_to=page_to, day_from=day_from, day_to=day_to
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"

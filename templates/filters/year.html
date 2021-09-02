@@ -31,8 +31,9 @@
                         {% if edition != None %}
                         <input type="hidden" name="edition" value="{{edition}}">
                         {% endif %}
-                        {% if pagenb != None %}
-                        <input type="hidden" name="pagenb" value="{{pagenb}}">
+                        {% if page_from != None %}
+                        <input type="hidden" name="page_from" value="{{page_from}}">
+                        <input type="hidden" name="page_to" value="{{page_to}}">
                         {% endif %}
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
@@ -80,8 +81,9 @@
                         {% if edition != None %}
                         <input type="hidden" name="edition" value="{{edition}}">
                         {% endif %}
-                        {% if pagenb != None %}
-                        <input type="hidden" name="pagenb" value="{{pagenb}}">
+                        {% if page_from != None %}
+                        <input type="hidden" name="page_from" value="{{page_from}}">
+                        <input type="hidden" name="page_to" value="{{page_to}}">
                         {% endif %}
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
