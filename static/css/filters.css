@@ -10938,3 +10938,8 @@ select.selectpicker {
     top: -2px;
     margin-left: 10px;
 }
+
+.clear-right {
+    float: right;
+    margin-top: -30px;
+}
