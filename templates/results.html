@@ -48,7 +48,7 @@
                         <button class="serp__button" aria-label="Help" type="button" id="help" title="Aide">
                             <div class="serp__help"></div>
                         </button>
-                        <div id="searchModal" class="modal">
+                        <div id="helpModal" class="modal">
                             <div class="modal-content">
                                 <div class="modal-body">
                                     <span class="close">&times;</span>
@@ -75,8 +75,9 @@
                         {% if month != None %}
                         <input type="hidden" name="month" value="{{month}}">
                         {% endif %}
-                        {% if day != None %}
-                        <input type="hidden" name="day" value="{{day}}">
+                        {% if day_from != None %}
+                        <input type="hidden" name="day_from" value="{{day_from}}">
+                        <input type="hidden" name="day_to" value="{{day_to}}">
                         {% endif %}
                         {% if dow != None %}
                         <input type="hidden" name="dow" value="{{dow}}">
@@ -162,8 +163,9 @@
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/pdfmodal.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/slider.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modal_help.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modal_pdf.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/slider_year.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/slider_day.js') }}"></script>
 </body>
 </html>
