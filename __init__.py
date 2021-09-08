@@ -76,6 +76,11 @@ def hello():
         if dow:
             query_dic["bool"]["filter"].append({"match": {"dow": dow}})
 
+        date_from = request.args.get("date_from")
+        date_to = request.args.get("date_to")
+        if date_from:
+            query_dic["bool"]["must"].append({"range": {"date": {"gte": date_from, "lte": date_to}}})
+
         edition = request.args.get("edition")
         if edition:
             query_dic["bool"]["filter"].append({"match": {"edition": edition}})
@@ -250,7 +255,8 @@ def hello():
                                    year_from=year_from, year_to=year_to, months=matched_months,
                                    month=month, dows=matched_dows, dow=dow, editions=matched_editions, 
                                    edition=edition, languages=matched_languages, language=language,
-                                   page_from=page_from, page_to=page_to, day_from=day_from, day_to=day_to
+                                   page_from=page_from, page_to=page_to, day_from=day_from, day_to=day_to,
+                                   date_from=date_from, date_to=date_to
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"

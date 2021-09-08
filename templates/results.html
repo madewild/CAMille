@@ -15,6 +15,8 @@
   <script src="{{ url_for('static', filename='js/filters.js') }}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
   <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/jquery-ui.js" type="text/javascript"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   
 </head>
 <body>
@@ -129,7 +131,7 @@
             <div id="facets" class="facets sidenav">
                 <div class="top-panel-heading panel-heading">
                     <h2 class="facets-heading">Filtres</h2>
-                    {% if paper != None or year_from != None or month != None or day_from != None or dow != None or edition != None or page_from != None or language != None %}
+                    {% if paper != None or year_from != None or month != None or day_from != None or dow != None or date_from != None or edition != None or page_from != None or language != None %}
                     <div class="clear-right">
                         <a class="remove" href="/?query={{query}}&sortcrit={{sortcrit}}">
                             <span style="color:#d9534f" class="glyphicon glyphicon-remove"></span>
@@ -142,6 +144,7 @@
                 {% include 'filters/month.html' %}
                 {% include 'filters/day.html' %}
                 {% include 'filters/dow.html' %}
+                {% include 'filters/date.html' %}
                 {% include 'filters/edition.html' %}
                 {% include 'filters/pagenb.html' %}
                 {% include 'filters/language.html' %}
@@ -197,5 +200,7 @@
     <script src="{{ url_for('static', filename='js/slider_year.js') }}"></script>
     <script src="{{ url_for('static', filename='js/slider_day.js') }}"></script>
     <script src="{{ url_for('static', filename='js/slider_page.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/datepicker-fr.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/datepicker.js') }}"></script>
 </body>
 </html>
