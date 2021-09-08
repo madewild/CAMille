@@ -25,6 +25,10 @@
                         {% if month != None %}
                         <input type="hidden" name="month" value="{{month}}">
                         {% endif %}
+                        {% if day_from != None %}
+                        <input type="hidden" name="day_from" value="{{day_from}}">
+                        <input type="hidden" name="day_to" value="{{day_to}}">
+                        {% endif %}
                         {% if dow != None %}
                         <input type="hidden" name="dow" value="{{dow}}">
                         {% endif %}
@@ -73,6 +77,10 @@
                         {% endif %}
                         {% if month != None %}
                         <input type="hidden" name="month" value="{{month}}">
+                        {% endif %}
+                        {% if day_from != None %}
+                        <input type="hidden" name="day_from" value="{{day_from}}">
+                        <input type="hidden" name="day_to" value="{{day_to}}">
                         {% endif %}
                         {% if dow != None %}
                         <input type="hidden" name="dow" value="{{dow}}">
