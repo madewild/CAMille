@@ -96,8 +96,8 @@
                         <p class="serp__query">Trier par :
                         <select id="sortcrit" name="sortcrit" onchange='this.form.submit()'>
                             <option value="relevance">pertinence</option>
-                            <option value="dateasc" {% if sortcrit == "dateasc" %}selected="selected"{% endif %}>date (croissante)</option>
-                            <option value="datedesc" {% if sortcrit == "datedesc" %}selected="selected"{% endif %}>date (décroissante)</option>
+                            <option value="dateasc" {% if sortcrit == "dateasc" %}selected{% endif %}>date (croissante)</option>
+                            <option value="datedesc" {% if sortcrit == "datedesc" %}selected{% endif %}>date (décroissante)</option>
                         </select>
                         <input type="hidden" name="query" value="{{query}}">
                         {% if paper_list != None %}
