@@ -42,10 +42,12 @@
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
                         {% endif %}
+                        <select name="paper" id="paper" size="12" multiple>
                         {% for paper in all_papers %}
-                            <input type="checkbox" name="paper" id="paper" value="{{paper['code']}}"> {{paper['name']}}<br>
+                            <option value="{{paper['code']}}">{{paper['name']}}</option>
                         {% endfor %}
-                        <br><span class="ok_btn"><input type="submit" value="OK"></span>
+                        </select>
+                        <span class="ok_btn"><input type="submit" value="OK"></span>
                     </form>
                 </li>
             </ul>
@@ -96,10 +98,12 @@
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
                         {% endif %}
+                        <select name="paper" id="paper" size="12" multiple>
                         {% for paper in all_papers %}
-                            <input {% if paper['code'] in paper_list %}checked{% endif %} type="checkbox" name="paper" id="paper" value="{{paper['code']}}"> {{paper['name']}}<br>
+                            <option {% if paper['code'] in paper_list %}selected{% endif %} value="{{paper['code']}}">{{paper['name']}}</option>
                         {% endfor %}
-                        <br><span class="ok_btn"><input type="submit" value="OK"></span>
+                        </select>
+                        <span class="ok_btn"><input type="submit" value="OK"></span>
                         {% set dic = {'new_url': url} %}
                         {% for paper_code in paper_list %}
                             {% set paper_param = "&paper=" + paper_code %}
