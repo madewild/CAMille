@@ -20,8 +20,10 @@
                                 <input type="hidden" name="paper" value="{{paper}}">
                             {% endfor %}
                         {% endif %}
-                        {% if month != None %}
-                        <input type="hidden" name="month" value="{{month}}">
+                        {% if month_list %}
+                            {% for month in month_list %}
+                                <input type="hidden" name="month" value="{{month}}">
+                            {% endfor %}
                         {% endif %}
                         {% if day_from != None %}
                         <input type="hidden" name="day_from" value="{{day_from}}">
@@ -76,8 +78,10 @@
                                 <input type="hidden" name="paper" value="{{paper}}">
                             {% endfor %}
                         {% endif %}
-                        {% if month != None %}
-                        <input type="hidden" name="month" value="{{month}}">
+                        {% if month_list %}
+                            {% for month in month_list %}
+                                <input type="hidden" name="month" value="{{month}}">
+                            {% endfor %}
                         {% endif %}
                         {% if day_from != None %}
                         <input type="hidden" name="day_from" value="{{day_from}}">

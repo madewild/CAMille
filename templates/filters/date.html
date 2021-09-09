@@ -24,8 +24,10 @@
                         <input type="hidden" name="year_from" value="{{year_from}}">
                         <input type="hidden" name="year_to" value="{{year_to}}">
                         {% endif %}
-                        {% if month != None %}
-                        <input type="hidden" name="month" value="{{month}}">
+                        {% if month_list %}
+                            {% for month in month_list %}
+                                <input type="hidden" name="month" value="{{month}}">
+                            {% endfor %}
                         {% endif %}
                         {% if day_from != None %}
                         <input type="hidden" name="day_from" value="{{day_from}}">
@@ -79,8 +81,10 @@
                         <input type="hidden" name="year_from" value="{{year_from}}">
                         <input type="hidden" name="year_to" value="{{year_to}}">
                         {% endif %}
-                        {% if month != None %}
-                        <input type="hidden" name="month" value="{{month}}">
+                        {% if month_list %}
+                            {% for month in month_list %}
+                                <input type="hidden" name="month" value="{{month}}">
+                            {% endfor %}
                         {% endif %}
                         {% if day_from != None %}
                         <input type="hidden" name="day_from" value="{{day_from}}">

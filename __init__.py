@@ -66,9 +66,11 @@ def hello():
         if year_from:
             query_dic["bool"]["must"].append({"range": {"year": {"gte": year_from, "lte": year_to}}})
         
-        month = request.args.get("month")
-        if month:
-            query_dic["bool"]["filter"].append({"match": {"month": month}})
+        month_list = request.args.getlist("month")
+        if month_list:
+            query_dic["bool"]["minimum_should_match"] = 1
+            for month in month_list:
+                query_dic["bool"]["should"].append({"match": {"month": month}})
 
         day_from = request.args.get("day_from")
         day_to = request.args.get("day_to")
@@ -153,11 +155,7 @@ def hello():
                 names = json.load(f)
             all_papers = [{"code": code, "name": names[code]} for code in names]
 
-            months = [{"code": f"{i:02d}", "name": calendar.month_name[i]} for i in range(1, 13)]
-            if month:
-                matched_months = [x for x in months if x["code"] == month]
-            else:
-                matched_months = months
+            all_months = [{"code": f"{i:02d}", "name": calendar.month_name[i]} for i in range(1, 13)]
 
             dows = [{"code": f"{i+1}", "name": calendar.day_name[i]} for i in range(7)]
             if dow:
@@ -255,8 +253,8 @@ def hello():
                                    results=results, p=p, firstp=firstp, lastp=lastp, 
                                    maxp=maxp, doc=doc, url=url, all_papers=all_papers,
                                    number=number, sortcrit=sortcrit, paper_list=paper_list,
-                                   year_from=year_from, year_to=year_to, months=matched_months,
-                                   month=month, dows=matched_dows, dow=dow, editions=matched_editions, 
+                                   year_from=year_from, year_to=year_to, all_months=all_months,
+                                   month_list=month_list, dows=matched_dows, dow=dow, editions=matched_editions, 
                                    edition=edition, languages=matched_languages, language=language,
                                    page_from=page_from, page_to=page_to, day_from=day_from, day_to=day_to,
                                    date_from=date_from, date_to=date_to
