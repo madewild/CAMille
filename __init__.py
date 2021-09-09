@@ -81,7 +81,11 @@ def hello():
 
         date_from = request.args.get("date_from")
         date_to = request.args.get("date_to")
-        if date_from:
+        if date_from or date_to:
+            if not date_from:
+                date_from = "1831-02-06"
+            if not date_to:
+                date_to = "1970-12-31"
             query_dic["bool"]["must"].append({"range": {"date": {"gte": date_from, "lte": date_to}}})
 
         edition = request.args.get("edition")
