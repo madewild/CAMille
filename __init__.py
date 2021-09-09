@@ -77,9 +77,11 @@ def hello():
         if day_from:
             query_dic["bool"]["must"].append({"range": {"day": {"gte": day_from, "lte": day_to}}})
 
-        dow = request.args.get("dow")
-        if dow:
-            query_dic["bool"]["filter"].append({"match": {"dow": dow}})
+        dow_list = request.args.getlist("dow")
+        if dow_list:
+            query_dic["bool"]["minimum_should_match"] = 1
+            for dow in dow_list:
+                query_dic["bool"]["should"].append({"match": {"dow": dow}})
 
         date_from = request.args.get("date_from")
         date_to = request.args.get("date_to")
@@ -157,11 +159,7 @@ def hello():
 
             all_months = [{"code": f"{i:02d}", "name": calendar.month_name[i]} for i in range(1, 13)]
 
-            dows = [{"code": f"{i+1}", "name": calendar.day_name[i]} for i in range(7)]
-            if dow:
-                matched_dows = [x for x in dows if x["code"] == dow]
-            else:
-                matched_dows = dows
+            all_dows = [{"code": f"{i+1}", "name": calendar.day_name[i]} for i in range(7)]
 
             editions = [{"code": f"{i:02d}", "name": f"{i}e édition"} for i in range(1, 6)]
             editions += [{"code": i, "name": f"{i[1]}e édition spéciale"} for i in ["11", "12"]]
@@ -254,10 +252,10 @@ def hello():
                                    maxp=maxp, doc=doc, url=url, all_papers=all_papers,
                                    number=number, sortcrit=sortcrit, paper_list=paper_list,
                                    year_from=year_from, year_to=year_to, all_months=all_months,
-                                   month_list=month_list, dows=matched_dows, dow=dow, editions=matched_editions, 
-                                   edition=edition, languages=matched_languages, language=language,
-                                   page_from=page_from, page_to=page_to, day_from=day_from, day_to=day_to,
-                                   date_from=date_from, date_to=date_to
+                                   month_list=month_list, all_dows=all_dows, dow_list=dow_list, 
+                                   editions=matched_editions, edition=edition, languages=matched_languages, 
+                                   language=language, page_from=page_from, page_to=page_to, day_from=day_from, 
+                                   day_to=day_to, date_from=date_from, date_to=date_to
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"

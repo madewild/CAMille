@@ -29,8 +29,10 @@
                                 <input type="hidden" name="month" value="{{month}}">
                             {% endfor %}
                         {% endif %}
-                        {% if dow != None %}
-                        <input type="hidden" name="dow" value="{{dow}}">
+                        {% if dow_list %}
+                            {% for dow in dow_list %}
+                                <input type="hidden" name="dow" value="{{dow}}">
+                            {% endfor %}
                         {% endif %}
                         {% if date_from != None %}
                         <input type="hidden" name="date_from" value="{{date_from}}">
@@ -87,8 +89,10 @@
                                 <input type="hidden" name="month" value="{{month}}">
                             {% endfor %}
                         {% endif %}
-                        {% if dow != None %}
-                        <input type="hidden" name="dow" value="{{dow}}">
+                        {% if dow_list %}
+                            {% for dow in dow_list %}
+                                <input type="hidden" name="dow" value="{{dow}}">
+                            {% endfor %}
                         {% endif %}
                         {% if date_from != None %}
                         <input type="hidden" name="date_from" value="{{date_from}}">
