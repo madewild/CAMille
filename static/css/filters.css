@@ -10947,3 +10947,7 @@ select.selectpicker {
 select {
     overflow-y: auto;
 }
+
+#date_from, #date_to {
+    width: 100px;
+}
