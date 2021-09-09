@@ -43,8 +43,10 @@
                                 spellcheck="true"
                                 autofocus="autofocus"
                             >
-                            {% if paper != None %}
-                            <input type="hidden" name="paper" value="{{paper}}">
+                            {% if paper_list != None %}
+                                {% for paper in paper_list %}
+                                    <input type="hidden" name="paper" value="{{paper}}">
+                                {% endfor %}
                             {% endif %}
                             {% if year_from != None %}
                             <input type="hidden" name="year_from" value="{{year_from}}">
@@ -98,9 +100,11 @@
                             <option value="datedesc" {% if sortcrit == "datedesc" %}selected="selected"{% endif %}>date (décroissante)</option>
                         </select>
                         <input type="hidden" name="query" value="{{query}}">
-                        {% if paper != None %}
-                        <input type="hidden" name="paper" value="{{paper}}">
-                        {% endif %}
+                        {% if paper_list != None %}
+                                {% for paper in paper_list %}
+                                    <input type="hidden" name="paper" value="{{paper}}">
+                                {% endfor %}
+                            {% endif %}
                         {% if year_from != None %}
                         <input type="hidden" name="year_from" value="{{year_from}}">
                         <input type="hidden" name="year_to" value="{{year_to}}">
@@ -139,7 +143,7 @@
             <div id="facets" class="facets sidenav">
                 <div class="top-panel-heading panel-heading">
                     <h2 class="facets-heading">Filtres</h2>
-                    {% if paper != None or year_from != None or month != None or day_from != None or dow != None or date_from != None or edition != None or page_from != None or language != None %}
+                    {% if paper_list or year_from != None or month != None or day_from != None or dow != None or date_from != None or edition != None or page_from != None or language != None %}
                     <div class="clear-right">
                         <a class="remove" href="/?query={{query}}&sortcrit={{sortcrit}}">
                             <span style="color:#d9534f" class="glyphicon glyphicon-remove"></span>

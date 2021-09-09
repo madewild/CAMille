@@ -53,10 +53,13 @@ def hello():
 
         query_dic = {"bool": {"must": [{"query_string": {"query": query}}]}}
         query_dic["bool"]["filter"] = []
+        query_dic["bool"]["should"] = []
 
-        paper = request.args.get("paper")
-        if paper:
-            query_dic["bool"]["filter"].append({"match": {"journal": paper}})
+        paper_list = request.args.getlist("paper")
+        if paper_list:
+            query_dic["bool"]["minimum_should_match"] = 1
+            for paper in paper_list:
+                query_dic["bool"]["should"].append({"match": {"journal": paper}})
 
         year_from = request.args.get("year_from")
         year_to = request.args.get("year_to")
@@ -144,11 +147,7 @@ def hello():
             path = Path(__file__).parent / "static/newspapers.json"
             with open(path, encoding="utf-8") as f:
                 names = json.load(f)
-            papers = [{"code": code, "name": names[code]} for code in names]
-            if paper:
-                matched_papers = [x for x in papers if x["code"] == paper]
-            else:
-                matched_papers = papers
+            all_papers = [{"code": code, "name": names[code]} for code in names]
 
             months = [{"code": f"{i:02d}", "name": calendar.month_name[i]} for i in range(1, 13)]
             if month:
@@ -250,8 +249,8 @@ def hello():
 
             html = render_template("results.html", query=query, stats=stats,
                                    results=results, p=p, firstp=firstp, lastp=lastp, 
-                                   maxp=maxp, doc=doc, url=url, papers=matched_papers,
-                                   number=number, sortcrit=sortcrit, paper=paper,
+                                   maxp=maxp, doc=doc, url=url, all_papers=all_papers,
+                                   number=number, sortcrit=sortcrit, paper_list=paper_list,
                                    year_from=year_from, year_to=year_to, months=matched_months,
                                    month=month, dows=matched_dows, dow=dow, editions=matched_editions, 
                                    edition=edition, languages=matched_languages, language=language,

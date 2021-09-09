@@ -10943,3 +10943,7 @@ select.selectpicker {
     float: right;
     margin-top: -30px;
 }
+
+select {
+    overflow-y: auto;
+}

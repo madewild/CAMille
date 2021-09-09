@@ -15,8 +15,10 @@
                         {% if sortcrit != None %}
                         <input type="hidden" name="sortcrit" value="{{sortcrit}}">
                         {% endif %}
-                        {% if paper != None %}
-                        <input type="hidden" name="paper" value="{{paper}}">
+                        {% if paper_list != None %}
+                            {% for paper in paper_list %}
+                                <input type="hidden" name="paper" value="{{paper}}">
+                            {% endfor %}
                         {% endif %}
                         {% if month != None %}
                         <input type="hidden" name="month" value="{{month}}">
@@ -69,8 +71,10 @@
                         {% if sortcrit != None %}
                         <input type="hidden" name="sortcrit" value="{{sortcrit}}">
                         {% endif %}
-                        {% if paper != None %}
-                        <input type="hidden" name="paper" value="{{paper}}">
+                        {% if paper_list != None %}
+                            {% for paper in paper_list %}
+                                <input type="hidden" name="paper" value="{{paper}}">
+                            {% endfor %}
                         {% endif %}
                         {% if month != None %}
                         <input type="hidden" name="month" value="{{month}}">
