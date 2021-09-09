@@ -48,7 +48,7 @@
                             <input type="checkbox" name="month" id="{{month['code']}}" value="{{month['code']}}"> 
                             <label for="{{month['code']}}">{{month['name']}}</label><br>
                         {% endfor %}
-                        <br><span class="ok_btn"><input type="submit" value="OK"></span>
+                        <input type="submit" value="OK">
                     </form>
                 </li>
             </ul>
@@ -105,7 +105,7 @@
                             <input {% if month['code'] in month_list %}checked{% endif %} type="checkbox" name="month" id="{{month['code']}}" value="{{month['code']}}">
                             <label for="{{month['code']}}">{{month['name']}}</label><br>
                         {% endfor %}
-                        <br><span class="ok_btn"><input type="submit" value="OK"></span>
+                        <input type="submit" value="OK">
                         {% set dic = {'new_url': url} %}
                         {% for month_code in month_list %}
                             {% set month_param = "&month=" + month_code %}
