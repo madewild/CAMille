@@ -21,7 +21,7 @@
 body {
     color: var(--text-color);
     background-color: var(--background-color);
-    font-family: Helvetica Neue, Arial, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
     line-height: 1.4;
     margin: 0;
@@ -493,11 +493,12 @@ a .serp__title:hover {
 }
 
 .help td  {
-    font-family: Helvetica Neue, Arial, sans-serif;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 15px;
     color: #444;
     vertical-align: top;
     line-height: 115%;
+    padding: 5px;
 }
 
 span.code {
@@ -507,4 +508,8 @@ span.code {
     border-width: 1px;
     font-family: 'Courier New', Courier, monospace;
     white-space: nowrap;
+}
+
+button {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

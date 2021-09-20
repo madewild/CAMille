@@ -1,0 +1,127 @@
+{% if not month_list %}
+<div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim ">
+    <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-month">
+    <h3 class="panel-title facet-field-heading">
+        <a data-turbolinks="false" data-no-turbolink="true" href="#">Mois</a>
+    </h3>
+    </div>
+    <div id="facet-month" class="panel-collapse facet-content collapse">
+        <div class="panel-body">
+            <ul class="facet-values list-unstyled">
+                <li>
+                    <form action="{{url}}" method="GET">
+                        <input type="hidden" name="query" value="{{query}}">
+                        {% if sortcrit != None %}
+                        <input type="hidden" name="sortcrit" value="{{sortcrit}}">
+                        {% endif %}
+                        {% if paper_list != None %}
+                            {% for paper in paper_list %}
+                                <input type="hidden" name="paper" value="{{paper}}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if year_from != None %}
+                        <input type="hidden" name="year_from" value="{{year_from}}">
+                        <input type="hidden" name="year_to" value="{{year_to}}">
+                        {% endif %}
+                        {% if day_from != None %}
+                        <input type="hidden" name="day_from" value="{{day_from}}">
+                        <input type="hidden" name="day_to" value="{{day_to}}">
+                        {% endif %}
+                        {% if dow_list %}
+                            {% for dow in dow_list %}
+                                <input type="hidden" name="dow" value="{{dow}}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if date_from != None %}
+                        <input type="hidden" name="date_from" value="{{date_from}}">
+                        <input type="hidden" name="date_to" value="{{date_to}}">
+                        {% endif %}
+                        {% if edition != None %}
+                        <input type="hidden" name="edition" value="{{edition}}">
+                        {% endif %}
+                        {% if page_from != None %}
+                        <input type="hidden" name="page_from" value="{{page_from}}">
+                        <input type="hidden" name="page_to" value="{{page_to}}">
+                        {% endif %}
+                        {% if language != None %}
+                        <input type="hidden" name="language" value="{{language}}">
+                        {% endif %}
+                        {% for month in all_months %}
+                            <input type="checkbox" name="month" id="{{month['code']}}" value="{{month['code']}}"> 
+                            <label for="{{month['code']}}">{{month['name']}}</label><br>
+                        {% endfor %}
+                        <input type="submit" value="OK">
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim facet_limit-active">
+    <div class=" collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-month">
+      <h3 class="panel-title facet-field-heading">
+        <a data-turbolinks="false" data-no-turbolink="true" href="#">Mois</a>
+      </h3>
+    </div>
+    <div id="facet-month" class="panel-collapse facet-content in">
+        <div class="panel-body">
+            <ul class="facet-values list-unstyled">
+                <li>
+                    <form action="{{url}}" method="GET">
+                        <input type="hidden" name="query" value="{{query}}">
+                        {% if sortcrit != None %}
+                        <input type="hidden" name="sortcrit" value="{{sortcrit}}">
+                        {% endif %}
+                        {% if paper_list != None %}
+                            {% for paper in paper_list %}
+                                <input type="hidden" name="paper" value="{{paper}}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if year_from != None %}
+                        <input type="hidden" name="year_from" value="{{year_from}}">
+                        <input type="hidden" name="year_to" value="{{year_to}}">
+                        {% endif %}
+                        {% if day_from != None %}
+                        <input type="hidden" name="day_from" value="{{day_from}}">
+                        <input type="hidden" name="day_to" value="{{day_to}}">
+                        {% endif %}
+                        {% if dow_list %}
+                            {% for dow in dow_list %}
+                                <input type="hidden" name="dow" value="{{dow}}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if date_from != None %}
+                        <input type="hidden" name="date_from" value="{{date_from}}">
+                        <input type="hidden" name="date_to" value="{{date_to}}">
+                        {% endif %}
+                        {% if edition != None %}
+                        <input type="hidden" name="edition" value="{{edition}}">
+                        {% endif %}
+                        {% if page_from != None %}
+                        <input type="hidden" name="page_from" value="{{page_from}}">
+                        <input type="hidden" name="page_to" value="{{page_to}}">
+                        {% endif %}
+                        {% if language != None %}
+                        <input type="hidden" name="language" value="{{language}}">
+                        {% endif %}
+                        {% for month in all_months %}
+                            <input {% if month['code'] in month_list %}checked{% endif %} type="checkbox" name="month" id="{{month['code']}}" value="{{month['code']}}">
+                            <label for="{{month['code']}}">{{month['name']}}</label><br>
+                        {% endfor %}
+                        <input type="submit" value="OK">
+                        {% set dic = {'new_url': url} %}
+                        {% for month_code in month_list %}
+                            {% set month_param = "&month=" + month_code %}
+                            {% if dic.update({'new_url': dic.new_url|strip_param(month_param)}) %} {% endif %}
+                        {% endfor %}
+                        <a class="remove" href="{{dic.new_url}}">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}

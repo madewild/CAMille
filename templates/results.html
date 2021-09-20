@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>CAMILLE</title>
+  <title>CAMille</title>
   <meta name="description" content="Centre d'archives sur les médias et l'information">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
@@ -15,6 +15,8 @@
   <script src="{{ url_for('static', filename='js/filters.js') }}"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
   <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.9/jquery-ui.js" type="text/javascript"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   
 </head>
 <body>
@@ -41,6 +43,43 @@
                                 spellcheck="true"
                                 autofocus="autofocus"
                             >
+                            {% if paper_list %}
+                                {% for paper in paper_list %}
+                                    <input type="hidden" name="paper" value="{{paper}}">
+                                {% endfor %}
+                            {% endif %}
+                            {% if year_from != None %}
+                            <input type="hidden" name="year_from" value="{{year_from}}">
+                            <input type="hidden" name="year_to" value="{{year_to}}">
+                            {% endif %}
+                            {% if month_list %}
+                                {% for month in month_list %}
+                                    <input type="hidden" name="month" value="{{month}}">
+                                {% endfor %}
+                            {% endif %}
+                            {% if day_from != None %}
+                            <input type="hidden" name="day_from" value="{{day_from}}">
+                            <input type="hidden" name="day_to" value="{{day_to}}">
+                            {% endif %}
+                            {% if dow_list %}
+                                {% for dow in dow_list %}
+                                    <input type="hidden" name="dow" value="{{dow}}">
+                                {% endfor %}
+                            {% endif %}
+                            {% if date_from != None %}
+                            <input type="hidden" name="date_from" value="{{date_from}}">
+                            <input type="hidden" name="date_to" value="{{date_to}}">
+                            {% endif %}
+                            {% if edition != None %}
+                            <input type="hidden" name="edition" value="{{edition}}">
+                            {% endif %}
+                            {% if page_from != None %}
+                            <input type="hidden" name="page_from" value="{{page_from}}">
+                            <input type="hidden" name="page_to" value="{{page_to}}">
+                            {% endif %}
+                            {% if language != None %}
+                            <input type="hidden" name="language" value="{{language}}">
+                            {% endif %}
                         </div>
                         <button class="serp__button" aria-label="Search" type="submit">
                             <div class="serp__ico"></div>
@@ -48,7 +87,7 @@
                         <button class="serp__button" aria-label="Help" type="button" id="help" title="Aide">
                             <div class="serp__help"></div>
                         </button>
-                        <div id="searchModal" class="modal">
+                        <div id="helpModal" class="modal">
                             <div class="modal-content">
                                 <div class="modal-body">
                                     <span class="close">&times;</span>
@@ -59,20 +98,50 @@
                     </form>
                     <form class="custom_form" action="/" method="GET">
                         <p class="serp__query">Trier par :
-                        <select id="sortcrit" name="sortcrit">
+                        <select id="sortcrit" name="sortcrit" onchange='this.form.submit()'>
                             <option value="relevance">pertinence</option>
-                            <option value="dateasc" {% if sortcrit == "dateasc" %}selected="selected"{% endif %}>date (croissante)</option>
-                            <option value="datedesc" {% if sortcrit == "datedesc" %}selected="selected"{% endif %}>date (décroissante)</option>
+                            <option value="dateasc" {% if sortcrit == "dateasc" %}selected{% endif %}>date (croissante)</option>
+                            <option value="datedesc" {% if sortcrit == "datedesc" %}selected{% endif %}>date (décroissante)</option>
                         </select>
                         <input type="hidden" name="query" value="{{query}}">
-                        {% if paper != None %}
-                        <input type="hidden" name="paper" value="{{paper}}">
-                        {% endif %}
+                        {% if paper_list != None %}
+                                {% for paper in paper_list %}
+                                    <input type="hidden" name="paper" value="{{paper}}">
+                                {% endfor %}
+                            {% endif %}
                         {% if year_from != None %}
                         <input type="hidden" name="year_from" value="{{year_from}}">
                         <input type="hidden" name="year_to" value="{{year_to}}">
                         {% endif %}
-                        <input type="submit" value="OK"></p>
+                        {% if month_list %}
+                            {% for month in month_list %}
+                                <input type="hidden" name="month" value="{{month}}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if day_from != None %}
+                        <input type="hidden" name="day_from" value="{{day_from}}">
+                        <input type="hidden" name="day_to" value="{{day_to}}">
+                        {% endif %}
+                        {% if dow_list %}
+                            {% for dow in dow_list %}
+                                <input type="hidden" name="dow" value="{{dow}}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if date_from != None %}
+                        <input type="hidden" name="date_from" value="{{date_from}}">
+                        <input type="hidden" name="date_to" value="{{date_to}}">
+                        {% endif %}
+                        {% if edition != None %}
+                        <input type="hidden" name="edition" value="{{edition}}">
+                        {% endif %}
+                        {% if page_from != None %}
+                        <input type="hidden" name="page_from" value="{{page_from}}">
+                        <input type="hidden" name="page_to" value="{{page_to}}">
+                        {% endif %}
+                        {% if language != None %}
+                        <input type="hidden" name="language" value="{{language}}">
+                        {% endif %}
+                        <noscript><input type="submit" value="Submit"></noscript>
                     </form>
                 </div>
                 <a class="serp__logo" href="/"></a>
@@ -81,131 +150,31 @@
         <div id="sidebar" class="col-md-3 col-sm-4">
             <div id="facets" class="facets sidenav">
                 <div class="top-panel-heading panel-heading">
-                <button type="button" class="facets-toggle" data-toggle="collapse" data-target="#facet-panel-collapse">
-                    <span class="sr-only">Toggle facets</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            
-                <h2 class='facets-heading'>
-                    Filtres
-                </h2>
+                    <h2 class="facets-heading">Filtres</h2>
+                    {% if paper_list or year_from != None or month_list or day_from != None or dow_list or date_from != None or edition != None or page_from != None or language != None %}
+                    <div class="clear-right">
+                        <a class="remove" href="/?query={{query}}&sortcrit={{sortcrit}}">
+                            <span style="color:#d9534f" class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
-                {% if paper == None %}
-                <div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim ">
-                    <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-member_of_collection_ids_ssim">
-                    <h3 class="panel-title facet-field-heading">
-                        <a data-turbolinks="false" data-no-turbolink="true" href="#">Journal</a>
-                    </h3>
-                    </div>
-                    <div id="facet-member_of_collection_ids_ssim" class="panel-collapse facet-content collapse">
-                        <div class="panel-body">
-                            <ul class="facet-values list-unstyled">
-                                {% for paper in papers %}
-                                <li>
-                                    <span class="facet-label"><a class="facet_select" href="{{url}}&paper={{paper['code']}}">{{paper['name']}}</a></span>
-                                </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-                <div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim facet_limit-active">
-                    <div class=" collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-member_of_collection_ids_ssim">
-                      <h3 class="panel-title facet-field-heading">
-                        <a data-turbolinks="false" data-no-turbolink="true" href="#">Journal</a>
-                      </h3>
-                    </div>
-                    <div id="facet-member_of_collection_ids_ssim" class="panel-collapse facet-content in">
-                        <div class="panel-body">
-                            <ul class="facet-values list-unstyled">
-                                <li>
-                                    <span class="facet-label"><span class="selected">{{papers[0]['name']}}</span>
-                                    {% set paper_param = "&paper=" + paper %}
-                                    <a class="remove" href="{{url|strip_param(paper_param)}}">
-                                        <span class="glyphicon glyphicon-remove"></span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
-                {% if year_from == None %}
-                <div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim ">
-                    <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-year">
-                    <h3 class="panel-title facet-field-heading">
-                        <a data-turbolinks="false" data-no-turbolink="true" href="#">Année</a>
-                    </h3>
-                    </div>
-                    <div id="facet-year" class="panel-collapse facet-content collapse">
-                        <div class="panel-body">
-                            <ul class="facet-values list-unstyled">
-                                <li>
-                                    <p><input type="text" id="amount" readonly style="border:0;"></p>
-                                    <form action="{{url}}" method="GET">
-                                        <input type="hidden" name="query" value="{{query}}">
-                                        {% if paper != None %}
-                                        <input type="hidden" name="paper" value="{{paper}}">
-                                        {% endif %}
-                                        {% if sortcrit != None %}
-                                        <input type="hidden" name="sortcrit" value="{{sortcrit}}">
-                                        {% endif %}
-                                        <input type="hidden" id="year_from" name="year_from">
-                                        <input type="hidden" id="year_to" name="year_to">
-                                        <div id="slider-range" style="width:80%;display:inline-block;"></div>
-                                        <span class="ok_btn"><input type="submit" value="OK"></span>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-                <div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim facet_limit-active">
-                    <div class=" collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-year">
-                      <h3 class="panel-title facet-field-heading">
-                        <a data-turbolinks="false" data-no-turbolink="true" href="#">Année</a>
-                      </h3>
-                    </div>
-                    <div id="facet-year" class="panel-collapse facet-content in">
-                        <div class="panel-body" style="overflow:hidden;">
-                            <ul class="facet-values list-unstyled">
-                                <li>
-                                    <p><input type="text" id="amount" readonly style="border:0;"></p>
-                                    <form action="{{url}}" method="GET">
-                                        <input type="hidden" name="query" value="{{query}}">
-                                        {% if paper != None %}
-                                        <input type="hidden" name="paper" value="{{paper}}">
-                                        {% endif %}
-                                        {% if sortcrit != None %}
-                                        <input type="hidden" name="sortcrit" value="{{sortcrit}}">
-                                        {% endif %}
-                                        <input type="hidden" id="year_from" name="year_from">
-                                        <input type="hidden" id="year_to" name="year_to">
-                                        <div id="slider-range" style="width:80%;display:inline-block;"></div>
-                                        <span class="ok_btn"><input type="submit" value="OK"></span>
-                                        {% set year_from_param = "&year_from=" + year_from %}
-                                        {% set year_to_param = "&year_to=" + year_to %}
-                                        <a class="remove" href="{{url|strip_param(year_from_param)|strip_param(year_to_param)}}">
-                                            <span class="glyphicon glyphicon-remove" style="float:right;"></span>
-                                        </a>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
+                {% include 'filters/paper.html' %}
+                {% include 'filters/year.html' %}
+                {% include 'filters/month.html' %}
+                {% include 'filters/day.html' %}
+                {% include 'filters/dow.html' %}
+                {% include 'filters/date.html' %}
+                {% include 'filters/edition.html' %}
+                {% include 'filters/pagenb.html' %}
+                {% include 'filters/language.html' %}
             </div>
         </div>
         <div class="serp__body">
             <div class="serp__main serp__results">
                 <span class="stats">{{stats}} 
                     {% if number > 0 %}
-                    <a href="{{url}}&export=true"><button type="button">Exporter</button></a>
+                    <a href="{{url}}&export=true"><button type="button" title="500 premiers résultats">Exporter</button></a>
                     {% endif %}
                 </span>
                 <div class="serp__web">
@@ -246,8 +215,12 @@
             </div>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/pdfmodal.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/slider.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modal_help.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modal_pdf.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/slider_year.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/slider_day.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/slider_page.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/datepicker-fr.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/datepicker.js') }}"></script>
 </body>
 </html>

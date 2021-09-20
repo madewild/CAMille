@@ -1,7 +1,8 @@
 """Basic Flask app"""
 
-from collections import defaultdict
+import calendar
 import json
+import locale
 import math
 from pathlib import Path
 from unidecode import unidecode
@@ -18,6 +19,8 @@ try:
     cred = json.load(open("credentials.json"))
 except FileNotFoundError:
     cred = json.load(open("/var/www/camille/credentials.json"))
+
+locale.setlocale(locale.LC_ALL, 'fr_BE.utf8')
 
 app = Flask(__name__)
 app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
@@ -49,15 +52,58 @@ def hello():
             sort = ["_score", {"date": {"order": "asc"}}]
 
         query_dic = {"bool": {"must": [{"query_string": {"query": query}}]}}
+        query_dic["bool"]["filter"] = []
+        query_dic["bool"]["should"] = []
 
-        paper = request.args.get("paper")
-        if paper:
-            query_dic["bool"]["filter"] = [{"match": {"journal": paper}}]
+        paper_list = request.args.getlist("paper")
+        if paper_list:
+            query_dic["bool"]["minimum_should_match"] = 1
+            for paper in paper_list:
+                query_dic["bool"]["should"].append({"match": {"journal": paper}})
 
         year_from = request.args.get("year_from")
         year_to = request.args.get("year_to")
         if year_from:
             query_dic["bool"]["must"].append({"range": {"year": {"gte": year_from, "lte": year_to}}})
+        
+        month_list = request.args.getlist("month")
+        if month_list:
+            query_dic["bool"]["minimum_should_match"] = 1
+            for month in month_list:
+                query_dic["bool"]["should"].append({"match": {"month": month}})
+
+        day_from = request.args.get("day_from")
+        day_to = request.args.get("day_to")
+        if day_from:
+            query_dic["bool"]["must"].append({"range": {"day": {"gte": day_from, "lte": day_to}}})
+
+        dow_list = request.args.getlist("dow")
+        if dow_list:
+            query_dic["bool"]["minimum_should_match"] = 1
+            for dow in dow_list:
+                query_dic["bool"]["should"].append({"match": {"dow": dow}})
+
+        date_from = request.args.get("date_from")
+        date_to = request.args.get("date_to")
+        if date_from or date_to:
+            if not date_from:
+                date_from = "1831-02-06"
+            if not date_to:
+                date_to = "1970-12-31"
+            query_dic["bool"]["must"].append({"range": {"date": {"gte": date_from, "lte": date_to}}})
+
+        edition = request.args.get("edition")
+        if edition:
+            query_dic["bool"]["filter"].append({"match": {"edition": edition}})
+
+        page_from = request.args.get("page_from")
+        page_to = request.args.get("page_to")
+        if page_from:
+            query_dic["bool"]["must"].append({"range": {"pagenb": {"gte": page_from, "lte": page_to}}})
+
+        language = request.args.get("language")
+        if language:
+            query_dic["bool"]["filter"].append({"match": {"language": language}})
 
         endpoint = cred["endpoint"]
         es_url = f"{endpoint}/pages/_search"
@@ -105,30 +151,50 @@ def hello():
             stats = f"{found_string} ({timing} secondes)"
             hits = resdic["hits"]
             results = []
+
             path = Path(__file__).parent / "static/newspapers.json"
             with open(path, encoding="utf-8") as f:
                 names = json.load(f)
-            papers = [{"code": code, "name": names[code]} for code in names]
-            if paper:
-                matched_papers = [p for p in papers if p["code"] == paper]
+            all_papers = [{"code": code, "name": names[code]} for code in names]
+
+            all_months = [{"code": f"{i:02d}", "name": calendar.month_name[i]} for i in range(1, 13)]
+
+            all_dows = [{"code": f"{i+1}", "name": calendar.day_name[i]} for i in range(7)]
+
+            editions = [{"code": f"{i:02d}", "name": f"{i}e édition"} for i in range(1, 6)]
+            editions += [{"code": i, "name": f"{i[1]}e édition spéciale"} for i in ["11", "12"]]
+            if edition:
+                matched_editions = [x for x in editions if x["code"] == edition]
             else:
-                matched_papers = papers
+                matched_editions = editions
+
+            languages = [{"code": "fr-BE", "name": "français"}]
+            if language:
+                matched_languages = [x for x in languages if x["code"] == language]
+            else:
+                matched_languages = languages
             
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
                 elements = result_id.split("_")
                 np = elements[1]
                 name = names[np]
-                date = elements[2]
-                dates = date.split("-")
-                year = dates[0]
-                month = dates[1]
-                day = dates[2]
+                hit_date = elements[2]
+                hit_dates = hit_date.split("-")
+                hit_year = hit_dates[0]
+                hit_month = hit_dates[1]
+                hit_day = hit_dates[2]
                 edpage = elements[3]
                 page = int(edpage.split("-")[1])
-                display = f"{name} ({day}/{month}/{year} - p. {page})"                
-                matches = hit["highlight"]["text"]
-                result = {"id": result_id, "display": display, "matches": " [...] ".join(matches)}
+                display = f"{name} ({hit_day}/{hit_month}/{hit_year} - p. {page})"
+                try:            
+                    matches = hit["highlight"]["text"]
+                except KeyError: # no matches (wildcard), defaulting to 500 first chars
+                    matches = [hit["_source"]["text"][:500] + "..."]
+                all_matches = " [...] ".join(matches)
+                all_matches = all_matches.replace("<span", "##!!##").replace("</span", "!!##!!").replace("<", "")
+                all_matches = all_matches.replace("##!!##", "<span").replace("!!##!!", "</span")
+                result = {"id": result_id, "display": display, "matches": all_matches}
                 results.append(result)
 
             maxp = math.ceil(number/10)
@@ -141,9 +207,9 @@ def hello():
                 bucket_name = "camille-data"
                 elements = doc.split("_")
                 np = elements[1]
-                date = elements[2]
-                year = date.split("-")[0]
-                key = f"PDF/{np}/{year}/{doc}.pdf"
+                doc_date = elements[2]
+                doc_year = doc_date.split("-")[0]
+                key = f"PDF/{np}/{doc_year}/{doc}.pdf"
                 temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
                 s3.download_file(bucket_name, key, str(temp_path))
             else:
@@ -183,9 +249,13 @@ def hello():
 
             html = render_template("results.html", query=query, stats=stats,
                                    results=results, p=p, firstp=firstp, lastp=lastp, 
-                                   maxp=maxp, doc=doc, url=url, papers=matched_papers,
-                                   number=number, sortcrit=sortcrit, paper=paper,
-                                   year_from=year_from, year_to=year_to
+                                   maxp=maxp, doc=doc, url=url, all_papers=all_papers,
+                                   number=number, sortcrit=sortcrit, paper_list=paper_list,
+                                   year_from=year_from, year_to=year_to, all_months=all_months,
+                                   month_list=month_list, all_dows=all_dows, dow_list=dow_list, 
+                                   editions=matched_editions, edition=edition, languages=matched_languages, 
+                                   language=language, page_from=page_from, page_to=page_to, day_from=day_from, 
+                                   day_to=day_to, date_from=date_from, date_to=date_to
                                   )
         else:
             html = f"HTTP Error: {r.status_code}"

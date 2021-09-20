@@ -1,0 +1,127 @@
+{% if not dow_list %}
+<div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim ">
+    <div class="collapsed collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-dow">
+    <h3 class="panel-title facet-field-heading">
+        <a data-turbolinks="false" data-no-turbolink="true" href="#">Jour de la semaine</a>
+    </h3>
+    </div>
+    <div id="facet-dow" class="panel-collapse facet-content collapse">
+        <div class="panel-body">
+            <ul class="facet-values list-unstyled">
+                <li>
+                    <form action="{{url}}" method="GET">
+                        <input type="hidden" name="query" value="{{query}}">
+                        {% if sortcrit != None %}
+                        <input type="hidden" name="sortcrit" value="{{sortcrit}}">
+                        {% endif %}
+                        {% if paper_list != None %}
+                            {% for paper in paper_list %}
+                                <input type="hidden" name="paper" value="{{paper}}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if year_from != None %}
+                        <input type="hidden" name="year_from" value="{{year_from}}">
+                        <input type="hidden" name="year_to" value="{{year_to}}">
+                        {% endif %}
+                        {% if month_list %}
+                            {% for month in month_list %}
+                                <input type="hidden" name="month" value="{{month}}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if day_from != None %}
+                        <input type="hidden" name="day_from" value="{{day_from}}">
+                        <input type="hidden" name="day_to" value="{{day_to}}">
+                        {% endif %}
+                        {% if date_from != None %}
+                        <input type="hidden" name="date_from" value="{{date_from}}">
+                        <input type="hidden" name="date_to" value="{{date_to}}">
+                        {% endif %}
+                        {% if edition != None %}
+                        <input type="hidden" name="edition" value="{{edition}}">
+                        {% endif %}
+                        {% if page_from != None %}
+                        <input type="hidden" name="page_from" value="{{page_from}}">
+                        <input type="hidden" name="page_to" value="{{page_to}}">
+                        {% endif %}
+                        {% if language != None %}
+                        <input type="hidden" name="language" value="{{language}}">
+                        {% endif %}
+                        {% for dow in all_dows %}
+                            <input type="checkbox" name="dow" id="{{dow['code']}}" value="{{dow['code']}}"> 
+                            <label for="{{dow['code']}}">{{dow['name']}}</label><br>
+                        {% endfor %}
+                        <input type="submit" value="OK">
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="panel panel-default facet_limit blacklight-member_of_collection_ids_ssim facet_limit-active">
+    <div class=" collapse-toggle panel-heading" data-toggle="collapse" data-target="#facet-dow">
+      <h3 class="panel-title facet-field-heading">
+        <a data-turbolinks="false" data-no-turbolink="true" href="#">Jour de la semaine</a>
+      </h3>
+    </div>
+    <div id="facet-dow" class="panel-collapse facet-content in">
+        <div class="panel-body">
+            <ul class="facet-values list-unstyled">
+                <li>
+                    <form action="{{url}}" method="GET">
+                        <input type="hidden" name="query" value="{{query}}">
+                        {% if sortcrit != None %}
+                        <input type="hidden" name="sortcrit" value="{{sortcrit}}">
+                        {% endif %}
+                        {% if paper_list != None %}
+                            {% for paper in paper_list %}
+                                <input type="hidden" name="paper" value="{{paper}}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if year_from != None %}
+                        <input type="hidden" name="year_from" value="{{year_from}}">
+                        <input type="hidden" name="year_to" value="{{year_to}}">
+                        {% endif %}
+                        {% if month_list %}
+                            {% for month in month_list %}
+                                <input type="hidden" name="month" value="{{month}}">
+                            {% endfor %}
+                        {% endif %}
+                        {% if day_from != None %}
+                        <input type="hidden" name="day_from" value="{{day_from}}">
+                        <input type="hidden" name="day_to" value="{{day_to}}">
+                        {% endif %}
+                        {% if date_from != None %}
+                        <input type="hidden" name="date_from" value="{{date_from}}">
+                        <input type="hidden" name="date_to" value="{{date_to}}">
+                        {% endif %}
+                        {% if edition != None %}
+                        <input type="hidden" name="edition" value="{{edition}}">
+                        {% endif %}
+                        {% if page_from != None %}
+                        <input type="hidden" name="page_from" value="{{page_from}}">
+                        <input type="hidden" name="page_to" value="{{page_to}}">
+                        {% endif %}
+                        {% if language != None %}
+                        <input type="hidden" name="language" value="{{language}}">
+                        {% endif %}
+                        {% for dow in all_dows %}
+                            <input {% if dow['code'] in dow_list %}checked{% endif %} type="checkbox" name="dow" id="{{dow['code']}}" value="{{dow['code']}}">
+                            <label for="{{dow['code']}}">{{dow['name']}}</label><br>
+                        {% endfor %}
+                        <input type="submit" value="OK">
+                        {% set dic = {'new_url': url} %}
+                        {% for dow_code in dow_list %}
+                            {% set dow_param = "&dow=" + dow_code %}
+                            {% if dic.update({'new_url': dic.new_url|strip_param(dow_param)}) %} {% endif %}
+                        {% endfor %}
+                        <a class="remove" href="{{dic.new_url}}">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}

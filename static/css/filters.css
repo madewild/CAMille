@@ -1857,6 +1857,7 @@ h6, .h6 {
 /* line 58, /home/axel/.rbenv/versions/2.5.3/lib/ruby/gems/2.5.0/gems/bootstrap-sass-3.4.0/assets/stylesheets/bootstrap/_type.scss */
 p {
   margin: 0 0 10px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 /* line 62, /home/axel/.rbenv/versions/2.5.3/lib/ruby/gems/2.5.0/gems/bootstrap-sass-3.4.0/assets/stylesheets/bootstrap/_type.scss */
@@ -3697,8 +3698,6 @@ legend {
 label {
   display: inline-block;
   max-width: 100%;
-  margin-bottom: 5px;
-  font-weight: 700;
 }
 
 /* line 46, /home/axel/.rbenv/versions/2.5.3/lib/ruby/gems/2.5.0/gems/bootstrap-sass-3.4.0/assets/stylesheets/bootstrap/_forms.scss */
@@ -10937,4 +10936,22 @@ select.selectpicker {
     position: relative;
     top: -2px;
     margin-left: 10px;
+}
+
+.clear-right {
+    float: right;
+    margin-top: -30px;
+}
+
+select {
+    overflow-y: auto;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#date_from, #date_to {
+    width: 100px;
+}
+
+input[type="text"] {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
