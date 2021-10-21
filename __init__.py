@@ -211,7 +211,10 @@ def hello():
                 doc_year = doc_date.split("-")[0]
                 key = f"PDF/{np}/{doc_year}/{doc}.pdf"
                 temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
-                s3.download_file(bucket_name, key, str(temp_path))
+                try:
+                    s3.download_file(bucket_name, key, str(temp_path))
+                except Exception as e: # problem with AWS credentials
+                    print(e)
             else:
                 doc = "false"
 
