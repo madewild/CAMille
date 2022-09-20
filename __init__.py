@@ -13,6 +13,7 @@ import boto3
 from flask import Flask, request, render_template, send_file
 from flask_htpasswd import HtPasswdAuth
 
+import pandas as pd
 import requests
 
 try:
@@ -222,8 +223,8 @@ def hello():
             if "&p=" in url:
                 url = url.split("&p=")[0]
 
-            export = request.args.get("export")
-            if export:
+            zip = request.args.get("zip")
+            if zip:
                 data2 =  {
                     "size": 500,
                     "query": query_dic,
@@ -249,6 +250,39 @@ def hello():
                             myzip.write(abspath, arcpath)
                             abspath.unlink()
                     return send_file(zippath, as_attachment=True)
+
+            csv = request.args.get("csv")
+            if csv:
+                data2 =  {
+                    "size": 500,
+                    "query": query_dic,
+                    "sort": sort
+                }
+                r2 = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data2))
+                if r2.status_code == 200:
+                    resdic2 = json.loads(r2.text)
+                    hits2 = resdic2["hits"]
+                    query_norm = unidecode(query).replace(" ", "_")
+                    query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
+                    csvpath = Path(__file__).parent / f"static/temp/camille_{query_norm}.csv"
+                    df = pd.DataFrame([], columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR', 'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
+                    for hit in hits2["hits"]:
+                        result_id = hit["_source"]["page"]
+                        journal = hit["_source"]["journal"]
+                        date = hit["_source"]["date"]
+                        year = hit["_source"]["year"]
+                        month = hit["_source"]["month"]
+                        day = hit["_source"]["day"]
+                        dow = hit["_source"]["dow"]
+                        edition = hit["_source"]["edition"]
+                        pagenb = hit["_source"]["pagenb"]
+                        language = hit["_source"]["language"]
+                        text = hit["_source"]["text"]
+                        line = [result_id, journal, date, year, month, day, dow, edition, pagenb, language, text]
+                        series = pd.Series(line, index=df.columns)
+                        df = df.append(series, ignore_index=True)
+                    df.to_csv(csvpath, index=None)
+                    return send_file(csvpath, as_attachment=True)
 
             html = render_template("results.html", query=query, stats=stats,
                                    results=results, p=p, firstp=firstp, lastp=lastp, 

@@ -174,7 +174,8 @@
             <div class="serp__main serp__results">
                 <span class="stats">{{stats}} 
                     {% if number > 0 %}
-                    <a href="{{url}}&export=true"><button type="button" title="500 premiers résultats">Exporter</button></a>
+                    <a href="{{url}}&zip=true"><button type="button" title="500 premiers résultats">ZIP</button></a> 
+                    <a href="{{url}}&csv=true"><button type="button" title="500 premiers résultats">CSV</button></a>
                     {% endif %}
                 </span>
                 <div class="serp__web">
