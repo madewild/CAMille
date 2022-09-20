@@ -42,10 +42,12 @@ def hello():
 
         sortcrit = request.args.get("sortcrit")
         if sortcrit:
-            if sortcrit == "datedesc":
-                sort = [{"date": {"order": "desc"}}]
-            elif sortcrit =="dateasc":
+            if sortcrit =="dateasc":
                 sort = [{"date": {"order": "asc"}}]
+            elif sortcrit == "datedesc":
+                sort = [{"date": {"order": "desc"}}]
+            elif sortcrit =="newspaper":
+                sort = [{"journal": {"order": "asc"}}]
             else:
                 sort = ["_score", {"date": {"order": "asc"}}]
         else:
@@ -307,7 +309,7 @@ def hello():
                                    day_to=day_to, date_from=date_from, date_to=date_to
                                   )
         else:
-            html = f"HTTP Error: {r.status_code}"
+            html = f"HTTP Error: {r.text}"
     else:
         page = request.args.get("page")
         if page:

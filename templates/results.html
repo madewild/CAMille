@@ -102,6 +102,7 @@
                             <option value="relevance">pertinence</option>
                             <option value="dateasc" {% if sortcrit == "dateasc" %}selected{% endif %}>date (croissante)</option>
                             <option value="datedesc" {% if sortcrit == "datedesc" %}selected{% endif %}>date (décroissante)</option>
+                            <option value="newspaper" {% if sortcrit == "newspaper" %}selected{% endif %}>journal</option>
                         </select>
                         <input type="hidden" name="query" value="{{query}}">
                         {% if paper_list != None %}
