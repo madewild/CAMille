@@ -255,8 +255,16 @@ def hello():
             if csv:
                 data2 =  {
                     "size": 500,
+                    "sort": sort,
                     "query": query_dic,
-                    "sort": sort
+                    "highlight": {
+                        "fields": {
+                            "text": {}
+                        },
+                        "pre_tags": "<kw>",
+                        "post_tags": "</kw>",
+                        "fragment_size": 2000
+                    }
                 }
                 r2 = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data2))
                 if r2.status_code == 200:
@@ -277,7 +285,11 @@ def hello():
                         edition = hit["_source"]["edition"]
                         pagenb = hit["_source"]["pagenb"]
                         language = hit["_source"]["language"]
-                        text = hit["_source"]["text"]
+                        try:            
+                            matches = hit["highlight"]["text"]
+                        except KeyError: # no matches (wildcard), defaulting to 2000 first chars
+                            matches = [hit["_source"]["text"][:2000] + "..."]
+                        text = " [...] ".join(matches)
                         line = [result_id, journal, date, year, month, day, dow, edition, pagenb, language, text]
                         series = pd.Series(line, index=df.columns)
                         df = df.append(series, ignore_index=True)
