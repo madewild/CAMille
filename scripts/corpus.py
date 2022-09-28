@@ -30,7 +30,7 @@ if __name__ == "__main__":
                 objects = page["Contents"]
                 all_objects += objects
             except KeyError:
-                print("Nothing found for {year}, skipping...")
+                print(f"Nothing found for {year}, skipping...")
         random.shuffle(all_objects)
         selected = all_objects[:100]
 
