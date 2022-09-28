@@ -1,6 +1,7 @@
 """Basic Flask app"""
 
 import calendar
+import encodings
 import json
 import locale
 import math
@@ -253,8 +254,8 @@ def hello():
                             abspath.unlink()
                     return send_file(zippath, as_attachment=True)
 
-            csv = request.args.get("csv")
-            if csv:
+            xlsx = request.args.get("xlsx")
+            if xlsx:
                 data2 =  {
                     "size": 500,
                     "sort": sort,
@@ -274,7 +275,7 @@ def hello():
                     hits2 = resdic2["hits"]
                     query_norm = unidecode(query).replace(" ", "_")
                     query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
-                    csvpath = Path(__file__).parent / f"static/temp/camille_{query_norm}.csv"
+                    xlsxpath = Path(__file__).parent / f"static/temp/camille_{query_norm}.xlsx"
                     df = pd.DataFrame([], columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR', 'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
                     for hit in hits2["hits"]:
                         result_id = hit["_source"]["page"]
@@ -295,8 +296,10 @@ def hello():
                         line = [result_id, journal, date, year, month, day, dow, edition, pagenb, language, text]
                         series = pd.Series(line, index=df.columns)
                         df = df.append(series, ignore_index=True)
-                    df.to_csv(csvpath, index=None)
-                    return send_file(csvpath, as_attachment=True)
+                    df['DATE'] = pd.to_datetime(df['DATE']).dt.date
+                    df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32', 'JDLS': 'int32', 'ÉDITION': 'int32', 'PAGE': 'int32'})
+                    df.to_excel(xlsxpath, index=None)
+                    return send_file(xlsxpath, as_attachment=True)
 
             html = render_template("results.html", query=query, stats=stats,
                                    results=results, p=p, firstp=firstp, lastp=lastp, 

@@ -6,3 +6,4 @@ Flask==1.1.2
 flask-htpasswd==0.4.0
 unidecode==1.2.0
 pandas==1.2.5
+openpyxl==3.0.10
