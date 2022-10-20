@@ -1,7 +1,6 @@
 """Main Flask app serving search engine"""
 
 import calendar
-import encodings
 import json
 import locale
 import math
