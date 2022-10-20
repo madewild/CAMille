@@ -1,4 +1,4 @@
-"""Basic Flask app"""
+"""Main Flask app serving search engine"""
 
 import calendar
 import encodings
