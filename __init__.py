@@ -1,10 +1,12 @@
 """Main Flask app serving search engine"""
 
 import calendar
+from collections import defaultdict
 import json
 import locale
 import math
 from pathlib import Path
+from shutil import copy
 from unidecode import unidecode
 from zipfile import ZipFile
 
@@ -239,11 +241,16 @@ def hello():
                     query_norm = unidecode(query).replace(" ", "_")
                     query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
                     zippath = Path(__file__).parent / f"static/temp/camille_{query_norm}.zip"
+                    stats_journal = defaultdict(int)
+                    stats_year = defaultdict(int)
                     with ZipFile(zippath, 'w') as myzip:
-                        readme = Path(__file__).parent / f"static/README.txt"
-                        myzip.write(readme, "_README.txt")
+                        total = len(hits2["hits"])
                         for hit in hits2["hits"]:
                             result_id = hit["_source"]["page"]
+                            result_journal = hit["_source"]["journal"]
+                            stats_journal[result_journal] += 1
+                            result_year = str(hit["_source"]["year"])
+                            stats_year[result_year] += 1
                             text = hit["_source"]["text"]
                             arcpath = f"{result_id}.txt"
                             abspath = Path(__file__).parent / f"static/temp/{arcpath}"
@@ -251,6 +258,20 @@ def hello():
                                 f.write(text)
                             myzip.write(abspath, arcpath)
                             abspath.unlink()
+
+                        readme_path = Path(__file__).parent / f"static/README.txt"
+                        new_readme_path = Path(__file__).parent / f"static/temp/README.txt"
+                        copy(readme_path, new_readme_path)
+                        readme = open(new_readme_path, 'a')
+                        readme.write("\n--- STATISTIQUES ---\n")
+                        readme.write(f"Nombre total de fichiers : {total}\n\n")
+                        for journal in sorted(stats_journal)[1:] + [sorted(stats_journal)[0]]:
+                            readme.write(f"{journal} : {stats_journal[journal]}\n")
+                        readme.write("\n")
+                        for year in sorted(stats_year):
+                            readme.write(f"{year} : {stats_year[year]}\n")
+                        readme.close()
+                        myzip.write(new_readme_path, "_README.txt")
                     return send_file(zippath, as_attachment=True)
 
             xlsx = request.args.get("xlsx")
