@@ -46,10 +46,13 @@
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
                         {% endif %}
+                        <div id="selectallmonths">
                         {% for month in all_months %}
                             <input type="checkbox" name="month" id="{{month['code']}}" value="{{month['code']}}"> 
                             <label for="{{month['code']}}">{{month['name']}}</label><br>
                         {% endfor %}
+                        </div>
+                        <button type="button" id="selectAllMonths" class="main"> <span class="sub"></span>Tout</button>
                         <input type="submit" value="OK">
                     </form>
                 </li>
@@ -105,10 +108,13 @@
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
                         {% endif %}
+                        <div id="selectallmonths">
                         {% for month in all_months %}
                             <input {% if month['code'] in month_list %}checked{% endif %} type="checkbox" name="month" id="{{month['code']}}" value="{{month['code']}}">
                             <label for="{{month['code']}}">{{month['name']}}</label><br>
                         {% endfor %}
+                        </div>
+                        <button type="button" id="selectAllMonths" class="main"> <span class="sub"></span>Tout</button>
                         <input type="submit" value="OK">
                         {% set dic = {'new_url': url} %}
                         {% for month_code in month_list %}

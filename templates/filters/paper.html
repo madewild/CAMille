@@ -46,13 +46,13 @@
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
                         {% endif %}
-                        <div id="selectall">
+                        <div id="selectallpapers">
                         {% for paper in all_papers %}
                             <input type="checkbox" name="paper" id="{{paper['code']}}" value="{{paper['code']}}"> 
                             <label for="{{paper['code']}}">{{paper['name']}}</label><br>
                         {% endfor %}
                         </div>
-                        <button type="button" id="selectAll" class="main"> <span class="sub"></span>Tout</button>
+                        <button type="button" id="selectAllPapers" class="main"> <span class="sub"></span>Tout</button>
                         <input type="submit" value="OK">
                     </form>
                 </li>
@@ -108,13 +108,13 @@
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
                         {% endif %}
-                        <div id="selectall">
+                        <div id="selectallpapers">
                         {% for paper in all_papers %}
                             <input {% if paper['code'] in paper_list %}checked{% endif %} type="checkbox" name="paper" id="{{paper['code']}}" value="{{paper['code']}}"> 
                             <label for="{{paper['code']}}">{{paper['name']}}</label><br>
                         {% endfor %}
                         </div>
-                        <button type="button" id="selectAll" class="main"> <span class="sub"></span>Tout</button>
+                        <button type="button" id="selectAllPapers" class="main"> <span class="sub"></span>Tout</button>
                         <input type="submit" value="OK">
                         {% set dic = {'new_url': url} %}
                         {% for paper_code in paper_list %}

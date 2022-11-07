@@ -46,10 +46,13 @@
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
                         {% endif %}
+                        <div id="selectalldays">
                         {% for dow in all_dows %}
                             <input type="checkbox" name="dow" id="{{dow['code']}}" value="{{dow['code']}}"> 
                             <label for="{{dow['code']}}">{{dow['name']}}</label><br>
                         {% endfor %}
+                        </div>
+                        <button type="button" id="selectAllDays" class="main"> <span class="sub"></span>Tout</button>
                         <input type="submit" value="OK">
                     </form>
                 </li>
@@ -105,10 +108,13 @@
                         {% if language != None %}
                         <input type="hidden" name="language" value="{{language}}">
                         {% endif %}
+                        <div id="selectalldays">
                         {% for dow in all_dows %}
                             <input {% if dow['code'] in dow_list %}checked{% endif %} type="checkbox" name="dow" id="{{dow['code']}}" value="{{dow['code']}}">
                             <label for="{{dow['code']}}">{{dow['name']}}</label><br>
                         {% endfor %}
+                        </div>
+                        <button type="button" id="selectAllDays" class="main"> <span class="sub"></span>Tout</button>
                         <input type="submit" value="OK">
                         {% set dic = {'new_url': url} %}
                         {% for dow_code in dow_list %}
