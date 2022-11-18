@@ -1,10 +1,12 @@
-"""Basic Flask app"""
+"""Main Flask app serving search engine"""
 
 import calendar
+from collections import defaultdict
 import json
 import locale
 import math
 from pathlib import Path
+from shutil import copy
 from unidecode import unidecode
 from zipfile import ZipFile
 
@@ -13,6 +15,7 @@ import boto3
 from flask import Flask, request, render_template, send_file
 from flask_htpasswd import HtPasswdAuth
 
+import pandas as pd
 import requests
 
 try:
@@ -41,10 +44,12 @@ def hello():
 
         sortcrit = request.args.get("sortcrit")
         if sortcrit:
-            if sortcrit == "datedesc":
-                sort = [{"date": {"order": "desc"}}]
-            elif sortcrit =="dateasc":
+            if sortcrit =="dateasc":
                 sort = [{"date": {"order": "asc"}}]
+            elif sortcrit == "datedesc":
+                sort = [{"date": {"order": "desc"}}]
+            elif sortcrit =="newspaper":
+                sort = [{"journal": {"order": "asc"}}]
             else:
                 sort = ["_score", {"date": {"order": "asc"}}]
         else:
@@ -211,7 +216,10 @@ def hello():
                 doc_year = doc_date.split("-")[0]
                 key = f"PDF/{np}/{doc_year}/{doc}.pdf"
                 temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
-                s3.download_file(bucket_name, key, str(temp_path))
+                try:
+                    s3.download_file(bucket_name, key, str(temp_path))
+                except Exception as e: # problem with AWS credentials
+                    print(e)
             else:
                 doc = "false"
 
@@ -219,8 +227,8 @@ def hello():
             if "&p=" in url:
                 url = url.split("&p=")[0]
 
-            export = request.args.get("export")
-            if export:
+            zip = request.args.get("zip")
+            if zip:
                 data2 =  {
                     "size": 500,
                     "query": query_dic,
@@ -233,11 +241,16 @@ def hello():
                     query_norm = unidecode(query).replace(" ", "_")
                     query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
                     zippath = Path(__file__).parent / f"static/temp/camille_{query_norm}.zip"
+                    stats_journal = defaultdict(int)
+                    stats_year = defaultdict(int)
                     with ZipFile(zippath, 'w') as myzip:
-                        readme = abspath = Path(__file__).parent / f"static/README.txt"
-                        myzip.write(abspath, "_README.txt")
+                        total = len(hits2["hits"])
                         for hit in hits2["hits"]:
                             result_id = hit["_source"]["page"]
+                            result_journal = hit["_source"]["journal"]
+                            stats_journal[result_journal] += 1
+                            result_year = str(hit["_source"]["year"])
+                            stats_year[result_year] += 1
                             text = hit["_source"]["text"]
                             arcpath = f"{result_id}.txt"
                             abspath = Path(__file__).parent / f"static/temp/{arcpath}"
@@ -245,7 +258,68 @@ def hello():
                                 f.write(text)
                             myzip.write(abspath, arcpath)
                             abspath.unlink()
+
+                        readme_path = Path(__file__).parent / f"static/README.txt"
+                        new_readme_path = Path(__file__).parent / f"static/temp/README.txt"
+                        copy(readme_path, new_readme_path)
+                        readme = open(new_readme_path, 'a')
+                        readme.write("\n--- STATISTIQUES ---\n")
+                        readme.write(f"Nombre total de fichiers : {total}\n\n")
+                        for journal in sorted(stats_journal)[1:] + [sorted(stats_journal)[0]]:
+                            readme.write(f"{journal} : {stats_journal[journal]}\n")
+                        readme.write("\n")
+                        for year in sorted(stats_year):
+                            readme.write(f"{year} : {stats_year[year]}\n")
+                        readme.close()
+                        myzip.write(new_readme_path, "_README.txt")
                     return send_file(zippath, as_attachment=True)
+
+            xlsx = request.args.get("xlsx")
+            if xlsx:
+                data2 =  {
+                    "size": 500,
+                    "sort": sort,
+                    "query": query_dic,
+                    "highlight": {
+                        "fields": {
+                            "text": {}
+                        },
+                        "pre_tags": "<kw>",
+                        "post_tags": "</kw>",
+                        "fragment_size": 2000
+                    }
+                }
+                r2 = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data2))
+                if r2.status_code == 200:
+                    resdic2 = json.loads(r2.text)
+                    hits2 = resdic2["hits"]
+                    query_norm = unidecode(query).replace(" ", "_")
+                    query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
+                    xlsxpath = Path(__file__).parent / f"static/temp/camille_{query_norm}.xlsx"
+                    df = pd.DataFrame([], columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR', 'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
+                    for hit in hits2["hits"]:
+                        result_id = hit["_source"]["page"]
+                        journal = hit["_source"]["journal"]
+                        date = hit["_source"]["date"]
+                        year = hit["_source"]["year"]
+                        month = hit["_source"]["month"]
+                        day = hit["_source"]["day"]
+                        dow = hit["_source"]["dow"]
+                        edition = hit["_source"]["edition"]
+                        pagenb = hit["_source"]["pagenb"]
+                        language = hit["_source"]["language"]
+                        try:            
+                            matches = hit["highlight"]["text"]
+                        except KeyError: # no matches (wildcard), defaulting to 2000 first chars
+                            matches = [hit["_source"]["text"][:2000] + "..."]
+                        text = " [...] ".join(matches)
+                        line = [result_id, journal, date, year, month, day, dow, edition, pagenb, language, text]
+                        series = pd.Series(line, index=df.columns)
+                        df = df.append(series, ignore_index=True)
+                    df['DATE'] = pd.to_datetime(df['DATE']).dt.date
+                    df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32', 'JDLS': 'int32', 'ÉDITION': 'int32', 'PAGE': 'int32'})
+                    df.to_excel(xlsxpath, index=None)
+                    return send_file(xlsxpath, as_attachment=True)
 
             html = render_template("results.html", query=query, stats=stats,
                                    results=results, p=p, firstp=firstp, lastp=lastp, 
@@ -258,7 +332,7 @@ def hello():
                                    day_to=day_to, date_from=date_from, date_to=date_to
                                   )
         else:
-            html = f"HTTP Error: {r.status_code}"
+            html = f"HTTP Error: {r.text}"
     else:
         page = request.args.get("page")
         if page:
