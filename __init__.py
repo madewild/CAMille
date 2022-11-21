@@ -230,7 +230,7 @@ def hello():
             zip = request.args.get("zip")
             if zip:
                 data2 =  {
-                    "size": 1000,
+                    "size": 500,
                     "query": query_dic,
                     "sort": sort
                 }
@@ -277,7 +277,7 @@ def hello():
             xlsx = request.args.get("xlsx")
             if xlsx:
                 data2 =  {
-                    "size": 1000,
+                    "size": 500,
                     "sort": sort,
                     "query": query_dic,
                     "highlight": {
