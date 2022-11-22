@@ -26,8 +26,15 @@ except FileNotFoundError:
 
 locale.setlocale(locale.LC_ALL, 'fr_BE.utf8')
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static', static_folder="static")
 CORS(app, resources={r"/static/*": {"origins": "*"}})
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+    return response
+
 app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
 app.config['FLASK_AUTH_ALL'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
