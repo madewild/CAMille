@@ -13,7 +13,6 @@ from zipfile import ZipFile
 import boto3
 
 from flask import Flask, request, render_template, send_file
-from flask_cors import CORS
 from flask_htpasswd import HtPasswdAuth
 
 import pandas as pd
@@ -26,14 +25,7 @@ except FileNotFoundError:
 
 locale.setlocale(locale.LC_ALL, 'fr_BE.utf8')
 
-app = Flask(__name__, static_url_path='/static', static_folder="static")
-CORS(app, resources={r"/static/*": {"origins": "*"}})
-
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
-    return response
+app = Flask(__name__)
 
 app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
 app.config['FLASK_AUTH_ALL'] = True
