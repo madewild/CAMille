@@ -13,6 +13,7 @@ from zipfile import ZipFile
 import boto3
 
 from flask import Flask, request, render_template, send_file
+from flask_cors import CORS
 from flask_htpasswd import HtPasswdAuth
 
 import pandas as pd
@@ -26,11 +27,12 @@ except FileNotFoundError:
 locale.setlocale(locale.LC_ALL, 'fr_BE.utf8')
 
 app = Flask(__name__)
+CORS(app)
 app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
 app.config['FLASK_AUTH_ALL'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
-htpasswd = HtPasswdAuth(app)
+#htpasswd = HtPasswdAuth(app)
 
 @app.template_filter()
 def strip_param(long_url, param):
