@@ -2,8 +2,8 @@
 
 import os
 
-path_xml = "/run/media/max/CAMille 1/JB685/"
-path_pdf = "/run/media/max/CAMille 1/JB685_PDF/"
+path_xml = "/run/media/max/CAMille 1/JB685_XML_nomets/"
+path_pdf = "/run/media/max/CAMille 1/JB685_PDF_nomets/"
 
 xml_files = [f.split("/")[-1][:-4] for f in [os.path.join(dp, f) for dp, dn, fn in os.walk(os.path.expanduser(path_xml)) for f in fn]]
 
