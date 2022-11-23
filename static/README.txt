@@ -25,6 +25,7 @@ JB555A	L'Indépendance belge (édité en Angleterre)
 JB567	Journal de Bruxelles
 JB572	Journal de Charleroi
 JB638	La Meuse
+JB685   Le Petit Bleu
 JB729	Le Vingtième Siècle
 JB773	Vers l'Avenir
 JB837	Le Peuple
