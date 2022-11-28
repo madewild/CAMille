@@ -8,7 +8,7 @@ Toute publication de résultats de recherche devra faire mention explicite de la
 L'équipe de CAMille invite les chercheurs et chercheuses à partager avec elle tout éventuel enrichissement apporté aux données brutes (contact@camille-ulb-kbr.be).
 
 ### CONTENU DU DOSSIER ###
-Ce dossier contient les fichiers textes des pages correspondant aux résultats de la requête lancée sur la plateforme. Lorsque les résultats de la requête excèdent 500 résultats, le dossier téléchargé ne contient que les 500 premiers documents selon l'ordre de pertinence sélectionné. Les noms de fichiers livrent des informations importantes sur la nature des documents (voir la section NOMS DE FICHIERS).
+Ce dossier contient les fichiers textes des pages correspondant aux résultats de la requête lancée sur la plateforme. Lorsque les résultats de la requête excèdent 1000 résultats, le dossier téléchargé ne contient que les 1000 premiers documents selon l'ordre de pertinence sélectionné. Les noms de fichiers livrent des informations importantes sur la nature des documents (voir la section NOMS DE FICHIERS).
 
 Les fichiers sont issus d'une extraction automatique du texte provenant de numérisations de documents originaux auxquelles ont été appliquée une reconnaissance automatique de caractères (OCR). L'OCR comprend des erreurs. Par ailleurs, une segmentation des différents contenus d'une même page n'a pas été opérée. Selon la nature des documents et de la complexité de leur structure, les différents textes d'une même page sont mélangés de manière plus ou moins importante. Pour visualiser les textes et de pouvoir les lire manuellement, il est préférable de consulter les fichiers PDF via les résultats de requêtes sur la plateforme.
 
