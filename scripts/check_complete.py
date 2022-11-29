@@ -5,9 +5,6 @@ import sys
 
 import requests
 
-from parse_s3 import *
-
-bucket_name = "camille-data"
 code = sys.argv[1]
 try:
     years = range(int(sys.argv[2]), 1971)
