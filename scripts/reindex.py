@@ -40,7 +40,7 @@ if __name__ == "__main__":
     years = range(start, end+1)
 
     try:
-        cred = json.load(open("../credentials.json"))
+        cred = json.load(open("credentials.json"))
     except FileNotFoundError:
         cred = json.load(open("/var/www/camille/credentials.json"))
     endpoint = cred["endpoint"]
