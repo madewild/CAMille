@@ -18,7 +18,7 @@ try:
 except IndexError:
     years = range(1831, 1971)
 
-cred = json.load(open("../credentials.json"))
+cred = json.load(open("credentials.json"))
 endpoint = cred["endpoint"]
 username = cred["username"]
 password = cred["password"]
