@@ -31,10 +31,13 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 workdir =  os.getcwd()
 print(f"Working directory is {workdir}")
 if workdir.endswith("prod"):
+    print("Basic auth enabled")
     from flask_htpasswd import HtPasswdAuth
     app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
     app.config['FLASK_AUTH_ALL'] = True
     htpasswd = HtPasswdAuth(app)
+else:
+    print("Basic auth disabled")
 
 @app.template_filter()
 def strip_param(long_url, param):
