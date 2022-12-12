@@ -5,16 +5,13 @@ import sys
 
 import requests
 
-from parse_s3 import *
-
-bucket_name = "camille-data"
 code = sys.argv[1]
 try:
     years = range(int(sys.argv[2]), 1971)
 except IndexError:
     years = range(1831, 1971)
 
-cred = json.load(open("../credentials.json"))
+cred = json.load(open("credentials.json"))
 endpoint = cred["endpoint"]
 username = cred["username"]
 password = cred["password"]

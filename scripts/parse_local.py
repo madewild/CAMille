@@ -7,7 +7,7 @@ from parse_s3 import extract_text
 
 journal = sys.argv[1]
 
-data_path = f"/run/media/max/Backup Plus/BelgicaPress XML/{journal}/"
+data_path = f"/run/media/max/CAMille 1/{journal}/"
 dirs = os.listdir(data_path)
 
 for dir in sorted(dirs):
@@ -16,7 +16,7 @@ for dir in sorted(dirs):
     for f in sorted(files):
         #print(f"Processing {f}")
         xml_string = open(data_path+dir+"/"+f, encoding="utf-8").read()
-        out_path = f"/run/media/max/Backup Plus/BelgicaPress TXT/{journal}/{dir}/"
+        out_path = f"/run/media/max/CAMille 1/{journal}_TXT/{dir}/"
         if not os.path.exists(out_path):
             os.makedirs(out_path)
         full_out_path = f"{out_path}{f[:-4]}.txt"

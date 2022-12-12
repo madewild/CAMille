@@ -86,7 +86,7 @@ def write_to_es(client, bucket_name, key, cred):
         elif r.status_code == 200:
             print("   Already present, skipping")
         else:
-            print(f"Error {r.status_code}")
+            print(f"Error {r.status_code}: {r.text}")
             sys.exit()
     except Exception as x:
         print(f"It failed: {x.__class__.__name__}")

@@ -5,6 +5,7 @@ from collections import defaultdict
 import json
 import locale
 import math
+import os
 from pathlib import Path
 from shutil import copy
 from unidecode import unidecode
@@ -13,7 +14,6 @@ from zipfile import ZipFile
 import boto3
 
 from flask import Flask, request, render_template, send_file
-from flask_htpasswd import HtPasswdAuth
 
 import pandas as pd
 import requests
@@ -26,11 +26,14 @@ except FileNotFoundError:
 locale.setlocale(locale.LC_ALL, 'fr_BE.utf8')
 
 app = Flask(__name__)
-app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
-app.config['FLASK_AUTH_ALL'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
-htpasswd = HtPasswdAuth(app)
+workdir =  os.getcwd()
+if workdir.endswith("prod"):
+    from flask_htpasswd import HtPasswdAuth
+    app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
+    app.config['FLASK_AUTH_ALL'] = True
+    htpasswd = HtPasswdAuth(app)
 
 @app.template_filter()
 def strip_param(long_url, param):
@@ -230,7 +233,7 @@ def hello():
             zip = request.args.get("zip")
             if zip:
                 data2 =  {
-                    "size": 500,
+                    "size": 1000,
                     "query": query_dic,
                     "sort": sort
                 }
@@ -277,7 +280,7 @@ def hello():
             xlsx = request.args.get("xlsx")
             if xlsx:
                 data2 =  {
-                    "size": 500,
+                    "size": 1000,
                     "sort": sort,
                     "query": query_dic,
                     "highlight": {
