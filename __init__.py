@@ -5,7 +5,6 @@ from collections import defaultdict
 import json
 import locale
 import math
-import os
 from pathlib import Path
 from shutil import copy
 from unidecode import unidecode
@@ -229,50 +228,58 @@ def hello():
 
             zip = request.args.get("zip")
             if zip:
-                data2 =  {
-                    "size": 1000,
-                    "query": query_dic,
-                    "sort": sort
-                }
-                r2 = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data2))
-                if r2.status_code == 200:
-                    resdic2 = json.loads(r2.text)
-                    hits2 = resdic2["hits"]
-                    query_norm = unidecode(query).replace(" ", "_")
-                    query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
-                    zippath = Path(__file__).parent / f"static/temp/camille_{query_norm}.zip"
-                    stats_journal = defaultdict(int)
-                    stats_year = defaultdict(int)
-                    with ZipFile(zippath, 'w') as myzip:
-                        total = len(hits2["hits"])
-                        for hit in hits2["hits"]:
-                            result_id = hit["_source"]["page"]
-                            result_journal = hit["_source"]["journal"]
-                            stats_journal[result_journal] += 1
-                            result_year = str(hit["_source"]["year"])
-                            stats_year[result_year] += 1
-                            text = hit["_source"]["text"]
-                            arcpath = f"{result_id}.txt"
-                            abspath = Path(__file__).parent / f"static/temp/{arcpath}"
-                            with open(abspath, "w", encoding="utf-8") as f:
-                                f.write(text)
-                            myzip.write(abspath, arcpath)
-                            abspath.unlink()
+                query_norm = unidecode(query).replace(" ", "_")
+                query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
+                zippath = Path(__file__).parent / f"static/temp/camille_{query_norm}.zip"
+                stats_journal = defaultdict(int)
+                stats_year = defaultdict(int)
+                with ZipFile(zippath, 'w') as myzip:
+                    total = min(number, 1000)
+                    print(f"Total: {total}")
+                    for i in range(total // 100):
+                        data_page =  {
+                            "from": i * 100,
+                            "size": 100,
+                            "sort": sort,
+                            "query": query_dic
+                        }
+                        rpage = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data_page))
+                        if rpage.status_code == 200:
+                            resdic2 = json.loads(rpage.text)
+                            hits2 = resdic2["hits"]
+                            for hit in hits2["hits"]:
+                                result_id = hit["_source"]["page"]
+                                result_journal = hit["_source"]["journal"]
+                                stats_journal[result_journal] += 1
+                                result_year = str(hit["_source"]["year"])
+                                stats_year[result_year] += 1
+                                text = hit["_source"]["text"]
+                                arcpath = f"{result_id}.txt"
+                                abspath = Path(__file__).parent / f"static/temp/{arcpath}"
+                                with open(abspath, "w", encoding="utf-8") as f:
+                                    f.write(text)
+                                myzip.write(abspath, arcpath)
+                                abspath.unlink()
+                        else:
+                            print(f"Error: {rpage.text}")
 
-                        readme_path = Path(__file__).parent / f"static/README.txt"
-                        new_readme_path = Path(__file__).parent / f"static/temp/README.txt"
-                        copy(readme_path, new_readme_path)
-                        readme = open(new_readme_path, 'a')
-                        readme.write("\n--- STATISTIQUES ---\n")
-                        readme.write(f"Nombre total de fichiers : {total}\n\n")
+                    readme_path = Path(__file__).parent / f"static/README.txt"
+                    new_readme_path = Path(__file__).parent / f"static/temp/README.txt"
+                    copy(readme_path, new_readme_path)
+                    readme = open(new_readme_path, 'a')
+                    readme.write("\n--- STATISTIQUES ---\n")
+                    readme.write(f"Nombre total de fichiers : {total}\n\n")
+                    try:
                         for journal in sorted(stats_journal)[1:] + [sorted(stats_journal)[0]]:
                             readme.write(f"{journal} : {stats_journal[journal]}\n")
-                        readme.write("\n")
-                        for year in sorted(stats_year):
-                            readme.write(f"{year} : {stats_year[year]}\n")
-                        readme.close()
-                        myzip.write(new_readme_path, "_README.txt")
-                    return send_file(zippath, as_attachment=True)
+                    except:
+                        print(stats_journal)
+                    readme.write("\n")
+                    for year in sorted(stats_year):
+                        readme.write(f"{year} : {stats_year[year]}\n")
+                    readme.close()
+                    myzip.write(new_readme_path, "_README.txt")
+                return send_file(zippath, as_attachment=True)
 
             xlsx = request.args.get("xlsx")
             if xlsx:
