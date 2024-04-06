@@ -5,7 +5,7 @@ import sys
 
 path = "/run/media/max/CAMille 1/La Presse/"
 folders = os.listdir(path)
-print(f"{len(folders)} folders found\n")
+print(f"\n{len(folders)} folders found\n")
 
 years_covered = set()
 total_pages = 0
@@ -35,7 +35,7 @@ for folder in sorted(folders):
         print(f"Mismatch found in folder {f}: {nb_xml} XML vs {nb_pdf} PDF")
         sys.exit()
 
-print(f"\nYears covered: {sorted(years_covered)}")
+#print(f"\nYears covered: {sorted(years_covered)}")
 years_to_cover = range(1954, 1994)
 years_not_covered = [y for y in years_to_cover if y not in years_covered]
 print(f"Years NOT covered: {years_not_covered}")
