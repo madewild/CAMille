@@ -32,7 +32,7 @@ for folder in sorted(folders):
         print(f"Edition {edition} contains {nb_xml} pages")
         total_pages += nb_xml
     else:
-        print(f"Mismatch found in folder {f}: {nb_xml} XML vs {nb_pdf} PDF")
+        print(f"Mismatch found in folder {folder}: {nb_xml} XML vs {nb_pdf} PDF")
         sys.exit()
 
 #print(f"\nYears covered: {sorted(years_covered)}")
