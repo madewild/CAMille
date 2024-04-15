@@ -4,11 +4,11 @@ import os
 import re
 import html
 
-data_path = "data/xml/"
-files = os.listdir(data_path)
+DATA_PATH = "data/xml/"
+files = os.listdir(DATA_PATH)
 
 for f in files:
-    lines = open(data_path+f, encoding="utf-8").readlines()
+    lines = open(DATA_PATH+f, encoding="utf-8").readlines()
     out_path = f"data/txt/{f[:-4]}.txt"
     output = open(out_path, "w", encoding="utf-8")
     words = []
@@ -18,5 +18,5 @@ for f in files:
             wordlist = content
             for word in wordlist:
                 words.append(html.unescape(word))
-    extracted_text = " ".join(words)
-    output.write(extracted_text)
+    TEXT = " ".join(words)
+    output.write(TEXT)

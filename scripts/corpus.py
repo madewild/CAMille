@@ -10,7 +10,7 @@ if __name__ == "__main__":
     s3 = session.client('s3')
     paginator = s3.get_paginator('list_objects')
 
-    bucket_name = "camille-data"
+    BUCKET_NAME = "camille-data"
     code = sys.argv[1]
     start = int(sys.argv[2])
     try:
@@ -24,7 +24,7 @@ if __name__ == "__main__":
         prefix = f"TXT/{code}/{year}"
         all_objects = []
 
-        pages = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
+        pages = paginator.paginate(Bucket=BUCKET_NAME, Prefix=prefix)
         for page in pages:
             try:
                 objects = page["Contents"]
@@ -38,4 +38,4 @@ if __name__ == "__main__":
             key = obj["Key"]
             filename = key.split("/")[-1]
             fullpath = f"data/txt/{filename}"
-            s3.download_file(bucket_name, key, fullpath)
+            s3.download_file(BUCKET_NAME, key, fullpath)

@@ -2,8 +2,8 @@
 
 import os
 
-data_path = "data/txt/"
-files = os.listdir(data_path)
+DATA_PATH = "data/txt/"
+files = os.listdir(DATA_PATH)
 print(len(files))
 all_years = range(1887, 1971)
 covered_years = set()
