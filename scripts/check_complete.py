@@ -11,7 +11,7 @@ try:
 except IndexError:
     years = range(1831, 1971)
 
-cred = json.load(open("credentials.json"))
+cred = json.load(open("credentials.json", encoding="utf-8"))
 endpoint = cred["endpoint"]
 username = cred["username"]
 password = cred["password"]
@@ -23,7 +23,8 @@ payload = {
 
 for year in years:
     es_url = f"{endpoint}/pages/_search?track_total_hits=true&q=journal:{code}%20AND%20year:{year}"
-    resp = requests.request("POST", es_url, auth=(username, password), data=json.dumps(payload), headers=headers)
+    resp = requests.request("POST", es_url, auth=(username, password),
+                            data=json.dumps(payload), headers=headers, timeout=60)
     resp = json.loads(resp.text)
     hits = resp["hits"]["hits"]
     es_ids = set([hit["_id"] for hit in hits])
