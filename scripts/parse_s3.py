@@ -114,7 +114,7 @@ if __name__ == "__main__":
         print(f"Processing {year}...")
         prefix = f"XML/{code}/{year}"
         #prefix = f"XML/{code}/{year}/KB_{code}_{year}-1"
-        
+
         pages = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
         for page in pages:
             try:
@@ -122,6 +122,6 @@ if __name__ == "__main__":
                 for obj in objects:
                     key = obj["Key"]
                     write_to_es(s3, bucket_name, key, credentials)
-                    
+
             except KeyError:
                 print(f"{year} has not been found, skipping")

@@ -23,7 +23,7 @@ if __name__ == "__main__":
         print(f"Processing {year}...")
         prefix = f"TXT/{code}/{year}"
         all_objects = []
-        
+
         pages = paginator.paginate(Bucket=bucket_name, Prefix=prefix)
         for page in pages:
             try:
