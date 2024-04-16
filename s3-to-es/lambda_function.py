@@ -47,7 +47,7 @@ headers = {"Content-Type": "application/json; charset=utf8"}
 s3 = boto3.client('s3')
 
 # Lambda execution starts here
-def lambda_handler(event, _):
+def lambda_handler(event, context):
     """Retrieving metadata"""
     for record in event['Records']:
 
@@ -103,4 +103,4 @@ def lambda_handler(event, _):
         }
         data = json.dumps(payload)
         full_es_url = f"{url}/{raw_file_name}"
-        _ = requests.put(full_es_url, auth=auth, data=data, headers=headers, timeout=60)
+        r = requests.put(full_es_url, auth=auth, data=data, headers=headers, timeout=60)
