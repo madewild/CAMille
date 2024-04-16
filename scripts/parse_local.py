@@ -10,16 +10,16 @@ journal = sys.argv[1]
 data_path = f"/run/media/max/CAMille 1/{journal}/"
 dirs = os.listdir(data_path)
 
-for dir in sorted(dirs):
-    print(f"Folder {dir}")
-    files = os.listdir(data_path+dir)
+for directory in sorted(dirs):
+    print(f"Folder {directory}")
+    files = os.listdir(data_path+directory)
     for f in sorted(files):
         if f.endswith(".xml"):
-            xml_string = open(data_path+dir+"/"+f, encoding="utf-8").read()
-            out_path = f"/run/media/max/CAMille 1/{journal}_TXT/{dir}/"
+            xml_string = open(data_path+directory+"/"+f, encoding="utf-8").read()
+            out_path = f"/run/media/max/CAMille 1/{journal}_TXT/{directory}/"
             if not os.path.exists(out_path):
                 os.makedirs(out_path)
             full_out_path = f"{out_path}{f[:-4]}.txt"
             output = open(full_out_path, "w", encoding="utf-8")
-            extracted_text = extract_text(xml_string)
-            output.write(extracted_text)
+            TEXT = extract_text(xml_string)
+            output.write(TEXT)
