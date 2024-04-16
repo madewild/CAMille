@@ -3,6 +3,8 @@ venv*
 .vscode
 *credentials*
 static/temp/*
+s3-to-es/package
+s3-to-es/*.zip
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
