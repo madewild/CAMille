@@ -1,12 +1,12 @@
 """Stream S3 objects into Elasticsearch"""
 
+import datetime
 import html
 import json
 import sys
 
 import boto3
 from bs4 import BeautifulSoup as bs
-import pandas as pd
 import requests
 
 def extract_text(xml_body):
@@ -47,7 +47,7 @@ headers = {"Content-Type": "application/json; charset=utf8"}
 s3 = boto3.client('s3')
 
 # Lambda execution starts here
-def handler(event, _):
+def lambda_handler(event, _):
     """Retrieving metadata"""
     for record in event['Records']:
 
@@ -69,6 +69,7 @@ def handler(event, _):
             day = date[6:8]
             edition = elements[3]
             pagenb = "0" + elements[8] # add leading zero
+            date_format = "%Y%m%d"
         else:
             date_elems = date.split("-")
             year = date_elems[0]
@@ -78,8 +79,9 @@ def handler(event, _):
             ep_elems = ed_page.split("-")
             edition = ep_elems[0]
             pagenb = ep_elems[1]
-        ts = pd.Timestamp(date)
-        dow = str(ts.dayofweek + 1)
+            date_format = "%Y-%m-%d"
+        ts = datetime.datetime.strptime(date, date_format)
+        dow = str(ts.weekday() + 1)
 
         # Process XML
         obj = s3.get_object(Bucket=bucket, Key=key)
