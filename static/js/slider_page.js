@@ -11,14 +11,18 @@ $( function() {
       $('#page_range').val("De la page " + ui.values[0] + " à la page " + ui.values[1]);
       if (ui.values[0] < 10) {
         $pf = "0000" + ui.values[0];
-      } else {
+      } else if (ui.values[0] < 100) {
         $pf = "000" + ui.values[0];
+      } else {
+        $pf = "00" + ui.values[0];
       }
       $('#page_from').val($pf);
       if (ui.values[1] < 10) {
         $pt = "0000" + ui.values[1];
+      } else if (ui.values[0] < 100) {
+        $pf = "000" + ui.values[0];
       } else {
-        $pt = "000" + ui.values[1];
+        $pf = "00" + ui.values[0];
       }
       $('#page_to').val($pt);
     }
