@@ -1,11 +1,11 @@
 var minValuePage = getParameterByName('page_from') || 1;
-var maxValuePage = getParameterByName('page_to') || 500;
+var maxValuePage = getParameterByName('page_to') || 516;
 
 $( function() {
   $("#slider-range-page").slider({
     range: true,
     min: 1,
-    max: 500,
+    max: 516,
     values: [minValuePage, maxValuePage],
     slide: function( event, ui ) {
       $('#page_range').val("De la page " + ui.values[0] + " à la page " + ui.values[1]);
