@@ -71,7 +71,7 @@ def write_to_es(client, bucket_name, key, cred):
             journal = "B14138"
         else: # unknown journal
             sys.exit()
-        edition = elements[3]
+        edition = elements[7]
         pagenb = "0" + elements[8] # add leading zero
         date = date[:4] + "-" + date[4:6] + "-" + date[6:8]
         date_format = "%Y%m%d"
