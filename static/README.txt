@@ -31,3 +31,4 @@ JB773	Vers l'Avenir
 JB837	Le Peuple
 JB838	Le Soir
 JB1051	Le Drapeau rouge
+B14138  La Presse
