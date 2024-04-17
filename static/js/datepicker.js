@@ -5,7 +5,7 @@ $( function() {
         dateFormat: "yy-mm-dd",
         changeMonth: true,
         changeYear: true,
-        yearRange: "1831:1970",
+        yearRange: "1831:1993",
         defaultDate: "1831-02-06"
       })
       .on( "change", function() {
@@ -15,8 +15,8 @@ $( function() {
         dateFormat: "yy-mm-dd",
         changeMonth: true,
         changeYear: true,
-        yearRange: "1831:1970",
-        defaultDate: "1970-12-31"
+        yearRange: "1831:1993",
+        defaultDate: "1993-09-01"
       })
       .on( "change", function() {
         from.datepicker( "option", "maxDate", getDate( this ) );
