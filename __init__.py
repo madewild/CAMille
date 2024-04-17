@@ -180,20 +180,14 @@ def hello():
             
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
-                elements = result_id.split("_")
-                np = elements[1]
-                if np == "15463334": # La Presse
-                    np = "B14138"
+                np = hit["_source"]["journal"]
                 name = names[np]
-                hit_date = elements[2]
-                hit_dates = hit_date.split("-")
-                hit_year = hit_dates[0]
-                hit_month = hit_dates[1]
-                hit_day = hit_dates[2]
-                edpage = elements[3]
-                page = int(edpage.split("-")[1])
+                hit_day = hit["_source"]["day"]
+                hit_month = hit["_source"]["month"]
+                hit_year = hit["_source"]["year"]
+                page = int(hit["_source"]["pagenb"])
                 display = f"{name} ({hit_day}/{hit_month}/{hit_year} - p. {page})"
-                try:            
+                try:
                     matches = hit["highlight"]["text"]
                 except KeyError: # no matches (wildcard), defaulting to 500 first chars
                     matches = [hit["_source"]["text"][:500] + "..."]
