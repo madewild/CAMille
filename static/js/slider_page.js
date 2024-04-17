@@ -20,9 +20,9 @@ $( function() {
       if (ui.values[1] < 10) {
         $pt = "0000" + ui.values[1];
       } else if (ui.values[1] < 100) {
-        $pf = "000" + ui.values[1];
+        $pt = "000" + ui.values[1];
       } else {
-        $pf = "00" + ui.values[1];
+        $pt = "00" + ui.values[1];
       }
       $('#page_to').val($pt);
     }
