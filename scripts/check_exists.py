@@ -48,7 +48,7 @@ for year in years:
                 raw_file_name = file_name[:-4]
                 if raw_file_name not in es_ids:
                     print(f"{raw_file_name} is missing")
-                    #write_to_es(s3, BUCKET_NAME, key, cred)
+                    write_to_es(s3, BUCKET_NAME, key, cred)
 
         resp = requests.request("POST", es_url, auth=(username, password),
                                 data=json.dumps(payload), headers=headers, timeout=60)
