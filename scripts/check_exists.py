@@ -16,7 +16,7 @@ code = sys.argv[1]
 try:
     years = [sys.argv[2]]
 except IndexError:
-    years = range(1831, 1971)
+    years = range(1954, 1994)
 
 cred = json.load(open("credentials.json", encoding="utf-8"))
 endpoint = cred["endpoint"]
@@ -48,7 +48,7 @@ for year in years:
                 raw_file_name = file_name[:-4]
                 if raw_file_name not in es_ids:
                     print(f"{raw_file_name} is missing")
-                    write_to_es(s3, BUCKET_NAME, key, cred)
+                    #write_to_es(s3, BUCKET_NAME, key, cred)
 
         resp = requests.request("POST", es_url, auth=(username, password),
                                 data=json.dumps(payload), headers=headers, timeout=60)
