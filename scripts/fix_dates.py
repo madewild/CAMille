@@ -30,7 +30,6 @@ def requests_retry_session(
 
 if __name__ == "__main__":
 
-    bucket_name = "camille-data"
     code = sys.argv[1]
     start = int(sys.argv[2])
     try:
@@ -80,7 +79,8 @@ if __name__ == "__main__":
                         }
                     }
                     es_url_update = f"{endpoint}/pages/_update/{es_id}"
-                    r2 = requests.request("POST", es_url_update, auth=(username, password), data=json.dumps(payload2), headers=headers, timeout=10)
+                    r2 = requests.request("POST", es_url_update, auth=(username, password),
+                                          data=json.dumps(payload2), headers=headers, timeout=10)
                     if r2.status_code != 200:
                         print(es_id, r2.text)
                         sys.exit()
