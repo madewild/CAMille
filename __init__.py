@@ -13,23 +13,24 @@ from zipfile import ZipFile
 import boto3
 
 from flask import Flask, request, render_template, send_file
-#from flask_htpasswd import HtPasswdAuth
+from flask_htpasswd import HtPasswdAuth
 
 import pandas as pd
 import requests
 
 try:
-    cred = json.load(open("credentials.json"))
+    cred = json.load(open("credentials.json", encoding="utf-8"))
 except FileNotFoundError:
-    cred = json.load(open("/var/www/camille/credentials.json"))
+    cred = json.load(open("/var/www/camille/credentials.json", encoding="utf-8"))
 
 locale.setlocale(locale.LC_ALL, 'fr_BE.utf8')
 
 app = Flask(__name__)
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  
-#app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
-#app.config['FLASK_AUTH_ALL'] = True
-#htpasswd = HtPasswdAuth(app)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+# comment next 3 lines to disable htpasswd (e.g. if CAS is enabled)
+app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
+app.config['FLASK_AUTH_ALL'] = True
+htpasswd = HtPasswdAuth(app)
 
 @app.template_filter()
 def strip_param(long_url, param):
@@ -137,7 +138,7 @@ def hello():
                     }
                 }
 
-        r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data))
+        r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data), timeout=60)
         if r.status_code == 200:
             resdic = json.loads(r.text)
             number = resdic["hits"]["total"]["value"]
@@ -239,7 +240,7 @@ def hello():
                             "sort": sort,
                             "query": query_dic
                         }
-                        rpage = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data_page))
+                        rpage = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data_page), timeout=60)
                         if rpage.status_code == 200:
                             resdic2 = json.loads(rpage.text)
                             hits2 = resdic2["hits"]
@@ -262,7 +263,7 @@ def hello():
                     readme_path = Path(__file__).parent / f"static/README.txt"
                     new_readme_path = Path(__file__).parent / f"static/temp/README.txt"
                     copy(readme_path, new_readme_path)
-                    readme = open(new_readme_path, 'a')
+                    readme = open(new_readme_path, 'a', encoding="utf-8")
                     readme.write("\n--- STATISTIQUES ---\n")
                     readme.write(f"Nombre total de fichiers : {total}\n\n")
                     try:
