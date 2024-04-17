@@ -17,7 +17,7 @@ Pour les journaux numérisés, la structure des noms de fichiers suit cette logi
 Nom de l'institution_Cote du journal_Année-Mois-Jour_Édition-Page
 Ainsi, KB_JB427_1928-09-04_01-00002.txt est la deuxième page de la première (et/ou seule) édition du 4 septembre 1928 du journal portant la cote JB427, soit La Libre Belgique.
 
---- COTES DES JOURNAUX ---
+--- COTES DES TITRES ---
 JB421	L'Avenir du Luxembourg
 JB427	La Libre Belgique
 JB555	L'Indépendance belge
