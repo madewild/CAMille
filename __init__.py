@@ -182,6 +182,8 @@ def hello():
                 result_id = hit["_source"]["page"]
                 elements = result_id.split("_")
                 np = elements[1]
+                if np == "15463334": # La Presse
+                    np = "B14138"
                 name = names[np]
                 hit_date = elements[2]
                 hit_dates = hit_date.split("-")
