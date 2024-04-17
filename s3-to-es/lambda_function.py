@@ -64,22 +64,20 @@ def lambda_handler(event, context):
                 journal = "B14138"
             else: # unknown journal
                 sys.exit()
-            year = date[:4]
-            month = date[4:6]
-            day = date[6:8]
             edition = elements[3]
             pagenb = "0" + elements[8] # add leading zero
+            date = date[:4] + "-" + date[4:6] + "-" + date[6:8]
             date_format = "%Y%m%d"
         else:
-            date_elems = date.split("-")
-            year = date_elems[0]
-            month = date_elems[1]
-            day = date_elems[2]
             ed_page = elements[3]
             ep_elems = ed_page.split("-")
             edition = ep_elems[0]
             pagenb = ep_elems[1]
             date_format = "%Y-%m-%d"
+        date_elems = date.split("-")
+        year = date_elems[0]
+        month = date_elems[1]
+        day = date_elems[2]
         ts = datetime.datetime.strptime(date, date_format)
         dow = str(ts.weekday() + 1)
 
