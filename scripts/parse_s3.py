@@ -85,7 +85,11 @@ def write_to_es(client, bucket_name, key, cred):
     docyear = date_elems[0]
     month = date_elems[1]
     day = date_elems[2]
-    ts = datetime.datetime.strptime(date, date_format)
+    try:
+        ts = datetime.datetime.strptime(date, date_format)
+    except ValueError:
+        date_format = "%Y-%m-%d"
+        ts = datetime.datetime.strptime(date, date_format)
     dow = str(ts.weekday() + 1)
 
     new_obj = client.get_object(Bucket=bucket_name, Key=key)
@@ -118,10 +122,8 @@ def write_to_es(client, bucket_name, key, cred):
     s.headers.update(headers)
     try:
         r = requests_retry_session(session=s).put(full_es_url, data=data, timeout=5)
-        if r.status_code == 201:
+        if r.status_code in [200, 201]:
             print("   Done")
-        elif r.status_code == 200:
-            print("   Already present, skipping")
         else:
             print(f"Error {r.status_code}: {r.text}")
             sys.exit()
