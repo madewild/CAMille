@@ -72,7 +72,8 @@ def hello():
         year_from = request.args.get("year_from")
         year_to = request.args.get("year_to")
         if year_from:
-            query_dic["bool"]["must"].append({"range": {"year": {"gte": year_from, "lte": year_to}}})
+            query_dic["bool"]["must"].append({"range": {"year": {"gte": year_from,
+                                                                 "lte": year_to}}})
 
         month_list = request.args.getlist("month")
         if month_list:
@@ -98,7 +99,8 @@ def hello():
                 date_from = "1831-02-06"
             if not date_to:
                 date_to = "1993-09-01"
-            query_dic["bool"]["must"].append({"range": {"date": {"gte": date_from, "lte": date_to}}})
+            query_dic["bool"]["must"].append({"range": {"date": {"gte": date_from,
+                                                                 "lte": date_to}}})
 
         edition = request.args.get("edition")
         if edition:
@@ -107,7 +109,8 @@ def hello():
         page_from = request.args.get("page_from")
         page_to = request.args.get("page_to")
         if page_from:
-            query_dic["bool"]["must"].append({"range": {"pagenb": {"gte": page_from, "lte": page_to}}})
+            query_dic["bool"]["must"].append({"range": {"pagenb": {"gte": page_from,
+                                                                   "lte": page_to}}})
 
         language = request.args.get("language")
         if language:
@@ -152,10 +155,10 @@ def hello():
             elif number == 1:
                 found_string = "Un seul résultat"
             elif p == 1:
-                nb = '{:,}'.format(number).replace(',', ' ')
+                nb = f"{number:,}".replace(',', ' ')
                 found_string = f"{nb} résultats"
             else:
-                nb = '{:,}'.format(number).replace(',', ' ')
+                nb = f"{number:,}".replace(',', ' ')
                 found_string = f"Page {p} sur {nb} résultats"
             stats = f"{found_string} ({timing} secondes)"
             hits = resdic["hits"]
@@ -166,7 +169,8 @@ def hello():
                 names = json.load(f)
             all_papers = [{"code": code, "name": names[code]} for code in names]
 
-            all_months = [{"code": f"{i:02d}", "name": calendar.month_name[i]} for i in range(1, 13)]
+            all_months = [{"code": f"{i:02d}",
+                           "name": calendar.month_name[i]} for i in range(1, 13)]
 
             all_dows = [{"code": f"{i+1}", "name": calendar.day_name[i]} for i in range(7)]
 
@@ -179,9 +183,9 @@ def hello():
 
             languages = [{"code": "fr-BE", "name": "français"}]
             if language:
-                matched_languages = [x for x in languages if x["code"] == language]
+                all_lang = [x for x in languages if x["code"] == language]
             else:
-                matched_languages = languages
+                all_lang = languages
 
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
@@ -197,7 +201,8 @@ def hello():
                 except KeyError: # no matches (wildcard), defaulting to 500 first chars
                     matches = [hit["_source"]["text"][:500] + "..."]
                 all_matches = " [...] ".join(matches)
-                all_matches = all_matches.replace("<span", "##!!##").replace("</span", "!!##!!").replace("<", "")
+                all_matches = all_matches.replace("<span", "##!!##").replace("</span", "!!##!!")
+                all_matches = all_matches.replace("<", "")
                 all_matches = all_matches.replace("##!!##", "<span").replace("!!##!!", "</span")
                 result = {"id": result_id, "display": display, "matches": all_matches}
                 results.append(result)
@@ -318,7 +323,8 @@ def hello():
                         except KeyError: # no matches (wildcard), defaulting to 2000 first chars
                             matches = [hit["_source"]["text"][:2000] + "..."]
                         text = " [...] ".join(matches)
-                        line = [result_id, journal, date, year, month, day, dow, edition, pagenb, language, text]
+                        line = [result_id, journal, date, year, month, day,
+                                dow, edition, pagenb, language, text]
                         series = pd.Series(line, index=df.columns)
                         df = df.append(series, ignore_index=True)
                     df['DATE'] = pd.to_datetime(df['DATE']).dt.date
@@ -333,9 +339,10 @@ def hello():
                                    number=number, sortcrit=sortcrit, paper_list=paper_list,
                                    year_from=year_from, year_to=year_to, all_months=all_months,
                                    month_list=month_list, all_dows=all_dows, dow_list=dow_list,
-                                   editions=matched_editions, edition=edition, languages=matched_languages,
-                                   language=language, page_from=page_from, page_to=page_to, day_from=day_from,
-                                   day_to=day_to, date_from=date_from, date_to=date_to
+                                   editions=matched_editions, edition=edition, languages=all_lang,
+                                   language=language, page_from=page_from, page_to=page_to,
+                                   day_from=day_from, day_to=day_to, date_from=date_from,
+                                   date_to=date_to
                                   )
         else:
             html = f"HTTP Error: {r.text}"
