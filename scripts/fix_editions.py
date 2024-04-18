@@ -57,7 +57,7 @@ if __name__ == "__main__":
             "size": 10000,
             "stored_fields": []
         }
-        r = requests_retry_session(session=s).post(es_url, data=json.dumps(payload), timeout=30)
+        r = requests_retry_session(session=s).post(es_url, data=json.dumps(payload), timeout=60)
         if r.status_code == 200:
             resp = json.loads(r.text)
             try:

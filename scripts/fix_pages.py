@@ -57,7 +57,7 @@ if __name__ == "__main__":
             "size": 10000,
             "stored_fields": []
         }
-        r = requests_retry_session(session=s).post(es_url, data=json.dumps(payload), timeout=30)
+        r = requests_retry_session(session=s).post(es_url, data=json.dumps(payload), timeout=60)
         if r.status_code == 200:
             resp = json.loads(r.text)
             try:
@@ -84,7 +84,7 @@ if __name__ == "__main__":
                     }
                     es_url_update = f"{endpoint}/pages/_update/{es_id}"
                     r2 = requests.request("POST", es_url_update, auth=(username, password),
-                                          data=json.dumps(payload2), headers=headers, timeout=10)
+                                          data=json.dumps(payload2), headers=headers, timeout=60)
                     if r2.status_code != 200:
                         print(es_id, r2.text)
                         sys.exit()
