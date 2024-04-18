@@ -7,7 +7,6 @@ import locale
 import math
 from pathlib import Path
 from shutil import copy
-from unidecode import unidecode
 from zipfile import ZipFile
 
 import boto3
@@ -17,6 +16,8 @@ from flask_htpasswd import HtPasswdAuth
 
 import pandas as pd
 import requests
+from unidecode import unidecode
+
 
 try:
     cred = json.load(open("credentials.json", encoding="utf-8"))
@@ -34,11 +35,13 @@ htpasswd = HtPasswdAuth(app)
 
 @app.template_filter()
 def strip_param(long_url, param):
+    """Remove parameter from URL"""
     new_url = long_url.replace(param, "")
     return new_url
 
 @app.route("/")
 def hello():
+    """Main Flask function"""
     query = request.args.get("query")
     if query:
 
@@ -70,7 +73,7 @@ def hello():
         year_to = request.args.get("year_to")
         if year_from:
             query_dic["bool"]["must"].append({"range": {"year": {"gte": year_from, "lte": year_to}}})
-        
+
         month_list = request.args.getlist("month")
         if month_list:
             query_dic["bool"]["minimum_should_match"] = 1
@@ -138,11 +141,12 @@ def hello():
                     }
                 }
 
-        r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data), timeout=60)
+        r = requests.post(es_url, auth=(username, password), headers=headers,
+                          data=json.dumps(data), timeout=60)
         if r.status_code == 200:
             resdic = json.loads(r.text)
             number = resdic["hits"]["total"]["value"]
-            timing = '{0:.2f}'.format(resdic["took"]/1000).replace('.', ',')
+            timing = f"{resdic['took']/1000:.2f}".replace('.', ',')
             if number == 0:
                 found_string = "Aucun résultat"
             elif number == 1:
@@ -178,7 +182,7 @@ def hello():
                 matched_languages = [x for x in languages if x["code"] == language]
             else:
                 matched_languages = languages
-            
+
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
                 np = hit["_source"]["journal"]
@@ -212,10 +216,7 @@ def hello():
                 doc_year = doc_date.split("-")[0]
                 key = f"PDF/{np}/{doc_year}/{doc}.pdf"
                 temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
-                try:
-                    s3.download_file(bucket_name, key, str(temp_path))
-                except Exception as e: # problem with AWS credentials
-                    print(e)
+                s3.download_file(bucket_name, key, str(temp_path))
             else:
                 doc = "false"
 
@@ -223,8 +224,8 @@ def hello():
             if "&p=" in url:
                 url = url.split("&p=")[0]
 
-            zip = request.args.get("zip")
-            if zip:
+            ziparg = request.args.get("zip")
+            if ziparg:
                 query_norm = unidecode(query).replace(" ", "_")
                 query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
                 zippath = Path(__file__).parent / f"static/temp/camille_{query_norm}.zip"
@@ -240,7 +241,8 @@ def hello():
                             "sort": sort,
                             "query": query_dic
                         }
-                        rpage = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data_page), timeout=60)
+                        rpage = requests.post(es_url, auth=(username, password), headers=headers,
+                                              data=json.dumps(data_page), timeout=60)
                         if rpage.status_code == 200:
                             resdic2 = json.loads(rpage.text)
                             hits2 = resdic2["hits"]
@@ -260,17 +262,14 @@ def hello():
                         else:
                             print(f"Error: {rpage.text}")
 
-                    readme_path = Path(__file__).parent / f"static/README.txt"
-                    new_readme_path = Path(__file__).parent / f"static/temp/README.txt"
+                    readme_path = Path(__file__).parent / "static/README.txt"
+                    new_readme_path = Path(__file__).parent / "static/temp/README.txt"
                     copy(readme_path, new_readme_path)
                     readme = open(new_readme_path, 'a', encoding="utf-8")
                     readme.write("\n--- STATISTIQUES ---\n")
                     readme.write(f"Nombre total de fichiers : {total}\n\n")
-                    try:
-                        for journal in sorted(stats_journal)[1:] + [sorted(stats_journal)[0]]:
-                            readme.write(f"{journal} : {stats_journal[journal]}\n")
-                    except:
-                        print(stats_journal)
+                    for journal in sorted(stats_journal)[1:] + [sorted(stats_journal)[0]]:
+                        readme.write(f"{journal} : {stats_journal[journal]}\n")
                     readme.write("\n")
                     for year in sorted(stats_year):
                         readme.write(f"{year} : {stats_year[year]}\n")
@@ -293,14 +292,16 @@ def hello():
                         "fragment_size": 2000
                     }
                 }
-                r2 = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data2))
+                r2 = requests.post(es_url, auth=(username, password), headers=headers,
+                                   data=json.dumps(data2), timeout=60)
                 if r2.status_code == 200:
                     resdic2 = json.loads(r2.text)
                     hits2 = resdic2["hits"]
                     query_norm = unidecode(query).replace(" ", "_")
                     query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
                     xlsxpath = Path(__file__).parent / f"static/temp/camille_{query_norm}.xlsx"
-                    df = pd.DataFrame([], columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR', 'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
+                    df = pd.DataFrame([], columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR',
+                                                   'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
                     for hit in hits2["hits"]:
                         result_id = hit["_source"]["page"]
                         journal = hit["_source"]["journal"]
@@ -312,7 +313,7 @@ def hello():
                         edition = hit["_source"]["edition"]
                         pagenb = hit["_source"]["pagenb"]
                         language = hit["_source"]["language"]
-                        try:            
+                        try:
                             matches = hit["highlight"]["text"]
                         except KeyError: # no matches (wildcard), defaulting to 2000 first chars
                             matches = [hit["_source"]["text"][:2000] + "..."]
@@ -321,18 +322,19 @@ def hello():
                         series = pd.Series(line, index=df.columns)
                         df = df.append(series, ignore_index=True)
                     df['DATE'] = pd.to_datetime(df['DATE']).dt.date
-                    df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32', 'JDLS': 'int32', 'ÉDITION': 'int32', 'PAGE': 'int32'})
+                    df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32',
+                                    'JDLS': 'int32', 'ÉDITION': 'int32', 'PAGE': 'int32'})
                     df.to_excel(xlsxpath, index=None)
                     return send_file(xlsxpath, as_attachment=True)
 
             html = render_template("results.html", query=query, stats=stats,
-                                   results=results, p=p, firstp=firstp, lastp=lastp, 
+                                   results=results, p=p, firstp=firstp, lastp=lastp,
                                    maxp=maxp, doc=doc, url=url, all_papers=all_papers,
                                    number=number, sortcrit=sortcrit, paper_list=paper_list,
                                    year_from=year_from, year_to=year_to, all_months=all_months,
-                                   month_list=month_list, all_dows=all_dows, dow_list=dow_list, 
-                                   editions=matched_editions, edition=edition, languages=matched_languages, 
-                                   language=language, page_from=page_from, page_to=page_to, day_from=day_from, 
+                                   month_list=month_list, all_dows=all_dows, dow_list=dow_list,
+                                   editions=matched_editions, edition=edition, languages=matched_languages,
+                                   language=language, page_from=page_from, page_to=page_to, day_from=day_from,
                                    day_to=day_to, date_from=date_from, date_to=date_to
                                   )
         else:
