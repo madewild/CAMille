@@ -217,8 +217,10 @@ def hello():
                 bucket_name = "camille-data"
                 elements = doc.split("_")
                 np = elements[1]
+                if np == "15463334": # La Presse
+                    np = "B14138"
                 doc_date = elements[2]
-                doc_year = doc_date.split("-")[0]
+                doc_year = doc_date[:4]
                 key = f"PDF/{np}/{doc_year}/{doc}.pdf"
                 temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
                 s3.download_file(bucket_name, key, str(temp_path))
