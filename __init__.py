@@ -10,6 +10,7 @@ from shutil import copy
 from zipfile import ZipFile
 
 import boto3
+from botocore.exceptions import ClientError
 
 from flask import Flask, request, render_template, send_file
 from flask_htpasswd import HtPasswdAuth
@@ -223,7 +224,10 @@ def hello():
                 doc_year = doc_date[:4]
                 key = f"PDF/{np}/{doc_year}/{doc}.pdf"
                 temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
-                s3.download_file(bucket_name, key, str(temp_path))
+                try:
+                    s3.download_file(bucket_name, key, str(temp_path))
+                except ClientError:
+                    print(key)
             else:
                 doc = "false"
 
