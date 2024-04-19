@@ -226,8 +226,9 @@ def hello():
                 temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
                 try:
                     s3.download_file(bucket_name, key, str(temp_path))
-                except ClientError:
-                    print(key)
+                except ClientError: # key mismatch
+                    key = key[:-13] + ".pdf"
+                    s3.download_file(bucket_name, key, str(temp_path))
             else:
                 doc = "false"
 
