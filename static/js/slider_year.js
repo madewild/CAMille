@@ -1,11 +1,11 @@
 var minValueYear = getParameterByName('year_from') || 1831;
-var maxValueYear = getParameterByName('year_to') || 1970;
+var maxValueYear = getParameterByName('year_to') || 1993;
 
 $( function() {
   $("#slider-range-year").slider({
     range: true,
     min: 1831,
-    max: 1970,
+    max: 1993,
     values: [minValueYear, maxValueYear],
     slide: function(event, ui) {
       $('#year_range').val("De " + ui.values[0] + " à " + ui.values[1]);

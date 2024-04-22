@@ -5,40 +5,44 @@ from collections import defaultdict
 import json
 import locale
 import math
-import os
 from pathlib import Path
 from shutil import copy
-from unidecode import unidecode
 from zipfile import ZipFile
 
 import boto3
+from botocore.exceptions import ClientError
 
 from flask import Flask, request, render_template, send_file
 from flask_htpasswd import HtPasswdAuth
 
 import pandas as pd
 import requests
+from unidecode import unidecode
+
 
 try:
-    cred = json.load(open("credentials.json"))
+    cred = json.load(open("credentials.json", encoding="utf-8"))
 except FileNotFoundError:
-    cred = json.load(open("/var/www/camille/credentials.json"))
+    cred = json.load(open("/var/www/camille/credentials.json", encoding="utf-8"))
 
 locale.setlocale(locale.LC_ALL, 'fr_BE.utf8')
 
 app = Flask(__name__)
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+# comment next 3 lines to disable htpasswd (e.g. if CAS is enabled)
 app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
 app.config['FLASK_AUTH_ALL'] = True
 htpasswd = HtPasswdAuth(app)
 
 @app.template_filter()
 def strip_param(long_url, param):
+    """Remove parameter from URL"""
     new_url = long_url.replace(param, "")
     return new_url
 
 @app.route("/")
 def hello():
+    """Main Flask function"""
     query = request.args.get("query")
     if query:
 
@@ -69,8 +73,9 @@ def hello():
         year_from = request.args.get("year_from")
         year_to = request.args.get("year_to")
         if year_from:
-            query_dic["bool"]["must"].append({"range": {"year": {"gte": year_from, "lte": year_to}}})
-        
+            query_dic["bool"]["must"].append({"range": {"year": {"gte": year_from,
+                                                                 "lte": year_to}}})
+
         month_list = request.args.getlist("month")
         if month_list:
             query_dic["bool"]["minimum_should_match"] = 1
@@ -94,8 +99,9 @@ def hello():
             if not date_from:
                 date_from = "1831-02-06"
             if not date_to:
-                date_to = "1970-12-31"
-            query_dic["bool"]["must"].append({"range": {"date": {"gte": date_from, "lte": date_to}}})
+                date_to = "1993-09-01"
+            query_dic["bool"]["must"].append({"range": {"date": {"gte": date_from,
+                                                                 "lte": date_to}}})
 
         edition = request.args.get("edition")
         if edition:
@@ -104,7 +110,8 @@ def hello():
         page_from = request.args.get("page_from")
         page_to = request.args.get("page_to")
         if page_from:
-            query_dic["bool"]["must"].append({"range": {"pagenb": {"gte": page_from, "lte": page_to}}})
+            query_dic["bool"]["must"].append({"range": {"pagenb": {"gte": page_from,
+                                                                   "lte": page_to}}})
 
         language = request.args.get("language")
         if language:
@@ -138,20 +145,21 @@ def hello():
                     }
                 }
 
-        r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data))
+        r = requests.post(es_url, auth=(username, password), headers=headers,
+                          data=json.dumps(data), timeout=60)
         if r.status_code == 200:
             resdic = json.loads(r.text)
             number = resdic["hits"]["total"]["value"]
-            timing = '{0:.2f}'.format(resdic["took"]/1000).replace('.', ',')
+            timing = f"{resdic['took']/1000:.2f}".replace('.', ',')
             if number == 0:
                 found_string = "Aucun résultat"
             elif number == 1:
                 found_string = "Un seul résultat"
             elif p == 1:
-                nb = '{:,}'.format(number).replace(',', ' ')
+                nb = f"{number:,}".replace(',', ' ')
                 found_string = f"{nb} résultats"
             else:
-                nb = '{:,}'.format(number).replace(',', ' ')
+                nb = f"{number:,}".replace(',', ' ')
                 found_string = f"Page {p} sur {nb} résultats"
             stats = f"{found_string} ({timing} secondes)"
             hits = resdic["hits"]
@@ -162,7 +170,8 @@ def hello():
                 names = json.load(f)
             all_papers = [{"code": code, "name": names[code]} for code in names]
 
-            all_months = [{"code": f"{i:02d}", "name": calendar.month_name[i]} for i in range(1, 13)]
+            all_months = [{"code": f"{i:02d}",
+                           "name": calendar.month_name[i]} for i in range(1, 13)]
 
             all_dows = [{"code": f"{i+1}", "name": calendar.day_name[i]} for i in range(7)]
 
@@ -175,29 +184,26 @@ def hello():
 
             languages = [{"code": "fr-BE", "name": "français"}]
             if language:
-                matched_languages = [x for x in languages if x["code"] == language]
+                all_lang = [x for x in languages if x["code"] == language]
             else:
-                matched_languages = languages
-            
+                all_lang = languages
+
             for hit in hits["hits"]:
                 result_id = hit["_source"]["page"]
-                elements = result_id.split("_")
-                np = elements[1]
+                np = hit["_source"]["journal"]
                 name = names[np]
-                hit_date = elements[2]
-                hit_dates = hit_date.split("-")
-                hit_year = hit_dates[0]
-                hit_month = hit_dates[1]
-                hit_day = hit_dates[2]
-                edpage = elements[3]
-                page = int(edpage.split("-")[1])
+                hit_day = hit["_source"]["day"]
+                hit_month = hit["_source"]["month"]
+                hit_year = hit["_source"]["year"]
+                page = int(hit["_source"]["pagenb"])
                 display = f"{name} ({hit_day}/{hit_month}/{hit_year} - p. {page})"
-                try:            
+                try:
                     matches = hit["highlight"]["text"]
                 except KeyError: # no matches (wildcard), defaulting to 500 first chars
                     matches = [hit["_source"]["text"][:500] + "..."]
                 all_matches = " [...] ".join(matches)
-                all_matches = all_matches.replace("<span", "##!!##").replace("</span", "!!##!!").replace("<", "")
+                all_matches = all_matches.replace("<span", "##!!##").replace("</span", "!!##!!")
+                all_matches = all_matches.replace("<", "")
                 all_matches = all_matches.replace("##!!##", "<span").replace("!!##!!", "</span")
                 result = {"id": result_id, "display": display, "matches": all_matches}
                 results.append(result)
@@ -212,14 +218,17 @@ def hello():
                 bucket_name = "camille-data"
                 elements = doc.split("_")
                 np = elements[1]
+                if np == "15463334": # La Presse
+                    np = "B14138"
                 doc_date = elements[2]
-                doc_year = doc_date.split("-")[0]
+                doc_year = doc_date[:4]
                 key = f"PDF/{np}/{doc_year}/{doc}.pdf"
                 temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
                 try:
                     s3.download_file(bucket_name, key, str(temp_path))
-                except Exception as e: # problem with AWS credentials
-                    print(e)
+                except ClientError: # key mismatch
+                    key = key[:-13] + ".pdf"
+                    s3.download_file(bucket_name, key, str(temp_path))
             else:
                 doc = "false"
 
@@ -227,52 +236,58 @@ def hello():
             if "&p=" in url:
                 url = url.split("&p=")[0]
 
-            zip = request.args.get("zip")
-            if zip:
-                data2 =  {
-                    "size": 1000,
-                    "query": query_dic,
-                    "sort": sort
-                }
-                r2 = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data2))
-                if r2.status_code == 200:
-                    resdic2 = json.loads(r2.text)
-                    hits2 = resdic2["hits"]
-                    query_norm = unidecode(query).replace(" ", "_")
-                    query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
-                    zippath = Path(__file__).parent / f"static/temp/camille_{query_norm}.zip"
-                    stats_journal = defaultdict(int)
-                    stats_year = defaultdict(int)
-                    with ZipFile(zippath, 'w') as myzip:
-                        total = len(hits2["hits"])
-                        for hit in hits2["hits"]:
-                            result_id = hit["_source"]["page"]
-                            result_journal = hit["_source"]["journal"]
-                            stats_journal[result_journal] += 1
-                            result_year = str(hit["_source"]["year"])
-                            stats_year[result_year] += 1
-                            text = hit["_source"]["text"]
-                            arcpath = f"{result_id}.txt"
-                            abspath = Path(__file__).parent / f"static/temp/{arcpath}"
-                            with open(abspath, "w", encoding="utf-8") as f:
-                                f.write(text)
-                            myzip.write(abspath, arcpath)
-                            abspath.unlink()
+            ziparg = request.args.get("zip")
+            if ziparg:
+                query_norm = unidecode(query).replace(" ", "_")
+                query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
+                zippath = Path(__file__).parent / f"static/temp/camille_{query_norm}.zip"
+                stats_journal = defaultdict(int)
+                stats_year = defaultdict(int)
+                with ZipFile(zippath, 'w') as myzip:
+                    total = min(number, 1000)
+                    print(f"Total: {total}")
+                    for i in range(total // 100):
+                        data_page =  {
+                            "from": i * 100,
+                            "size": 100,
+                            "sort": sort,
+                            "query": query_dic
+                        }
+                        rpage = requests.post(es_url, auth=(username, password), headers=headers,
+                                              data=json.dumps(data_page), timeout=60)
+                        if rpage.status_code == 200:
+                            resdic2 = json.loads(rpage.text)
+                            hits2 = resdic2["hits"]
+                            for hit in hits2["hits"]:
+                                result_id = hit["_source"]["page"]
+                                result_journal = hit["_source"]["journal"]
+                                stats_journal[result_journal] += 1
+                                result_year = str(hit["_source"]["year"])
+                                stats_year[result_year] += 1
+                                text = hit["_source"]["text"]
+                                arcpath = f"{result_id}.txt"
+                                abspath = Path(__file__).parent / f"static/temp/{arcpath}"
+                                with open(abspath, "w", encoding="utf-8") as f:
+                                    f.write(text)
+                                myzip.write(abspath, arcpath)
+                                abspath.unlink()
+                        else:
+                            print(f"Error: {rpage.text}")
 
-                        readme_path = Path(__file__).parent / f"static/README.txt"
-                        new_readme_path = Path(__file__).parent / f"static/temp/README.txt"
-                        copy(readme_path, new_readme_path)
-                        readme = open(new_readme_path, 'a')
-                        readme.write("\n--- STATISTIQUES ---\n")
-                        readme.write(f"Nombre total de fichiers : {total}\n\n")
-                        for journal in sorted(stats_journal)[1:] + [sorted(stats_journal)[0]]:
-                            readme.write(f"{journal} : {stats_journal[journal]}\n")
-                        readme.write("\n")
-                        for year in sorted(stats_year):
-                            readme.write(f"{year} : {stats_year[year]}\n")
-                        readme.close()
-                        myzip.write(new_readme_path, "_README.txt")
-                    return send_file(zippath, as_attachment=True)
+                    readme_path = Path(__file__).parent / "static/README.txt"
+                    new_readme_path = Path(__file__).parent / "static/temp/README.txt"
+                    copy(readme_path, new_readme_path)
+                    readme = open(new_readme_path, 'a', encoding="utf-8")
+                    readme.write("\n--- STATISTIQUES ---\n")
+                    readme.write(f"Nombre total de fichiers : {total}\n\n")
+                    for journal in sorted(stats_journal)[1:] + [sorted(stats_journal)[0]]:
+                        readme.write(f"{journal} : {stats_journal[journal]}\n")
+                    readme.write("\n")
+                    for year in sorted(stats_year):
+                        readme.write(f"{year} : {stats_year[year]}\n")
+                    readme.close()
+                    myzip.write(new_readme_path, "_README.txt")
+                return send_file(zippath, as_attachment=True)
 
             xlsx = request.args.get("xlsx")
             if xlsx:
@@ -289,14 +304,16 @@ def hello():
                         "fragment_size": 2000
                     }
                 }
-                r2 = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data2))
+                r2 = requests.post(es_url, auth=(username, password), headers=headers,
+                                   data=json.dumps(data2), timeout=60)
                 if r2.status_code == 200:
                     resdic2 = json.loads(r2.text)
                     hits2 = resdic2["hits"]
                     query_norm = unidecode(query).replace(" ", "_")
                     query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
                     xlsxpath = Path(__file__).parent / f"static/temp/camille_{query_norm}.xlsx"
-                    df = pd.DataFrame([], columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR', 'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
+                    df = pd.DataFrame([], columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR',
+                                                   'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
                     for hit in hits2["hits"]:
                         result_id = hit["_source"]["page"]
                         journal = hit["_source"]["journal"]
@@ -308,28 +325,31 @@ def hello():
                         edition = hit["_source"]["edition"]
                         pagenb = hit["_source"]["pagenb"]
                         language = hit["_source"]["language"]
-                        try:            
+                        try:
                             matches = hit["highlight"]["text"]
                         except KeyError: # no matches (wildcard), defaulting to 2000 first chars
                             matches = [hit["_source"]["text"][:2000] + "..."]
                         text = " [...] ".join(matches)
-                        line = [result_id, journal, date, year, month, day, dow, edition, pagenb, language, text]
+                        line = [result_id, journal, date, year, month, day,
+                                dow, edition, pagenb, language, text]
                         series = pd.Series(line, index=df.columns)
                         df = df.append(series, ignore_index=True)
                     df['DATE'] = pd.to_datetime(df['DATE']).dt.date
-                    df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32', 'JDLS': 'int32', 'ÉDITION': 'int32', 'PAGE': 'int32'})
+                    df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32',
+                                    'JDLS': 'int32', 'ÉDITION': 'int32', 'PAGE': 'int32'})
                     df.to_excel(xlsxpath, index=None)
                     return send_file(xlsxpath, as_attachment=True)
 
             html = render_template("results.html", query=query, stats=stats,
-                                   results=results, p=p, firstp=firstp, lastp=lastp, 
+                                   results=results, p=p, firstp=firstp, lastp=lastp,
                                    maxp=maxp, doc=doc, url=url, all_papers=all_papers,
                                    number=number, sortcrit=sortcrit, paper_list=paper_list,
                                    year_from=year_from, year_to=year_to, all_months=all_months,
-                                   month_list=month_list, all_dows=all_dows, dow_list=dow_list, 
-                                   editions=matched_editions, edition=edition, languages=matched_languages, 
-                                   language=language, page_from=page_from, page_to=page_to, day_from=day_from, 
-                                   day_to=day_to, date_from=date_from, date_to=date_to
+                                   month_list=month_list, all_dows=all_dows, dow_list=dow_list,
+                                   editions=matched_editions, edition=edition, languages=all_lang,
+                                   language=language, page_from=page_from, page_to=page_to,
+                                   day_from=day_from, day_to=day_to, date_from=date_from,
+                                   date_to=date_to
                                   )
         else:
             html = f"HTTP Error: {r.text}"

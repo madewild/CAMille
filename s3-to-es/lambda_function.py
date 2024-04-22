@@ -1,15 +1,16 @@
 """Stream S3 objects into Elasticsearch"""
 
+import datetime
 import html
 import json
 import sys
 
 import boto3
 from bs4 import BeautifulSoup as bs
-import pandas as pd
 import requests
 
 def extract_text(xml_body):
+    """Extract text from XML, word by word, and join"""
     soup = bs(xml_body, "lxml")
     extracted_lines = []
     lines = soup.find_all("textline")
@@ -35,7 +36,7 @@ def extract_text(xml_body):
     extracted_text = " ".join(extracted_lines)
     return extracted_text
 
-cred = json.load(open("es_credentials.json"))
+cred = json.load(open("es_credentials.json", encoding="utf-8"))
 endpoint = cred["endpoint"]
 url = f"{endpoint}/pages/_doc"
 username = cred["username"]
@@ -46,7 +47,8 @@ headers = {"Content-Type": "application/json; charset=utf8"}
 s3 = boto3.client('s3')
 
 # Lambda execution starts here
-def handler(event, context):
+def lambda_handler(event, context):
+    """Retrieving metadata"""
     for record in event['Records']:
 
         # Get metadata
@@ -57,16 +59,27 @@ def handler(event, context):
         elements = raw_file_name.split("_")
         journal = elements[1]
         date = elements[2]
+        if elements[0] == "BE-KBR00": # new KBR format
+            if journal == "15463334": # La Presse
+                journal = "B14138"
+            else: # unknown journal
+                sys.exit()
+            edition = elements[7]
+            pagenb = "0" + elements[8] # add leading zero
+            date = date[:4] + "-" + date[4:6] + "-" + date[6:8]
+            date_format = "%Y%m%d"
+        else:
+            ed_page = elements[3]
+            ep_elems = ed_page.split("-")
+            edition = ep_elems[0]
+            pagenb = ep_elems[1]
+            date_format = "%Y-%m-%d"
         date_elems = date.split("-")
         year = date_elems[0]
         month = date_elems[1]
         day = date_elems[2]
-        ts = pd.Timestamp(date)
-        dow = str(ts.dayofweek + 1)
-        ed_page = elements[3]
-        ep_elems = ed_page.split("-")
-        edition = ep_elems[0]
-        pagenb = ep_elems[1]
+        ts = datetime.datetime.strptime(date, date_format)
+        dow = str(ts.weekday() + 1)
 
         # Process XML
         obj = s3.get_object(Bucket=bucket, Key=key)
@@ -88,4 +101,4 @@ def handler(event, context):
         }
         data = json.dumps(payload)
         full_es_url = f"{url}/{raw_file_name}"
-        r = requests.put(full_es_url, auth=auth, data=data, headers=headers)
+        r = requests.put(full_es_url, auth=auth, data=data, headers=headers, timeout=60)

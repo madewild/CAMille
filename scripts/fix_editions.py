@@ -1,10 +1,9 @@
-"""Reindex docs in ES with extra fields"""
+"""Fix edition to avoid hight numbers"""
 
 import json
 import sys
 import time
 
-import pandas as pd
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util import Retry
@@ -15,6 +14,7 @@ def requests_retry_session(
     status_forcelist=(500, 502, 503, 504, 400),
     session=None,
 ):
+    """Retrying upon failure"""
     session = session or requests.Session()
     retry = Retry(
         total=retries,
@@ -30,7 +30,6 @@ def requests_retry_session(
 
 if __name__ == "__main__":
 
-    bucket_name = "camille-data"
     code = sys.argv[1]
     start = int(sys.argv[2])
     try:
@@ -40,9 +39,9 @@ if __name__ == "__main__":
     years = range(start, end+1)
 
     try:
-        cred = json.load(open("credentials.json"))
+        cred = json.load(open("credentials.json", encoding="utf-8"))
     except FileNotFoundError:
-        cred = json.load(open("/var/www/camille/credentials.json"))
+        cred = json.load(open("/var/www/camille/credentials.json", encoding="utf-8"))
     endpoint = cred["endpoint"]
     username = cred["username"]
     password = cred["password"]
@@ -71,29 +70,14 @@ if __name__ == "__main__":
             print(f"{nb_es_ids} docs found for journal {code} and year {year}")
             if nb_es_ids:
                 for es_id in sorted(es_ids):
-                    elems = es_id.split("_")
-                    date = elems[2]
-                    date_elems = date.split("-")
-                    month = date_elems[1]
-                    day = date_elems[2]
-                    ts = pd.Timestamp(date)
-                    dow = str(ts.dayofweek + 1)
-                    ed_page = elems[3]
-                    ep_elems = ed_page.split("-")
-                    edition = ep_elems[0]
-                    pagenb = ep_elems[1]
                     payload2 = {
                         "doc" : {
-                            "month": month,
-                            "day": day,
-                            "dow": dow,
-                            "edition": edition,
-                            "pagenb": pagenb,
-                            "language": "fr-BE"
+                            "edition": "01"
                         }
                     }
                     es_url_update = f"{endpoint}/pages/_update/{es_id}"
-                    r2 = requests.request("POST", es_url_update, auth=(username, password), data=json.dumps(payload2), headers=headers, , timeout=60)
+                    r2 = requests.request("POST", es_url_update, auth=(username, password),
+                                          data=json.dumps(payload2), headers=headers, timeout=60)
                     if r2.status_code != 200:
                         print(es_id, r2.text)
                         sys.exit()
@@ -102,4 +86,4 @@ if __name__ == "__main__":
             print(r.text)
             sys.exit()
         print("Done")
-        time.sleep(60)
+        time.sleep(10)
