@@ -5,6 +5,7 @@ venv*
 static/temp/*
 s3-to-es/package
 s3-to-es/*.zip
+user-*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
