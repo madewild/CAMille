@@ -10,7 +10,7 @@ Please do not commit this to the Git repository!
 from pywikibot import family
 
 
-class Family(family.Family):  # noqa: D101
+class Family(family.WikibaseFamily):  # noqa: D101
 
     name = 'sparqulb'
     langs = {
