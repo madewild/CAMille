@@ -10,7 +10,7 @@ wikibase_repo.login()
 
 sparql = SPARQLWrapper("https://query.sparq.ulb.be/bigdata/namespace/wdq/sparql")
 
-query = "select ?s ?o where {?s rdfs:label ?o}"
+query = "select ?item ?value where {?item rdfs:label ?value}"
 
 sparql.setQuery(query)
 sparql.setReturnFormat(JSON)
