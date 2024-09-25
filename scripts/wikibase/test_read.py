@@ -15,10 +15,9 @@ query = "select ?item ?value where {?item rdfs:label ?value}"
 sparql.setQuery(query)
 sparql.setReturnFormat(JSON)
 results = sparql.query().convert()
-print(results)
 
 bindings = results['results']['bindings']
 print(f"{len(bindings)} items found")
 for result in bindings:
     qid = result['item']['value'].replace("https://sparq.ulb.be/entity/", "")
-    print(qid)
+    #print(qid)
