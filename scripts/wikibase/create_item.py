@@ -1,7 +1,6 @@
 """Creating a single item"""
 
 import json
-import sys
 
 import pywikibot
 
@@ -19,35 +18,47 @@ with open("data/sample.json", encoding="utf-8") as json_file:
     item = pywikibot.ItemPage(wikibase_repo)
     label = sample['full_name']
     data['labels'] = {'en': label, 'fr': label}
-    data['descriptions'] = {'en': "journalist", 'fr': "journaliste"}
+    if sample['country'] == "Belgique":
+        en_desc = "Belgian journalist"
+        fr_desc = "journaliste belge"
+    else:
+        en_desc = "journalist"
+        fr_desc = "journaliste"
+    data['descriptions'] = {'en': en_desc, 'fr': fr_desc}
 
     new_claims = []
 
     # instance of human
     claim = pywikibot.Claim(wikibase_repo, "P3", datatype='wikibase-item')
-    object = pywikibot.ItemPage(wikibase_repo, "Q1206")
-    claim.setTarget(object)
+    value = pywikibot.ItemPage(wikibase_repo, "Q1206")
+    claim.setTarget(value)
     new_claims.append(claim.toJSON())
 
-    """# given name
-    claim = pywikibot.Claim(wikibase_repo, "P115", datatype='string')
+    # instance of journalist
+    claim = pywikibot.Claim(wikibase_repo, "P3", datatype='wikibase-item')
+    value = pywikibot.ItemPage(wikibase_repo, "Q1225")
+    claim.setTarget(value)
+    new_claims.append(claim.toJSON())
+
+    # given name as string
+    claim = pywikibot.Claim(wikibase_repo, "P6098", datatype='string')
     claim.setTarget(sample['first_name'])
     new_claims.append(claim.toJSON())
 
-    # family name
-    claim = pywikibot.Claim(wikibase_repo, "P113", datatype='string')
+    # family name as string
+    claim = pywikibot.Claim(wikibase_repo, "P6099", datatype='string')
     claim.setTarget(sample['last_name'])
-    new_claims.append(claim.toJSON())"""
+    new_claims.append(claim.toJSON())
 
     # sex or gender
     claim = pywikibot.Claim(wikibase_repo, "P87", datatype='wikibase-item')
     if sample['gender'] == "H":
-        object = pywikibot.ItemPage(wikibase_repo, "Q1173")
-        claim.setTarget(object)
+        value = pywikibot.ItemPage(wikibase_repo, "Q1173")
+        claim.setTarget(value)
         new_claims.append(claim.toJSON())
     elif sample['gender'] == "F":
-        object = pywikibot.ItemPage(wikibase_repo, "Q1179")
-        claim.setTarget(object)
+        value = pywikibot.ItemPage(wikibase_repo, "Q1179")
+        claim.setTarget(value)
         new_claims.append(claim.toJSON())
     else:
         print(f"Unknown gender: {sample['gender']}")
@@ -55,8 +66,8 @@ with open("data/sample.json", encoding="utf-8") as json_file:
     # country of citizenship
     claim = pywikibot.Claim(wikibase_repo, "P89", datatype='wikibase-item')
     if sample['country'] == "Belgique":
-        object = pywikibot.ItemPage(wikibase_repo, "Q4")
-        claim.setTarget(object)
+        value = pywikibot.ItemPage(wikibase_repo, "Q4")
+        claim.setTarget(value)
         new_claims.append(claim.toJSON())
     else:
         print(f"Unknown country: {sample['country']}")
