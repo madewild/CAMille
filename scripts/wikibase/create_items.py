@@ -2,6 +2,7 @@
 
 import json
 import re
+import sys
 
 import pywikibot
 
@@ -10,13 +11,15 @@ wikibase = pywikibot.Site("en", "sparqulb")
 wikibase_repo = wikibase.data_repository()
 wikibase_repo.login()
 
-with open("data/sample.json", encoding="utf-8") as json_file:
-    sample = json.load(json_file)
+with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf-8") as json_file:
+    collection = json.load(json_file)
+    nb = len(collection)
+    print(f"{nb} journalists found")
 
-    for entry in sample:
+    for entry in [collection["0"]]:
 
         data = {}
-        label = entry['full_name']
+        label = entry['full name']
         print(f"\nAttempting import of {label}")
 
         item = pywikibot.ItemPage(wikibase_repo)
@@ -45,26 +48,26 @@ with open("data/sample.json", encoding="utf-8") as json_file:
 
         # given name as string
         claim = pywikibot.Claim(wikibase_repo, "P6098", datatype='string')
-        claim.setTarget(entry['first_name'])
+        claim.setTarget(entry['given name'])
         new_claims.append(claim.toJSON())
 
         # family name as string
         claim = pywikibot.Claim(wikibase_repo, "P6099", datatype='string')
-        claim.setTarget(entry['last_name'])
+        claim.setTarget(entry['family name'])
         new_claims.append(claim.toJSON())
 
         # sex or gender
         claim = pywikibot.Claim(wikibase_repo, "P87", datatype='wikibase-item')
-        if entry['gender'] == "H":
+        if entry['sex'] == "male":
             value = pywikibot.ItemPage(wikibase_repo, "Q1173")
             claim.setTarget(value)
             new_claims.append(claim.toJSON())
-        elif entry['gender'] == "F":
+        elif entry['sex'] == "female":
             value = pywikibot.ItemPage(wikibase_repo, "Q1179")
             claim.setTarget(value)
             new_claims.append(claim.toJSON())
         else:
-            print(f"Unknown gender: {entry['gender']}")
+            print(f"Unknown gender: {entry['sex']}")
 
         # country of citizenship
         claim = pywikibot.Claim(wikibase_repo, "P89", datatype='wikibase-item')
@@ -78,7 +81,7 @@ with open("data/sample.json", encoding="utf-8") as json_file:
         data['claims'] = new_claims
         try:
             item.editEntity(data, summary="adding new journalist")
-            print (f"{entry['full_name']} added as {item.getID()}")
+            print (f"{entry['full name']} added as {item.getID()}")
         except pywikibot.exceptions.OtherPageSaveError as e:
             x = re.findall(r'\[\[Item:.*\]\]', str(e))
             if x:
