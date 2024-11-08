@@ -85,6 +85,16 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
             claim.setTarget(isni_number)
             new_claims.append(claim.toJSON())
 
+        # occupations
+        occupations = entry['occupation']
+        if occupations:
+            for occupation in occupations:
+                claim = pywikibot.Claim(wikibase_repo, "P6100", datatype='string')
+                claim.setTarget(occupation)
+                new_claims.append(claim.toJSON())
+
+        
+
         data['claims'] = new_claims
         try:
             item.editEntity(data, summary="adding new journalist")
