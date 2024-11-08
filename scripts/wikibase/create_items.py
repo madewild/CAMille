@@ -93,7 +93,15 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                 claim.setTarget(occupation)
                 new_claims.append(claim.toJSON())
 
-        
+        # medias
+        medias = entry['media']
+        if medias:
+            for media in medias:
+                claim = pywikibot.Claim(wikibase_repo, "P8682", datatype='string')
+                media_type = media["type"]
+                media_name = media["name"]
+                claim.setTarget(media_name)
+                new_claims.append(claim.toJSON())
 
         data['claims'] = new_claims
         try:
@@ -101,9 +109,12 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
             print (f"{entry['full name']} added as {item.getID()}")
         except pywikibot.exceptions.OtherPageSaveError as e:
             x = re.findall(r'\[\[Item:.*\]\]', str(e))
-            if x:
-                qid =  x[-1].replace("[[Item:", "").split("|")[0]
-            else:
+            if not x:
                 print("QID not found")
-            print(f"{label} already exists as {qid}")
+                sys.exit()
+            else:
+                qid =  x[-1].replace("[[Item:", "").split("|")[0]
+                print(f"{label} already exists as {qid}")
+              
+            
     print("")
