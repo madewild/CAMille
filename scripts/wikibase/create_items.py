@@ -106,7 +106,7 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
         data['claims'] = new_claims
         try:
             item.editEntity(data, summary="adding new journalist")
-            print (f"{entry['full name']} added as {item.getID()}")
+            print (f"{label} added as {item.getID()}")
         except pywikibot.exceptions.OtherPageSaveError as e:
             x = re.findall(r'\[\[Item:.*\]\]', str(e))
             if not x:
@@ -115,6 +115,11 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
             else:
                 qid =  x[-1].replace("[[Item:", "").split("|")[0]
                 print(f"{label} already exists as {qid}")
-              
-            
+                existing_item = pywikibot.ItemPage(wikibase_repo, qid)
+                for claim in new_claims:
+                    property = claim['mainsnak']['property']
+                    if property in existing_item.claims:
+                        print(f"{property} already exists for {label}")
+                    else:
+                        print(f"{property} is a new claim for {label}")
     print("")
