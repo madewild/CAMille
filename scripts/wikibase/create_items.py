@@ -78,6 +78,13 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
         else:
             print(f"Unknown country: {entry['country']}")
 
+        # ISNI number
+        isni_number = entry['ISNI']
+        if isni_number:
+            claim = pywikibot.Claim(wikibase_repo, "P218", datatype='external-id')
+            claim.setTarget(isni_number)
+            new_claims.append(claim.toJSON())
+
         data['claims'] = new_claims
         try:
             item.editEntity(data, summary="adding new journalist")
