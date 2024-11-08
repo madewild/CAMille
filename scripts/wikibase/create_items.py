@@ -114,12 +114,16 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                 sys.exit()
             else:
                 qid =  x[-1].replace("[[Item:", "").split("|")[0]
-                print(f"{label} already exists as {qid}")
+                print(f"{label} already exists as {qid}\n")
                 existing_item = pywikibot.ItemPage(wikibase_repo, qid)
+                added_claims = []
                 for claim in new_claims:
                     property = claim['mainsnak']['property']
                     if property in existing_item.claims:
-                        print(f"{property} already exists for {label}")
+                        print(f"{property} already present for {label}")
                     else:
                         print(f"{property} is a new claim for {label}")
+                        existing_item.editEntity({'claims': [claim]}, summary=f"adding {property}")
+                        sys.exit()
+
     print("")
