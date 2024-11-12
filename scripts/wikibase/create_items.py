@@ -14,7 +14,7 @@ wikibase_repo.login()
 with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf-8") as json_file:
     collection = json.load(json_file)
     nb = len(collection)
-    print(f"{nb} journalists found")
+    print(f"\n{nb} journalists found")
 
     for entry in [collection["0"]]:
 
@@ -121,8 +121,9 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                     property = claim['mainsnak']['property']
                     if property in existing_item.claims:
                         print(f"{property} already present for {label}")
+                        # compare claims to check if changed and merge if needed
                     else:
-                        print(f"{property} is a new claim for {label}")
+                        print(f"{property} is a new claim for {label}, adding")
                         existing_item.editEntity({'claims': [claim]}, summary=f"adding {property}")
                         sys.exit()
 
