@@ -11,6 +11,21 @@ wikibase = pywikibot.Site("en", "sparqulb")
 wikibase_repo = wikibase.data_repository()
 wikibase_repo.login()
 
+def format_date(date_string):
+    if len(date_string) == 10:
+        year = date_string[:4]
+        month = date_string[5:7]
+        day = date_string[8:]
+        target = pywikibot.WbTime(site=wikibase_repo, year=int(year), month=int(month), day=int(day))
+    elif len(date_string) == 7:
+        year = date_string[:4]
+        month = date_string[5:7]
+        target = pywikibot.WbTime(site=wikibase_repo, year=int(year), month=int(month))
+    elif len(date_string) == 4:
+        year = date_string
+        target = pywikibot.WbTime(site=wikibase_repo, year=int(year))
+    return target
+
 with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf-8") as json_file:
     collection = json.load(json_file)
     nb = len(collection)
@@ -157,18 +172,15 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
         dob = entry['date of birth']
         if dob:
             claim = pywikibot.Claim(wikibase_repo, "P4817", datatype='time')
-            if len(dob) == 10:
-                year = dob[:4]
-                month = dob[5:7]
-                day = dob[8:]
-                target = pywikibot.WbTime(site=wikibase_repo, year=int(year), month=int(month), day=int(day))
-            elif len(dob) == 7:
-                year = dob[:4]
-                month = dob[5:7]
-                target = pywikibot.WbTime(site=wikibase_repo, year=int(year), month=int(month))
-            elif len(dob) == 4:
-                year = dob
-                target = pywikibot.WbTime(site=wikibase_repo, year=int(year))
+            target = format_date(dob)
+            claim.setTarget(target)
+            new_claims.append(claim.toJSON())
+
+        # date of death
+        dod = entry['date of death']
+        if dod:
+            claim = pywikibot.Claim(wikibase_repo, "P4535", datatype='time')
+            target = format_date(dod)
             claim.setTarget(target)
             new_claims.append(claim.toJSON())
 
