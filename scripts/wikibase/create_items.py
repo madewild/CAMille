@@ -98,10 +98,42 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
         if medias:
             for media in medias:
                 claim = pywikibot.Claim(wikibase_repo, "P8682", datatype='string')
-                media_type = media["type"]
                 media_name = media["name"]
                 claim.setTarget(media_name)
+                media_type = media["type"]
+                if media_type == "unsure":
+                    qualifier = pywikibot.Claim(wikibase_repo, "P1111") # sourcing circmstances
+                    target = pywikibot.ItemPage(wikibase_repo, "Q9743") # presumably
+                    qualifier.setTarget(target)
+                    claim.addQualifier(qualifier)
                 new_claims.append(claim.toJSON())
+
+        # works
+        works = entry['work']
+        if works:
+            for work in works:
+                claim = pywikibot.Claim(wikibase_repo, "P8683", datatype='string')
+                claim.setTarget(work)
+                new_claims.append(claim.toJSON())
+
+        # notice
+        notices = entry['notice']
+        if notices:
+            for notice in notices:
+                claim = pywikibot.Claim(wikibase_repo, "P8684", datatype='string')
+                claim.setTarget(notice)
+                new_claims.append(claim.toJSON())
+
+        # sources
+        sources = entry['source']
+        if sources:
+            for source in sources:
+                texts = source["text"]
+                for text in texts:
+                    claim = pywikibot.Claim(wikibase_repo, "P8722", datatype='string')
+                    claim.setTarget(text)
+                    new_claims.append(claim.toJSON())
+
 
         data['claims'] = new_claims
         try:
