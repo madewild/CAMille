@@ -11,6 +11,8 @@ wikibase = pywikibot.Site("en", "sparqulb")
 wikibase_repo = wikibase.data_repository()
 wikibase_repo.login()
 
+cutoff = int(sys.argv[1])
+
 def format_date(date_string):
     if len(date_string) == 10:
         year = date_string[:4]
@@ -34,7 +36,7 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
     nb = len(collection)
     print(f"\n{nb} journalists found")
 
-    for entry in [collection[f"{n}"] for n in range(10)]:
+    for entry in [collection[f"{n}"] for n in range(cutoff)]:
 
         data = {}
         label = entry['full name']
