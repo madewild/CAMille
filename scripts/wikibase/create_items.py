@@ -164,6 +164,13 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                     claim.setTarget(text)
                     new_claims.append(claim.toJSON())
 
+        # BDD ID
+        bdd_id = entry['ID']
+        if bdd_id:
+            claim = pywikibot.Claim(wikibase_repo, "P8852", datatype='external-id')
+            claim.setTarget(bdd_id[0])
+            new_claims.append(claim.toJSON())
+
         # place of birth
         pob = entry['place of birth']
         if pob:
