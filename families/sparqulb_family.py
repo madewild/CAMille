@@ -26,3 +26,7 @@ class Family(family.WikibaseFamily):  # noqa: D101
         return {
             'en': 'https',
         }[code]
+    
+    def calendarmodel(self, code):
+        """Default calendar model for WbTime datatype."""
+        return 'http://www.wikidata.org/entity/Q1985727'
