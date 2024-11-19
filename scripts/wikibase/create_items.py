@@ -31,7 +31,7 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
     nb = len(collection)
     print(f"\n{nb} journalists found")
 
-    for entry in [collection["3"]]:
+    for entry in [collection["67"]]:
 
         data = {}
         label = entry['full name']
@@ -91,12 +91,14 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
 
         # country of citizenship
         claim = pywikibot.Claim(wikibase_repo, "P89", datatype='wikibase-item')
-        if entry['country'] == "Belgique":
-            value = pywikibot.ItemPage(wikibase_repo, "Q4")
-            claim.setTarget(value)
-            new_claims.append(claim.toJSON())
-        else:
-            print(f"Unknown country: {entry['country']}")
+        country = entry['country']
+        if country:
+            if  country == "Belgique":
+                value = pywikibot.ItemPage(wikibase_repo, "Q4")
+                claim.setTarget(value)
+                new_claims.append(claim.toJSON())
+            else:
+                print(f"Unknown country: {country}")
 
         # ISNI number
         isni_number = entry['ISNI']
@@ -183,6 +185,33 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
             target = format_date(dod)
             claim.setTarget(target)
             new_claims.append(claim.toJSON())
+
+        # work period
+        periods = entry['work period']
+        if periods:
+            for period in periods:
+                claim = pywikibot.Claim(wikibase_repo, "P6157", datatype='string')
+                claim.setTarget(period)
+                new_claims.append(claim.toJSON())
+
+        # affiliations
+        affiliations = entry['affiliation']
+        if affiliations:
+            for affiliation in affiliations:
+                claim = pywikibot.Claim(wikibase_repo, "P8680", datatype='string')
+                aff_name = affiliation["name"]
+                claim.setTarget(aff_name)
+                aff_role = affiliation["role"]
+                if aff_role:
+                    qualifier = pywikibot.Claim(wikibase_repo, "P8681")
+                    qualifier.setTarget(aff_role)
+                    claim.addQualifier(qualifier)
+                aff_period = affiliation["period"]
+                if aff_period:
+                    qualifier = pywikibot.Claim(wikibase_repo, "P6157")
+                    qualifier.setTarget(aff_period)
+                    claim.addQualifier(qualifier)
+                new_claims.append(claim.toJSON())
 
         data['claims'] = new_claims
         try:
