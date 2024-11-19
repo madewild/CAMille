@@ -12,7 +12,7 @@ wikibase_repo = wikibase.data_repository()
 wikibase_repo.login()
 
 cutoff = int(sys.argv[1])
-LIMIT = 400
+LIMIT = 5000
 
 def format_date(date_string):
     if len(date_string) == 10:
@@ -240,7 +240,8 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                 for claim in new_claims:
                     property = claim['mainsnak']['property']
                     if property in existing_item.claims:
-                        print(f"{property} already present for {label}")
+                        pass
+                        # print(f"{property} already present for {label}")
                         # compare claims to check if changed and merge if needed
                     else:
                         print(f"{property} is a new claim for {label}, adding")
