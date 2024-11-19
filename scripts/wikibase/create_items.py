@@ -16,7 +16,10 @@ def format_date(date_string):
         year = date_string[:4]
         month = date_string[5:7]
         day = date_string[8:]
-        target = pywikibot.WbTime(site=wikibase_repo, year=int(year), month=int(month), day=int(day))
+        if day == "00":
+            target = pywikibot.WbTime(site=wikibase_repo, year=int(year), month=int(month))
+        else:
+            target = pywikibot.WbTime(site=wikibase_repo, year=int(year), month=int(month), day=int(day))
     elif len(date_string) == 7:
         year = date_string[:4]
         month = date_string[5:7]
@@ -31,7 +34,7 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
     nb = len(collection)
     print(f"\n{nb} journalists found")
 
-    for entry in [collection["67"]]:
+    for entry in [collection[f"{n}"] for n in range(10)]:
 
         data = {}
         label = entry['full name']
