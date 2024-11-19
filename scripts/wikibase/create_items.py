@@ -30,6 +30,11 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
         else:
             en_desc = "journalist"
             fr_desc = "journaliste"
+        data['aliases'] = {'en': []}
+        aliases = entry['alias']
+        if aliases:
+            for alias in aliases:
+                data['aliases']['en'].append(alias)
         data['descriptions'] = {'en': en_desc, 'fr': fr_desc}
 
         new_claims = []
