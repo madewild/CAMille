@@ -16,7 +16,7 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
     nb = len(collection)
     print(f"\n{nb} journalists found")
 
-    for entry in [collection["0"]]:
+    for entry in [collection["3"]]:
 
         data = {}
         label = entry['full name']
@@ -121,13 +121,13 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                 claim.setTarget(work)
                 new_claims.append(claim.toJSON())
 
-        # notice
-        notices = entry['notice']
+        # notice (to uncomment when allowing for more than 400 chars)
+        """notices = entry['notice']
         if notices:
             for notice in notices:
                 claim = pywikibot.Claim(wikibase_repo, "P8684", datatype='string')
                 claim.setTarget(notice)
-                new_claims.append(claim.toJSON())
+                new_claims.append(claim.toJSON())"""
 
         # sources
         sources = entry['source']
@@ -138,6 +138,22 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                     claim = pywikibot.Claim(wikibase_repo, "P8722", datatype='string')
                     claim.setTarget(text)
                     new_claims.append(claim.toJSON())
+
+        # place of birth
+        pob = entry['place of birth']
+        if pob:
+            claim = pywikibot.Claim(wikibase_repo, "P8678", datatype='string')
+            claim.setTarget(pob)
+            new_claims.append(claim.toJSON())
+
+        # place of death
+        pod = entry['place of death']
+        if pod:
+            claim = pywikibot.Claim(wikibase_repo, "P8679", datatype='string')
+            claim.setTarget(pod)
+            new_claims.append(claim.toJSON())
+
+        
 
 
         data['claims'] = new_claims
@@ -153,6 +169,8 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                 qid =  x[-1].replace("[[Item:", "").split("|")[0]
                 print(f"{label} already exists as {qid}\n")
                 existing_item = pywikibot.ItemPage(wikibase_repo, qid)
+                if data["aliases"]["en"]:
+                    existing_item.editEntity({'aliases': data["aliases"]}, summary=f"adding aliases")
                 added_claims = []
                 for claim in new_claims:
                     property = claim['mainsnak']['property']
@@ -162,6 +180,5 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                     else:
                         print(f"{property} is a new claim for {label}, adding")
                         existing_item.editEntity({'claims': [claim]}, summary=f"adding {property}")
-                        sys.exit()
 
     print("")
