@@ -246,7 +246,8 @@ def hello():
                 with ZipFile(zippath, 'w') as myzip:
                     total = min(number, 1000)
                     print(f"Total: {total}")
-                    for i in range(total // 100 + 1):
+                    pages = 10 if total == 1000 else total // 100 + 1
+                    for i in range(pages):
                         data_page =  {
                             "from": i * 100,
                             "size": 100,
