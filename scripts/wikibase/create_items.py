@@ -14,7 +14,14 @@ wikibase_repo.login()
 
 sparql = SPARQLWrapper("https://query.sparq.ulb.be/bigdata/namespace/wdq/sparql")
 
-cutoff = int(sys.argv[1])
+cutoff = sys.argv[1]
+if "-" in cutoff:
+    start = int(cutoff.split("-")[0])
+    end = int(cutoff.split("-")[1])
+else:
+    start = 0
+    end = int(cutoff)
+
 LIMIT = 5000
 
 def format_date(date_string):
@@ -40,7 +47,7 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
     nb = len(collection)
     print(f"\n{nb} journalists found")
 
-    for entry in [collection[f"{n}"] for n in range(cutoff)]:
+    for entry in [collection[f"{n}"] for n in range(start, end)]:
 
         data = {}
         label = entry['full name']
@@ -183,8 +190,7 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                     claim.setTarget(notice)
                     new_claims.append(claim.toJSON())
                 else:
-                    print(f"Notice is longer than {LIMIT} chars, aborting")
-                    sys.exit()
+                    print(f"Notice is longer than {LIMIT} chars, skipping")
 
         # sources
         sources = entry['source']
