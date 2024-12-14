@@ -73,9 +73,11 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
         new_claims.append(claim.toJSON())
 
         # given name as string
-        claim = pywikibot.Claim(wikibase_repo, "P6098", datatype='string')
-        claim.setTarget(entry['given name'])
-        new_claims.append(claim.toJSON())
+        given = entry['given name']
+        if given: # some people have only a family name (e.g. "Allaer")
+            claim = pywikibot.Claim(wikibase_repo, "P6098", datatype='string')
+            claim.setTarget(given)
+            new_claims.append(claim.toJSON())
 
         # family name as string
         claim = pywikibot.Claim(wikibase_repo, "P6099", datatype='string')
