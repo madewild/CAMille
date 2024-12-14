@@ -90,17 +90,18 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
         # sex or gender
         claim = pywikibot.Claim(wikibase_repo, "P87", datatype='wikibase-item')
         sex = entry['sex']
-        if sex == "male":
-            value = pywikibot.ItemPage(wikibase_repo, "Q1173")
-            claim.setTarget(value)
-            new_claims.append(claim.toJSON())
-        elif sex == "female":
-            value = pywikibot.ItemPage(wikibase_repo, "Q1179")
-            claim.setTarget(value)
-            new_claims.append(claim.toJSON())
-        else:
-            print(f"Unknown gender: {sex}")
-            sys.exit()
+        if sex:
+            if sex == "male":
+                value = pywikibot.ItemPage(wikibase_repo, "Q1173")
+                claim.setTarget(value)
+                new_claims.append(claim.toJSON())
+            elif sex == "female":
+                value = pywikibot.ItemPage(wikibase_repo, "Q1179")
+                claim.setTarget(value)
+                new_claims.append(claim.toJSON())
+            else:
+                print(f"Unknown gender: {sex}")
+                sys.exit()
 
         # country of citizenship
         claim = pywikibot.Claim(wikibase_repo, "P89", datatype='wikibase-item')
