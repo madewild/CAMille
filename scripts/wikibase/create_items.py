@@ -4,12 +4,15 @@ import json
 import re
 import sys
 
+from SPARQLWrapper import SPARQLWrapper, JSON
 import pywikibot
 
 #connect to the wikibase
 wikibase = pywikibot.Site("en", "sparqulb")
 wikibase_repo = wikibase.data_repository()
 wikibase_repo.login()
+
+sparql = SPARQLWrapper("https://query.sparq.ulb.be/bigdata/namespace/wdq/sparql")
 
 cutoff = int(sys.argv[1])
 LIMIT = 5000
@@ -101,12 +104,30 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
         claim = pywikibot.Claim(wikibase_repo, "P89", datatype='wikibase-item')
         country = entry['country']
         if country:
-            if  country == "Belgique":
-                value = pywikibot.ItemPage(wikibase_repo, "Q4")
-                claim.setTarget(value)
-                new_claims.append(claim.toJSON())
-            else:
-                print(f"Unknown country: {country}")
+            query = f"""select * where {{
+                        ?country wdt:P3 wd:Q1605 .
+                        ?country rdfs:label "{country}"@fr .
+                    }}"""
+        sparql.setQuery(query)
+        sparql.setReturnFormat(JSON)
+        results = sparql.query().convert()
+
+        bindings = results['results']['bindings']
+        qids = []
+        for result in bindings:
+            qid = result['country']['value'].replace("https://sparq.ulb.be/entity/", "")
+            qids.append(qid)
+        if len(qids) == 0:
+            print(f"No QID found for {country}")
+            sys.exit()
+        elif len(qids) > 1 : 
+            print(f"More than one QID found for {country}: {qids}")
+            sys.exit()
+        else:
+            country_qid = qids[0]         
+            value = pywikibot.ItemPage(wikibase_repo, country_qid)
+            claim.setTarget(value)
+            new_claims.append(claim.toJSON())
 
         # ISNI number: problem in BDD file!
         """isni_number = entry['ISNI']
