@@ -14,10 +14,10 @@ wikibase_repo.login()
 
 sparql = SPARQLWrapper("https://query.sparq.ulb.be/bigdata/namespace/wdq/sparql")
 
-query = """select * where {
+query = f"""select * where {{
             ?s wdt:P3 wd:Q1225 .
-            ?s wdt:P218 ?isni .
-        }"""
+            ?s wdt:{pid} ?value .
+        }}"""
 
 sparql.setQuery(query)
 sparql.setReturnFormat(JSON)
