@@ -144,6 +144,9 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                     claim = pywikibot.Claim(wikibase_repo, "P8683", datatype='string')
                     claim.setTarget(work)
                     new_claims.append(claim.toJSON())
+                else:
+                    print(f"Work is longer than {LIMIT} chars, aborting")
+                    sys.exit()
 
         # notice
         notices = entry['notice']
@@ -153,6 +156,9 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                     claim = pywikibot.Claim(wikibase_repo, "P8684", datatype='string')
                     claim.setTarget(notice)
                     new_claims.append(claim.toJSON())
+                else:
+                    print(f"Notice is longer than {LIMIT} chars, aborting")
+                    sys.exit()
 
         # sources
         sources = entry['source']
