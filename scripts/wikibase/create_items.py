@@ -108,26 +108,26 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                         ?country wdt:P3 wd:Q1605 .
                         ?country rdfs:label "{country}"@fr .
                     }}"""
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
+            sparql.setQuery(query)
+            sparql.setReturnFormat(JSON)
+            results = sparql.query().convert()
 
-        bindings = results['results']['bindings']
-        qids = []
-        for result in bindings:
-            qid = result['country']['value'].replace("https://sparq.ulb.be/entity/", "")
-            qids.append(qid)
-        if len(qids) == 0:
-            print(f"No QID found for {country}")
-            sys.exit()
-        elif len(qids) > 1 : 
-            print(f"More than one QID found for {country}: {qids}")
-            sys.exit()
-        else:
-            country_qid = qids[0]         
-            value = pywikibot.ItemPage(wikibase_repo, country_qid)
-            claim.setTarget(value)
-            new_claims.append(claim.toJSON())
+            bindings = results['results']['bindings']
+            qids = []
+            for result in bindings:
+                qid = result['country']['value'].replace("https://sparq.ulb.be/entity/", "")
+                qids.append(qid)
+            if len(qids) == 0:
+                print(f"No QID found for {country}")
+                sys.exit()
+            elif len(qids) > 1 : 
+                print(f"More than one QID found for {country}: {qids}")
+                sys.exit()
+            else:
+                country_qid = qids[0]         
+                value = pywikibot.ItemPage(wikibase_repo, country_qid)
+                claim.setTarget(value)
+                new_claims.append(claim.toJSON())
 
         # ISNI number: problem in BDD file!
         """isni_number = entry['ISNI']
