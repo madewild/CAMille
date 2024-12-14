@@ -253,6 +253,8 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
             for affiliation in affiliations:
                 claim = pywikibot.Claim(wikibase_repo, "P8680", datatype='string')
                 aff_name = affiliation["name"]
+                if not aff_name: # handle edge case when role known but not assoc
+                    aff_name = "inconnu"
                 claim.setTarget(aff_name)
                 aff_role = affiliation["role"]
                 if aff_role:
@@ -276,20 +278,24 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                 print("QID not found")
                 sys.exit()
             else:
-                qid =  x[-1].replace("[[Item:", "").split("|")[0]
-                print(f"{label} already exists as {qid}\n")
-                existing_item = pywikibot.ItemPage(wikibase_repo, qid)
-                if data["aliases"]["en"]:
-                    existing_item.editEntity({'aliases': data["aliases"]}, summary=f"adding aliases")
-                added_claims = []
-                for claim in new_claims:
-                    property = claim['mainsnak']['property']
-                    if property in existing_item.claims:
-                        pass
-                        # print(f"{property} already present for {label}")
-                        # compare claims to check if changed and merge if needed
-                    else:
-                        print(f"{property} is a new claim for {label}, adding")
-                        existing_item.editEntity({'claims': [claim]}, summary=f"adding {property}")
+                if "-1" in x [-1]: # error not due to item already created
+                    print(data)
+                    sys.exit()
+                else:
+                    qid =  x[-1].replace("[[Item:", "").split("|")[0]
+                    print(f"{label} already exists as {qid}\n")
+                    existing_item = pywikibot.ItemPage(wikibase_repo, qid)
+                    if data["aliases"]["en"]:
+                        existing_item.editEntity({'aliases': data["aliases"]}, summary=f"adding aliases")
+                    added_claims = []
+                    for claim in new_claims:
+                        property = claim['mainsnak']['property']
+                        if property in existing_item.claims:
+                            pass
+                            # print(f"{property} already present for {label}")
+                            # compare claims to check if changed and merge if needed
+                        else:
+                            print(f"{property} is a new claim for {label}, adding")
+                            existing_item.editEntity({'claims': [claim]}, summary=f"adding {property}")
 
     print("")
