@@ -10,14 +10,18 @@ wikibase_repo.login()
 
 sparql = SPARQLWrapper("https://query.sparq.ulb.be/bigdata/namespace/wdq/sparql")
 
-query = "select ?item ?value where {?item rdfs:label ?value}"
+query = """select * where {
+            ?journalist wdt:P3 wd:Q1225 .
+            ?journalist rdfs:label ?name .
+            FILTER(lang(?name)="fr")
+        }"""
 
 sparql.setQuery(query)
 sparql.setReturnFormat(JSON)
 results = sparql.query().convert()
 
 bindings = results['results']['bindings']
-print(f"{len(bindings)} items found")
+print(f"{len(bindings)} items found\n")
 for result in bindings:
-    qid = result['item']['value'].replace("https://sparq.ulb.be/entity/", "")
-    #print(qid)
+    print(result['name']['value'])
+
