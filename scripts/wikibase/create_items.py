@@ -22,7 +22,7 @@ else:
     start = 0
     end = int(cutoff)
 
-LIMIT = 5000
+LIMIT = 15000
 
 def format_date(date_string):
     if len(date_string) == 10:
