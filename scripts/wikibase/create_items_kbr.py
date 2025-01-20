@@ -22,6 +22,7 @@ else:
     start = 0
     end = int(cutoff)
 
+FILE = "camille_final_bon24_31juillet.xlsx.clean.json"
 LIMIT = 15000
 
 def format_date(date_string):
@@ -42,7 +43,7 @@ def format_date(date_string):
         target = pywikibot.WbTime(site=wikibase_repo, year=int(year))
     return target
 
-with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf-8") as json_file:
+with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
     collection = json.load(json_file)
     nb = len(collection)
     print(f"\n{nb} journalists found")
