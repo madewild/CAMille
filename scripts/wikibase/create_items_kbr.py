@@ -56,7 +56,7 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
 
         item = pywikibot.ItemPage(wikibase_repo)
         data['labels'] = {'en': label, 'fr': label}
-        if entry['country'] == "Belgique":
+        if entry['country'][0]['country'] == "Belgique":
             en_desc = "Belgian journalist"
             fr_desc = "journaliste belge"
         else:
@@ -113,32 +113,34 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
 
         # country of citizenship
         claim = pywikibot.Claim(wikibase_repo, "P89", datatype='wikibase-item')
-        country = entry['country']
-        if country:
-            query = f"""select * where {{
-                        ?country wdt:P3 wd:Q1605 .
-                        ?country rdfs:label "{country}"@fr .
-                    }}"""
-            sparql.setQuery(query)
-            sparql.setReturnFormat(JSON)
-            results = sparql.query().convert()
+        countries = entry['country']
+        if countries:
+            for country_object in countries:
+                country = country_object['country']
+                query = f"""select * where {{
+                            ?country wdt:P3 wd:Q1605 .
+                            ?country rdfs:label "{country}"@fr .
+                        }}"""
+                sparql.setQuery(query)
+                sparql.setReturnFormat(JSON)
+                results = sparql.query().convert()
 
-            bindings = results['results']['bindings']
-            qids = []
-            for result in bindings:
-                qid = result['country']['value'].replace("https://sparq.ulb.be/entity/", "")
-                qids.append(qid)
-            if len(qids) == 0:
-                print(f"No QID found for {country}")
-                sys.exit()
-            elif len(qids) > 1 : 
-                print(f"More than one QID found for {country}: {qids}")
-                sys.exit()
-            else:
-                country_qid = qids[0]         
-                value = pywikibot.ItemPage(wikibase_repo, country_qid)
-                claim.setTarget(value)
-                new_claims.append(claim.toJSON())
+                bindings = results['results']['bindings']
+                qids = []
+                for result in bindings:
+                    qid = result['country']['value'].replace("https://sparq.ulb.be/entity/", "")
+                    qids.append(qid)
+                if len(qids) == 0:
+                    print(f"No QID found for {country}")
+                    sys.exit()
+                elif len(qids) > 1 : 
+                    print(f"More than one QID found for {country}: {qids}")
+                    sys.exit()
+                else:
+                    country_qid = qids[0]         
+                    value = pywikibot.ItemPage(wikibase_repo, country_qid)
+                    claim.setTarget(value)
+                    new_claims.append(claim.toJSON())
 
         # ISNI number: problem in BDD file!
         """isni_number = entry['ISNI']
@@ -204,7 +206,7 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                     new_claims.append(claim.toJSON())
 
         # BDD ID
-        bdd_id = entry['ID']
+        bdd_id = entry['BDD ID']
         if bdd_id:
             claim = pywikibot.Claim(wikibase_repo, "P8852", datatype='external-id')
             claim.setTarget(bdd_id[0])
@@ -225,20 +227,24 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
             new_claims.append(claim.toJSON())
 
         # date of birth
-        dob = entry['date of birth']
-        if dob:
-            claim = pywikibot.Claim(wikibase_repo, "P4817", datatype='time')
-            target = format_date(dob)
-            claim.setTarget(target)
-            new_claims.append(claim.toJSON())
+        dobs = entry['date of birth']
+        if dobs:
+            for dob_object in dobs:
+                dob = dob_object['date']
+                claim = pywikibot.Claim(wikibase_repo, "P4817", datatype='time')
+                target = format_date(dob)
+                claim.setTarget(target)
+                new_claims.append(claim.toJSON())
 
         # date of death
-        dod = entry['date of death']
-        if dod:
-            claim = pywikibot.Claim(wikibase_repo, "P4535", datatype='time')
-            target = format_date(dod)
-            claim.setTarget(target)
-            new_claims.append(claim.toJSON())
+        dods = entry['date of death']
+        if dods:
+            for dod_object in dods:
+                dod = dod_object['date']
+                claim = pywikibot.Claim(wikibase_repo, "P4535", datatype='time')
+                target = format_date(dod)
+                claim.setTarget(target)
+                new_claims.append(claim.toJSON())
 
         # work period
         periods = entry['work period']
@@ -249,7 +255,7 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                 new_claims.append(claim.toJSON())
 
         # affiliations
-        affiliations = entry['affiliation']
+        """affiliations = entry['affiliation']
         if affiliations:
             for affiliation in affiliations:
                 claim = pywikibot.Claim(wikibase_repo, "P8680", datatype='string')
@@ -267,7 +273,7 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                     qualifier = pywikibot.Claim(wikibase_repo, "P6157")
                     qualifier.setTarget(aff_period)
                     claim.addQualifier(qualifier)
-                new_claims.append(claim.toJSON())
+                new_claims.append(claim.toJSON())"""
 
         data['claims'] = new_claims
         try:
