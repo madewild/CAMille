@@ -219,6 +219,20 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
             claim.setTarget(wikidata_qid)
             new_claims.append(claim.toJSON())
 
+        # BnF ID
+        bnf_id = entry['Bibliothèque nationale de France ID']
+        if bnf_id:
+            claim = pywikibot.Claim(wikibase_repo, "P302", datatype='external-id')
+            claim.setTarget(bnf_id)
+            new_claims.append(claim.toJSON())
+
+        # NTA ID
+        nta_id = entry['Nationale Thesaurus voor Auteursnamen ID']
+        if nta_id:
+            claim = pywikibot.Claim(wikibase_repo, "P5270", datatype='external-id')
+            claim.setTarget(nta_id)
+            new_claims.append(claim.toJSON())
+
         # BDD ID
         bdd_id = entry['BDD ID']
         if bdd_id:
