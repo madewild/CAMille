@@ -233,6 +233,13 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
             claim.setTarget(nta_id)
             new_claims.append(claim.toJSON())
 
+        # KBR ID
+        kbr_id = entry['KBR Catalogue ID']
+        if kbr_id:
+            claim = pywikibot.Claim(wikibase_repo, "P7514", datatype='external-id')
+            claim.setTarget(kbr_id)
+            new_claims.append(claim.toJSON())
+
         # BDD ID
         bdd_id = entry['BDD ID']
         if bdd_id:
