@@ -309,26 +309,35 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                 claim.setTarget(period)
                 new_claims.append(claim.toJSON())
 
-        # affiliations
-        """affiliations = entry['affiliation']
-        if affiliations:
-            for affiliation in affiliations:
-                claim = pywikibot.Claim(wikibase_repo, "P8680", datatype='string')
-                aff_name = affiliation["name"]
-                if not aff_name: # handle edge case when role known but not assoc
-                    aff_name = "inconnu"
-                claim.setTarget(aff_name)
-                aff_role = affiliation["role"]
-                if aff_role:
-                    qualifier = pywikibot.Claim(wikibase_repo, "P8681")
-                    qualifier.setTarget(aff_role)
-                    claim.addQualifier(qualifier)
-                aff_period = affiliation["period"]
-                if aff_period:
-                    qualifier = pywikibot.Claim(wikibase_repo, "P6157")
-                    qualifier.setTarget(aff_period)
-                    claim.addQualifier(qualifier)
-                new_claims.append(claim.toJSON())"""
+        # languages
+        claim = pywikibot.Claim(wikibase_repo, "P3151", datatype='wikibase-item')
+        languages = entry['languages']
+        if languages:
+            for language in languages:
+                query = f"""select * where {{
+                        ?language wdt:P3 wd:Q18007 .
+                        ?language rdfs:label "{language}"@en .
+                    }}"""
+                sparql.setQuery(query)
+                sparql.setReturnFormat(JSON)
+                results = sparql.query().convert()
+
+                bindings = results['results']['bindings']
+                qids = []
+                for result in bindings:
+                    qid = result['language']['value'].replace("https://sparq.ulb.be/entity/", "")
+                    qids.append(qid)
+                if len(qids) == 0:
+                    print(f"No QID found for {language}")
+                    sys.exit()
+                elif len(qids) > 1 : 
+                    print(f"More than one QID found for {language}: {qids}")
+                    sys.exit()
+                else:
+                    language_qid = qids[0]         
+                    value = pywikibot.ItemPage(wikibase_repo, language_qid)
+                    claim.setTarget(value)
+                    new_claims.append(claim.toJSON())
 
         data['claims'] = new_claims
         try:
