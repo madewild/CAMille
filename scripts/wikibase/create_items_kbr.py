@@ -212,6 +212,8 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                     claim = pywikibot.Claim(wikibase_repo, "P8722", datatype='string')
                     claim.setTarget(text)
                     new_claims.append(claim.toJSON())
+                # TO ADD
+                # pages = source["page"]
 
         # VIAF ID
         viaf_id = entry['VIAF ID']
