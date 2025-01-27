@@ -205,6 +205,20 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                     claim.setTarget(text)
                     new_claims.append(claim.toJSON())
 
+        # VIAF ID
+        viaf_id = entry['VIAF ID']
+        if viaf_id:
+            claim = pywikibot.Claim(wikibase_repo, "P196", datatype='external-id')
+            claim.setTarget(viaf_id)
+            new_claims.append(claim.toJSON())
+        
+        # Wikidata QID
+        wikidata_qid = entry['Wikidata QID']
+        if wikidata_qid:
+            claim = pywikibot.Claim(wikibase_repo, "P4", datatype='external-id')
+            claim.setTarget(wikidata_qid)
+            new_claims.append(claim.toJSON())
+
         # BDD ID
         bdd_id = entry['BDD ID']
         if bdd_id:
