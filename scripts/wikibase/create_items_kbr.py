@@ -142,12 +142,12 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                     claim.setTarget(value)
                     new_claims.append(claim.toJSON())
 
-        # ISNI number: problem in BDD file!
-        """isni_number = entry['ISNI']
+        # ISNI number
+        isni_number = entry['ISNI']
         if isni_number:
             claim = pywikibot.Claim(wikibase_repo, "P218", datatype='external-id')
             claim.setTarget(isni_number)
-            new_claims.append(claim.toJSON())"""
+            new_claims.append(claim.toJSON())
 
         # occupations
         occupations = entry['occupation']
