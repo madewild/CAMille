@@ -25,6 +25,8 @@ else:
 FILE = "camille_final_bon24_31juillet.xlsx.clean.json"
 LIMIT = 15000
 
+ref_mapping = {"CAMille": "Q17896", "Wikipedia": "Q6083", "BnF": "Q1304"}
+
 def format_date(date_string):
     if len(date_string) == 10:
         year = date_string[:4]
@@ -140,6 +142,12 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                     country_qid = qids[0]         
                     value = pywikibot.ItemPage(wikibase_repo, country_qid)
                     claim.setTarget(value)
+                    coun_refs = country_object["sources"]
+                    if coun_refs:
+                        for coun_ref in coun_refs:
+                            ref = pywikibot.Claim(wikibase_repo, 'P127') # stated in
+                            ref.setTarget(pywikibot.ItemPage(wikibase_repo, ref_mapping[coun_ref]))
+                            claim.addSources([ref])
                     new_claims.append(claim.toJSON())
 
         # ISNI number
@@ -269,6 +277,12 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                 claim = pywikibot.Claim(wikibase_repo, "P4817", datatype='time')
                 target = format_date(dob)
                 claim.setTarget(target)
+                dob_refs = dob_object["sources"]
+                if dob_refs:
+                    for dob_ref in dob_refs:
+                        ref = pywikibot.Claim(wikibase_repo, 'P127') # stated in
+                        ref.setTarget(pywikibot.ItemPage(wikibase_repo, ref_mapping[dob_ref]))
+                        claim.addSources([ref])
                 new_claims.append(claim.toJSON())
 
         # date of death
@@ -279,6 +293,12 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                 claim = pywikibot.Claim(wikibase_repo, "P4535", datatype='time')
                 target = format_date(dod)
                 claim.setTarget(target)
+                dod_refs = dod_object["sources"]
+                if dod_refs:
+                    for dod_ref in dod_refs:
+                        ref = pywikibot.Claim(wikibase_repo, 'P127') # stated in
+                        ref.setTarget(pywikibot.ItemPage(wikibase_repo, ref_mapping[dod_ref]))
+                        claim.addSources([ref])
                 new_claims.append(claim.toJSON())
 
         # work period
