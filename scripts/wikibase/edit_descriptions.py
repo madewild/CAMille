@@ -12,6 +12,8 @@ sparql = SPARQLWrapper("https://query.sparq.ulb.be/bigdata/namespace/wdq/sparql"
 
 query = f"""select distinct ?s where {{
             ?s wdt:P3 wd:Q1225 .
+            ?s schema:description ?description
+            FILTER (?description = 'Belgian journalist'@en)
         }}"""
 
 sparql.setQuery(query)
