@@ -243,10 +243,10 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
             claim.setTarget(nta_id)
             new_claims.append(claim.toJSON())
 
-        # KBR ID
+        # KBR person ID
         kbr_id = entry['KBR Catalogue ID']
         if kbr_id:
-            claim = pywikibot.Claim(wikibase_repo, "P7514", datatype='external-id')
+            claim = pywikibot.Claim(wikibase_repo, "P10258", datatype='external-id')
             claim.setTarget(kbr_id)
             new_claims.append(claim.toJSON())
 
