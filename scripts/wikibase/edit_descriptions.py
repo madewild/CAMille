@@ -28,4 +28,4 @@ for result in bindings:
     if descriptions['fr'] == "journaliste belge":
         new_desc = {'en': 'journalist', 'fr': 'journaliste'}
         item.editDescriptions(new_desc, summary='Description changed')
-        print(f"Changes description for {qid}")
+        print(f"Changing description for {qid}")
