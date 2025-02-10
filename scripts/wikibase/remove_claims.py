@@ -14,7 +14,7 @@ wikibase_repo.login()
 
 sparql = SPARQLWrapper("https://query.sparq.ulb.be/bigdata/namespace/wdq/sparql")
 
-query = f"""select * where {{
+query = f"""select distinct ?s where {{
             ?s wdt:P3 wd:Q1225 .
             ?s wdt:{pid} ?value .
         }}"""
