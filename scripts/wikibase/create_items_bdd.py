@@ -56,12 +56,8 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
 
         item = pywikibot.ItemPage(wikibase_repo)
         data['labels'] = {'en': label, 'fr': label}
-        if entry['country'] == "Belgique":
-            en_desc = "Belgian journalist"
-            fr_desc = "journaliste belge"
-        else:
-            en_desc = "journalist"
-            fr_desc = "journaliste"
+        en_desc = "journalist"
+        fr_desc = "journaliste"
         data['aliases'] = {'en': []}
         aliases = entry['alias']
         if aliases:
