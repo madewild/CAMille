@@ -50,7 +50,7 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
     nb = len(collection)
     print(f"\n{nb} journalists found")
 
-    for entry in [collection[f"{n}"] for n in range(start, end)]:
+    for index, entry in enumerate([collection[f"{n}"] for n in range(start, end)]):
 
         data = {}
         label = entry['full name']
@@ -252,6 +252,11 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
             claim = pywikibot.Claim(wikibase_repo, "P8852", datatype='external-id')
             claim.setTarget(bdd_id[0])
             new_claims.append(claim.toJSON())
+
+        # CAMille file index
+        claim = pywikibot.Claim(wikibase_repo, "P12117", datatype='external-id')
+        claim.setTarget(index)
+        new_claims.append(claim.toJSON())
 
         # place of birth
         pob = entry['place of birth']
