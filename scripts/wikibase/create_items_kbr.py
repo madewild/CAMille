@@ -155,10 +155,16 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
 
         # occupations
         occupations = entry['occupation']
-        if occupations:
+        if occupations: 
             for occupation in occupations:
+                role = occupation["role"]
                 claim = pywikibot.Claim(wikibase_repo, "P6100", datatype='string')
-                claim.setTarget(occupation)
+                claim.setTarget(role)
+                occ_period = occupation["period"]
+                if occ_period:
+                    qualifier = pywikibot.Claim(wikibase_repo, "P6157")
+                    qualifier.setTarget(occ_period)
+                    claim.addQualifier(qualifier)
                 new_claims.append(claim.toJSON())
 
         # media
@@ -320,12 +326,12 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                 new_claims.append(claim.toJSON())
 
         # work period
-        periods = entry['work period']
+        """periods = entry['work period']
         if periods:
             for period in periods:
                 claim = pywikibot.Claim(wikibase_repo, "P6157", datatype='string')
                 claim.setTarget(period)
-                new_claims.append(claim.toJSON())
+                new_claims.append(claim.toJSON())"""
 
         # languages
         claim = pywikibot.Claim(wikibase_repo, "P3151", datatype='wikibase-item')
