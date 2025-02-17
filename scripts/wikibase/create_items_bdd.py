@@ -145,13 +145,19 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
 
         # occupations
         occupations = entry['occupation']
-        if occupations:
+        if occupations: 
             for occupation in occupations:
+                role = occupation["role"]
                 claim = pywikibot.Claim(wikibase_repo, "P6100", datatype='string')
-                claim.setTarget(occupation)
-                new_claims.append(claim.toJSON())
+                claim.setTarget(role)
+                """occ_period = occupation["period"]
+                if occ_period:
+                    qualifier = pywikibot.Claim(wikibase_repo, "P6157")
+                    qualifier.setTarget(occ_period)
+                    claim.addQualifier(qualifier)
+                new_claims.append(claim.toJSON())"""
 
-        # medias
+        # media
         medias = entry['media']
         if medias:
             for media in medias:
@@ -164,6 +170,17 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                     target = pywikibot.ItemPage(wikibase_repo, "Q9743") # presumably
                     qualifier.setTarget(target)
                     claim.addQualifier(qualifier)
+                med_role = media["role"]
+                if med_role:
+                    qualifier = pywikibot.Claim(wikibase_repo, "P8681")
+                    qualifier.setTarget(med_role)
+                    claim.addQualifier(qualifier)
+                med_periods = media["period"]
+                if med_periods:
+                    for med_period in med_periods:
+                        qualifier = pywikibot.Claim(wikibase_repo, "P6157")
+                        qualifier.setTarget(med_period)
+                        claim.addQualifier(qualifier)
                 new_claims.append(claim.toJSON())
 
         # works
@@ -237,12 +254,12 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
             new_claims.append(claim.toJSON())
 
         # work period
-        periods = entry['work period']
+        """periods = entry['work period']
         if periods:
             for period in periods:
                 claim = pywikibot.Claim(wikibase_repo, "P6157", datatype='string')
                 claim.setTarget(period)
-                new_claims.append(claim.toJSON())
+                new_claims.append(claim.toJSON())"""
 
         # affiliations
         affiliations = entry['affiliation']
