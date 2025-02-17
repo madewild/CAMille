@@ -150,12 +150,7 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                 role = occupation["role"]
                 claim = pywikibot.Claim(wikibase_repo, "P6100", datatype='string')
                 claim.setTarget(role)
-                """occ_period = occupation["period"]
-                if occ_period:
-                    qualifier = pywikibot.Claim(wikibase_repo, "P6157")
-                    qualifier.setTarget(occ_period)
-                    claim.addQualifier(qualifier)
-                new_claims.append(claim.toJSON())"""
+                new_claims.append(claim.toJSON())
 
         # media
         medias = entry['media']
