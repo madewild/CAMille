@@ -161,7 +161,7 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                 claim.setTarget(occupation)
                 new_claims.append(claim.toJSON())
 
-        # medias
+        # media
         medias = entry['media']
         if medias:
             for media in medias:
@@ -174,6 +174,17 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                     target = pywikibot.ItemPage(wikibase_repo, "Q9743") # presumably
                     qualifier.setTarget(target)
                     claim.addQualifier(qualifier)
+                med_role = media["role"]
+                if med_role:
+                    qualifier = pywikibot.Claim(wikibase_repo, "P8681")
+                    qualifier.setTarget(med_role)
+                    claim.addQualifier(qualifier)
+                med_periods = media["period"]
+                if med_periods:
+                    for med_period in med_periods:
+                        qualifier = pywikibot.Claim(wikibase_repo, "P6157")
+                        qualifier.setTarget(med_period)
+                        claim.addQualifier(qualifier)
                 new_claims.append(claim.toJSON())
 
         # works
