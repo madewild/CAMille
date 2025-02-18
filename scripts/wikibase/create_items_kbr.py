@@ -115,8 +115,8 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
         if countries:
             for country_object in countries:
                 country = country_object['country']
-                query = f"""select * where {{
-                            ?country wdt:P3 wd:Q1605 .
+                query = f"""select distinct * where {{
+                            {{?country wdt:P3 wd:Q1605}} UNION {{?country wdt:P3 wd:Q1607}} .
                             ?country rdfs:label "{country}"@fr .
                         }}"""
                 sparql.setQuery(query)
