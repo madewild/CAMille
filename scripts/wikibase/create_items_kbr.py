@@ -341,8 +341,8 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
         languages = entry['languages']
         if languages:
             for language in languages:
-                query = f"""select * where {{
-                        ?language wdt:P3 wd:Q18007 .
+                query = f"""select distinct * where {{
+                        {{?language wdt:P3 wd:Q18007}} UNION {{?language wdt:P3 wd:Q18008}} .
                         ?language rdfs:label "{language}"@en .
                     }}"""
                 sparql.setQuery(query)
