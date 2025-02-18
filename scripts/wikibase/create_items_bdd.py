@@ -300,11 +300,14 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                     for claim in new_claims:
                         property = claim['mainsnak']['property']
                         if property in existing_item.claims:
-                            pass
-                            # print(f"{property} already present for {label}")
-                            # compare claims to check if changed and merge if needed
+                            #print(f"{property} already present for {label}\n")
+                            value = claim['mainsnak']['datavalue']['value']
+                            existing_values = [c.toJSON().get('mainsnak').get('datavalue').get('value') for c in existing_item.claims[property]]
+                            if value not in existing_values and len(value) > 1:
+                                print(f"{value} is a new value for {property}, adding")
+                                existing_item.editEntity({'claims': [claim]}, summary=f"adding {property}")
                         else:
-                            print(f"{property} is a new claim for {label}, adding")
+                            print(f"{property} is a new property for {label}, adding")
                             existing_item.editEntity({'claims': [claim]}, summary=f"adding {property}")
 
     print("")
