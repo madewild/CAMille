@@ -17,6 +17,7 @@ sparql = SPARQLWrapper("https://query.sparq.ulb.be/bigdata/namespace/wdq/sparql"
 query = f"""select distinct ?s where {{
             ?s wdt:P3 wd:Q1225 .
             ?s wdt:{pid} ?value .
+            #?s wdt:P218 ?isni .
         }}"""
 
 sparql.setQuery(query)
