@@ -160,11 +160,14 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
                 role = occupation["role"]
                 claim = pywikibot.Claim(wikibase_repo, "P6100", datatype='string')
                 claim.setTarget(role)
-                occ_period = occupation["period"]
-                if occ_period:
-                    qualifier = pywikibot.Claim(wikibase_repo, "P6157")
-                    qualifier.setTarget(occ_period)
-                    claim.addQualifier(qualifier)
+                try:
+                    occ_periods = occupation["period"]
+                    for occ_period in occ_periods:
+                        qualifier = pywikibot.Claim(wikibase_repo, "P6157")
+                        qualifier.setTarget(occ_period)
+                        claim.addQualifier(qualifier)
+                except KeyError: # no period
+                    pass
                 new_claims.append(claim.toJSON())
 
         # media
@@ -276,7 +279,7 @@ with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
 
         # CAMille file index
         claim = pywikibot.Claim(wikibase_repo, "P12117", datatype='external-id')
-        claim.setTarget(index)
+        claim.setTarget(f"{index}")
         new_claims.append(claim.toJSON())
 
         # place of birth
