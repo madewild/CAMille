@@ -315,7 +315,7 @@ def hello():
                         }
                     }
                     r2 = requests.post(es_url, auth=(username, password), headers=headers,
-                                   data=json.dumps(data_page2), timeout=60)
+                                   data=json.dumps(data_page2), timeout=600)
                     if r2.status_code == 200:
                         resdic2 = json.loads(r2.text)
                         hits2 = resdic2["hits"]
