@@ -292,54 +292,59 @@ def hello():
 
             xlsx = request.args.get("xlsx")
             if xlsx:
-                data2 =  {
-                    "size": 1000,
-                    "sort": sort,
-                    "query": query_dic,
-                    "highlight": {
-                        "fields": {
-                            "text": {}
-                        },
-                        "pre_tags": "<kw>",
-                        "post_tags": "</kw>",
-                        "fragment_size": 2000
+                total = min(number, 25000)
+                pages_xlsx = 25 if total == 25000 else total // 1000 + 1
+                query_norm = unidecode(query).replace(" ", "_")
+                query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
+                xlsxpath = Path(__file__).parent / f"static/temp/camille_{query_norm}.xlsx"
+                df = pd.DataFrame([], columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR',
+                                               'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
+                for i in range(pages_xlsx):
+                    data_page2 =  {
+                        "from": i * 1000,
+                        "size": 1000,
+                        "sort": sort,
+                        "query": query_dic,
+                        "highlight": {
+                            "fields": {
+                                "text": {}
+                            },
+                            "pre_tags": "<kw>",
+                            "post_tags": "</kw>",
+                            "fragment_size": 2000
+                        }
                     }
-                }
-                r2 = requests.post(es_url, auth=(username, password), headers=headers,
-                                   data=json.dumps(data2), timeout=60)
-                if r2.status_code == 200:
-                    resdic2 = json.loads(r2.text)
-                    hits2 = resdic2["hits"]
-                    query_norm = unidecode(query).replace(" ", "_")
-                    query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
-                    xlsxpath = Path(__file__).parent / f"static/temp/camille_{query_norm}.xlsx"
-                    df = pd.DataFrame([], columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR',
-                                                   'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
-                    for hit in hits2["hits"]:
-                        result_id = hit["_source"]["page"]
-                        journal = hit["_source"]["journal"]
-                        date = hit["_source"]["date"]
-                        year = hit["_source"]["year"]
-                        month = hit["_source"]["month"]
-                        day = hit["_source"]["day"]
-                        dow = hit["_source"]["dow"]
-                        edition = hit["_source"]["edition"]
-                        pagenb = hit["_source"]["pagenb"]
-                        language = hit["_source"]["language"]
-                        try:
-                            matches = hit["highlight"]["text"]
-                        except KeyError: # no matches (wildcard), defaulting to 2000 first chars
-                            matches = [hit["_source"]["text"][:2000] + "..."]
-                        text = " [...] ".join(matches)
-                        line = [result_id, journal, date, year, month, day,
-                                dow, edition, pagenb, language, text]
-                        series = pd.Series(line, index=df.columns)
-                        df = df.append(series, ignore_index=True)
-                    df['DATE'] = pd.to_datetime(df['DATE']).dt.date
-                    df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32',
+                    r2 = requests.post(es_url, auth=(username, password), headers=headers,
+                                   data=json.dumps(data_page2), timeout=60)
+                    if r2.status_code == 200:
+                        resdic2 = json.loads(r2.text)
+                        hits2 = resdic2["hits"]
+                        for hit in hits2["hits"]:
+                            result_id = hit["_source"]["page"]
+                            journal = hit["_source"]["journal"]
+                            date = hit["_source"]["date"]
+                            year = hit["_source"]["year"]
+                            month = hit["_source"]["month"]
+                            day = hit["_source"]["day"]
+                            dow = hit["_source"]["dow"]
+                            edition = hit["_source"]["edition"]
+                            pagenb = hit["_source"]["pagenb"]
+                            language = hit["_source"]["language"]
+                            try:
+                                matches = hit["highlight"]["text"]
+                            except KeyError: # no matches (wildcard), defaulting to 2000 first chars
+                                matches = [hit["_source"]["text"][:2000] + "..."]
+                            text = " [...] ".join(matches)
+                            line = [result_id, journal, date, year, month, day,
+                                    dow, edition, pagenb, language, text]
+                            series = pd.Series(line, index=df.columns)
+                            df = df.append(series, ignore_index=True)
+
+                df['DATE'] = pd.to_datetime(df['DATE']).dt.date
+                df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32',
                                     'JDLS': 'int32', 'ÉDITION': 'int32', 'PAGE': 'int32'})
-                    df.to_excel(xlsxpath, index=None)
-                    return send_file(xlsxpath, as_attachment=True)
+                df.to_excel(xlsxpath, index=None)
+                return send_file(xlsxpath, as_attachment=True)
 
             html = render_template("results.html", query=query, stats=stats,
                                    results=results, p=p, firstp=firstp, lastp=lastp,
