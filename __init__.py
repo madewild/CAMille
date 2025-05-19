@@ -338,7 +338,8 @@ def hello():
                             line = [result_id, journal, date, year, month, day,
                                     dow, edition, pagenb, language, text]
                             series = pd.Series(line, index=df.columns)
-                            df = df.append(series, ignore_index=True)
+                            #df = df.append(series, ignore_index=True)
+                            df = pd.concat([df, series], ignore_index=True)
 
                 df['DATE'] = pd.to_datetime(df['DATE']).dt.date
                 df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32',
