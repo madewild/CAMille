@@ -13,7 +13,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 from flask import Flask, request, render_template, send_file
-from flask_htpasswd import HtPasswdAuth
+#from flask_htpasswd import HtPasswdAuth
 
 import pandas as pd
 import requests
@@ -30,9 +30,9 @@ locale.setlocale(locale.LC_ALL, 'fr_BE.utf8')
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 # comment next 3 lines to disable htpasswd (e.g. if CAS is enabled)
-app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
-app.config['FLASK_AUTH_ALL'] = True
-htpasswd = HtPasswdAuth(app)
+#app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
+#app.config['FLASK_AUTH_ALL'] = True
+#htpasswd = HtPasswdAuth(app)
 
 @app.template_filter()
 def strip_param(long_url, param):
@@ -146,7 +146,7 @@ def hello():
                 }
 
         r = requests.post(es_url, auth=(username, password), headers=headers,
-                          data=json.dumps(data), timeout=60)
+                          data=json.dumps(data), timeout=60, verify=False)
         if r.status_code == 200:
             resdic = json.loads(r.text)
             number = resdic["hits"]["total"]["value"]
@@ -255,7 +255,7 @@ def hello():
                             "query": query_dic
                         }
                         rpage = requests.post(es_url, auth=(username, password), headers=headers,
-                                              data=json.dumps(data_page), timeout=60)
+                                              data=json.dumps(data_page), timeout=60, verify=False)
                         if rpage.status_code == 200:
                             resdic2 = json.loads(rpage.text)
                             hits2 = resdic2["hits"]
@@ -315,7 +315,7 @@ def hello():
                         }
                     }
                     r2 = requests.post(es_url, auth=(username, password), headers=headers,
-                                   data=json.dumps(data_page2), timeout=600)
+                                   data=json.dumps(data_page2), timeout=600, verify=False)
                     if r2.status_code == 200:
                         resdic2 = json.loads(r2.text)
                         hits2 = resdic2["hits"]
