@@ -122,9 +122,10 @@ def hello():
         es_url = f"{endpoint}/pages/_search"
         username = cred["username"]
         password = cred["password"]
+        cert = cred["cert"]
         es = Elasticsearch(
             endpoint,
-            ca_certs="/etc/elasticsearch/certs/http_ca.crt",
+            ca_certs=cert,
             basic_auth=(username, password)
         )
         headers = {"Content-Type": "application/json; charset=utf8"}
