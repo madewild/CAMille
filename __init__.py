@@ -153,7 +153,7 @@ def hello():
                 }
 
         #r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data), timeout=60)
-        r = es.search(index="pages", query=data)
+        r = es.search(index="pages", from_=fromp, size=size, sort=sort, track_total_hits=True, query=query_dic)
         if r.status_code == 200:
             resdic = json.loads(r.text)
             number = resdic["hits"]["total"]["value"]
