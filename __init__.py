@@ -323,10 +323,10 @@ def hello():
                     except ValueError: # mismatch between index and data
                         print(df.columns)
                         sys.exit()
-                    #df = df.append(series, ignore_index=True)
                     df = pd.concat([df, series], ignore_index=True)
 
             df['DATE'] = pd.to_datetime(df['DATE']).dt.date
+            print(df)
             df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32',
                                 'JDLS': 'int32', 'ÉDITION': 'int32', 'PAGE': 'int32'})
             df.to_excel(xlsxpath, index=None)
