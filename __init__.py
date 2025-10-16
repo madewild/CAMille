@@ -7,6 +7,7 @@ import locale
 import math
 from pathlib import Path
 from shutil import copy
+import sys
 from zipfile import ZipFile
 
 import boto3
@@ -317,7 +318,11 @@ def hello():
                     text = " [...] ".join(matches)
                     line = [result_id, journal, date, year, month, day,
                             dow, edition, pagenb, language, text]
-                    series = pd.Series(line, index=df.columns)
+                    try:
+                        series = pd.Series(line, index=df.columns)
+                    except ValueError: # mismatch between index and data
+                        print(df.columns)
+                        sys.exit()
                     #df = df.append(series, ignore_index=True)
                     df = pd.concat([df, series], ignore_index=True)
 
