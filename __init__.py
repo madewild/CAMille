@@ -19,6 +19,7 @@ import pandas as pd
 import requests
 from unidecode import unidecode
 
+from elasticsearch import Elasticsearch
 
 try:
     cred = json.load(open("credentials.json", encoding="utf-8"))
@@ -121,6 +122,11 @@ def hello():
         es_url = f"{endpoint}/pages/_search"
         username = cred["username"]
         password = cred["password"]
+        es = Elasticsearch(
+            endpoint,
+            ca_certs="/etc/elasticsearch/certs/http_ca.crt",
+            basic_auth=(username, password)
+        )
         headers = {"Content-Type": "application/json; charset=utf8"}
         size = 10
         p = request.args.get("p")
@@ -145,8 +151,8 @@ def hello():
                     }
                 }
 
-        r = requests.post(es_url, auth=(username, password), headers=headers,
-                          data=json.dumps(data), timeout=60)
+        #r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data), timeout=60)
+        r = es.search(index="pages", query=data)
         if r.status_code == 200:
             resdic = json.loads(r.text)
             number = resdic["hits"]["total"]["value"]
