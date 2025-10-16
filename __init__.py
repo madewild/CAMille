@@ -233,7 +233,7 @@ def hello():
         url = request.url
         if "&p=" in url:
             url = url.split("&p=")[0]
-        url.replace("http://", "https://")
+        url = url.replace("http://", "https://")
 
         ziparg = request.args.get("zip")
         if ziparg:
