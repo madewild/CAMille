@@ -136,25 +136,17 @@ def hello():
         else:
             p = 1
         fromp = (int(p)-1)*10
-        data =  {
-                    "from": fromp,
-                    "size": size,
-                    "sort": sort,
-                    "track_total_hits": "true",
-                    "query": query_dic,
-                    "highlight": {
-                        "fields": {
-                            "text": {}
-                        },
-                        "pre_tags": "<span class='serp__match'>",
-                        "post_tags": "</span>",
-                        "fragment_size": 500
-                    }
-                }
 
-        #r = requests.post(es_url, auth=(username, password), headers=headers, data=json.dumps(data), timeout=60)
-        resdic = es.search(index="pages", from_=fromp, size=size, sort=sort, track_total_hits=True, query=query_dic)
-        
+        highlight = {
+            "fields": {
+                "text": {}
+            },
+            "pre_tags": "<span class='serp__match'>",
+            "post_tags": "</span>",
+            "fragment_size": 500
+        }
+
+        resdic = es.search(index="pages", from_=fromp, size=size, sort=sort, track_total_hits=True, query=query_dic, highlight=highlight)        
         number = resdic["hits"]["total"]["value"]
         timing = f"{resdic['took']/1000:.2f}".replace('.', ',')
         if number == 0:
