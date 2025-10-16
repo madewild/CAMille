@@ -319,6 +319,7 @@ def hello():
                     line = [result_id, journal, date, year, month, day,
                             dow, edition, pagenb, language, text]
                     try:
+                        df = df.drop(columns=[0])
                         series = pd.Series(line, index=df.columns)
                     except ValueError: # mismatch between index and data
                         print(df.columns)
