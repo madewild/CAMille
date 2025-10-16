@@ -247,32 +247,21 @@ def hello():
                 print(f"Total: {total}")
                 pages = 10 if total == 1000 else total // 100 + 1
                 for i in range(pages):
-                    data_page =  {
-                        "from": i * 100,
-                        "size": 100,
-                        "sort": sort,
-                        "query": query_dic
-                    }
-                    rpage = requests.post(es_url, auth=(username, password), headers=headers,
-                                            data=json.dumps(data_page), timeout=60)
-                    if rpage.status_code == 200:
-                        resdic2 = json.loads(rpage.text)
-                        hits2 = resdic2["hits"]
-                        for hit in hits2["hits"]:
-                            result_id = hit["_source"]["page"]
-                            result_journal = hit["_source"]["journal"]
-                            stats_journal[result_journal] += 1
-                            result_year = str(hit["_source"]["year"])
-                            stats_year[result_year] += 1
-                            text = hit["_source"]["text"]
-                            arcpath = f"{result_id}.txt"
-                            abspath = Path(__file__).parent / f"static/temp/{arcpath}"
-                            with open(abspath, "w", encoding="utf-8") as f:
-                                f.write(text)
-                            myzip.write(abspath, arcpath)
-                            abspath.unlink()
-                    else:
-                        print(f"Error: {rpage.text}")
+                    resdic2 = es.search(index="pages", from_=i*100, size=100, sort=sort, query=query_dic)
+                    hits2 = resdic2["hits"]
+                    for hit in hits2["hits"]:
+                        result_id = hit["_source"]["page"]
+                        result_journal = hit["_source"]["journal"]
+                        stats_journal[result_journal] += 1
+                        result_year = str(hit["_source"]["year"])
+                        stats_year[result_year] += 1
+                        text = hit["_source"]["text"]
+                        arcpath = f"{result_id}.txt"
+                        abspath = Path(__file__).parent / f"static/temp/{arcpath}"
+                        with open(abspath, "w", encoding="utf-8") as f:
+                            f.write(text)
+                        myzip.write(abspath, arcpath)
+                        abspath.unlink()
 
                 readme_path = Path(__file__).parent / "static/README.txt"
                 new_readme_path = Path(__file__).parent / "static/temp/README.txt"
