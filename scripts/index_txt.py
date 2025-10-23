@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 
 import requests
 
-cred = json.load(open("credentials.json", encoding="utf-8"))
+cred = json.load(open("../credentials.json", encoding="utf-8"))
 endpoint = cred["endpoint"]
 url = f"{endpoint}/pages/_doc"
 username = cred["username"]
