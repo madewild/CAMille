@@ -307,8 +307,10 @@ def hello():
                     except KeyError: # no matches (wildcard), defaulting to 2000 first chars
                         matches = [hit["_source"]["text"][:2000] + "..."]
                     text = " [...] ".join(matches)
-                    line = [result_id, journal, date, year, month, day,
-                            dow, edition, pagenb, language, text]
+                    line = [result_id, journal, date, year, month, day, dow, edition, pagenb, language, text]
+                    if len(line) > 11:
+                        print(f"Line contains too many elements: {line}")
+                        sys.exit()
                     try:
                         series = pd.Series(line, index=df.columns)
                     except ValueError: # mismatch between index and data
