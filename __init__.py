@@ -311,9 +311,7 @@ def hello():
                     df.loc[len(df)] = line
 
             df['DATE'] = pd.to_datetime(df['DATE']).dt.date
-            print(df)
-            df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32',
-                                'JDLS': 'int32', 'ÉDITION': 'int32', 'PAGE': 'int32'})
+            df = df.astype({'ANNÉE': 'int32', 'MOIS': 'int32', 'JOUR': 'int32', 'JDLS': 'int32', 'ÉDITION': 'int32', 'PAGE': 'int32'})
             df.to_excel(xlsxpath, index=None)
             return send_file(xlsxpath, as_attachment=True)
 
