@@ -308,15 +308,7 @@ def hello():
                         matches = [hit["_source"]["text"][:2000] + "..."]
                     text = " [...] ".join(matches)
                     line = [result_id, journal, date, year, month, day, dow, edition, pagenb, language, text]
-                    if len(line) > 11:
-                        print(f"Line contains too many elements: {line}")
-                        sys.exit()
-                    try:
-                        series = pd.Series(line, index=df.columns)
-                    except ValueError: # mismatch between index and data
-                        print(df.columns)
-                        sys.exit()
-                    df = pd.concat([df, series], ignore_index=True)
+                    df.loc[len(df)] = line
 
             df['DATE'] = pd.to_datetime(df['DATE']).dt.date
             print(df)
