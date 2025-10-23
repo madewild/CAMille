@@ -7,6 +7,7 @@ import locale
 import math
 from pathlib import Path
 from shutil import copy
+import shutil
 import sys
 from zipfile import ZipFile
 
@@ -216,7 +217,8 @@ def hello():
             doc_date = elements[2]
             doc_year = doc_date[:4]
             key = f"/mnt/data/PDF/{np}/{doc_year}/{doc}.pdf"
-            return send_file(key, mimetype='application/pdf')
+            temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
+            shutil.copy(key, temp_path)
         else:
             doc = "false"
 
