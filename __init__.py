@@ -216,7 +216,7 @@ def hello():
             doc_date = elements[2]
             doc_year = doc_date[:4]
             key = f"/mnt/data/PDF/{np}/{doc_year}/{doc}.pdf"
-            redirect(key)
+            return redirect(key)
         else:
             doc = "false"
 
