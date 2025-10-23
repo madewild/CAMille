@@ -272,8 +272,9 @@ def hello():
 
         xlsx = request.args.get("xlsx")
         if xlsx:
-            total = min(number, 25000)
-            pages_xlsx = 25 if total == 25000 else total // 1000 + 1
+            total = min(number, 1000)
+            #pages_xlsx = 25 if total == 25000 else total // 1000 + 1
+            pages_xlsx = 1
             query_norm = unidecode(query).replace(" ", "_")
             query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
             xlsxpath = Path(__file__).parent / f"static/temp/camille_{query_norm}.xlsx"
