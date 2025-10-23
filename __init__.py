@@ -278,8 +278,7 @@ def hello():
             query_norm = unidecode(query).replace(" ", "_")
             query_norm = "".join([c for c in query_norm if c.isalpha() or c == "_"])
             xlsxpath = Path(__file__).parent / f"static/temp/camille_{query_norm}.xlsx"
-            df = pd.DataFrame([], columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR',
-                                            'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
+            df = pd.DataFrame(columns=['ID', 'JOURNAL', 'DATE', 'ANNÉE', 'MOIS', 'JOUR', 'JDLS', 'ÉDITION', 'PAGE', 'LANGUE', 'TEXTE'])
             for i in range(pages_xlsx):
                 highlight = {
                     "fields": {
