@@ -31,17 +31,17 @@ def write_to_es(path_with_year, txt_file):
         if journal == "15463334": # La Presse
             journal = "B14138"
         else: # unknown journal
+            print(f"Unknown journal code {journal} in file {txt_file}")
             sys.exit()
         edition = elements[7]
         pagenb = "0" + elements[8] # add leading zero
         date = date[:4] + "-" + date[4:6] + "-" + date[6:8]
-        date_format = "%Y%m%d"
     else:
         ed_page = elements[3]
         ep_elems = ed_page.split("-")
         edition = ep_elems[0]
         pagenb = ep_elems[1]
-        date_format = "%Y-%m-%d"
+    date_format = "%Y-%m-%d"
     date_elems = date.split("-")
     year = date_elems[0]
     month = date_elems[1]
