@@ -216,9 +216,9 @@ def hello():
                 np = "B14138"
             doc_date = elements[2]
             doc_year = doc_date[:4]
-            key = f"/mnt/data/PDF/{np}/{doc_year}/{doc}.pdf"
+            pdf_path = f"/mnt/data/PDF/{np}/{doc_year}/{doc}.pdf"
             temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
-            shutil.copy(key, temp_path)
+            shutil.copy(pdf_path, temp_path)
         else:
             doc = "false"
 
