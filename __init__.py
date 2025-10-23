@@ -10,7 +10,7 @@ from shutil import copy
 import sys
 from zipfile import ZipFile
 
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template, send_file, redirect
 #from flask_htpasswd import HtPasswdAuth
 
 import pandas as pd
@@ -216,7 +216,7 @@ def hello():
             doc_date = elements[2]
             doc_year = doc_date[:4]
             key = f"/mnt/data/PDF/{np}/{doc_year}/{doc}.pdf"
-            return send_file(key)
+            redirect(key)
         else:
             doc = "false"
 
