@@ -10,14 +10,10 @@ from shutil import copy
 import sys
 from zipfile import ZipFile
 
-import boto3
-from botocore.exceptions import ClientError
-
-from flask import Flask, request, render_template, send_file
+from flask import Flask, redirect, request, render_template, send_file
 #from flask_htpasswd import HtPasswdAuth
 
 import pandas as pd
-import requests
 from unidecode import unidecode
 
 from elasticsearch import Elasticsearch
@@ -213,21 +209,14 @@ def hello():
 
         doc = request.args.get("doc")
         if doc:
-            s3 = boto3.client('s3')
-            bucket_name = "camille-data"
             elements = doc.split("_")
             np = elements[1]
             if np == "15463334": # La Presse
                 np = "B14138"
             doc_date = elements[2]
             doc_year = doc_date[:4]
-            key = f"PDF/{np}/{doc_year}/{doc}.pdf"
-            temp_path = Path(__file__).parent / f"static/temp/{doc}.pdf"
-            try:
-                s3.download_file(bucket_name, key, str(temp_path))
-            except ClientError: # key mismatch
-                key = key[:-13] + ".pdf"
-                s3.download_file(bucket_name, key, str(temp_path))
+            key = f"/mnt/data/PDF/{np}/{doc_year}/{doc}.pdf"
+            redirect(key)
         else:
             doc = "false"
 
