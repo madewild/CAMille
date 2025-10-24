@@ -4,6 +4,7 @@ import json
 import re
 import sys
 
+from SPARQLWrapper import SPARQLWrapper, JSON
 import pywikibot
 
 #connect to the wikibase
@@ -11,8 +12,18 @@ wikibase = pywikibot.Site("en", "sparqulb")
 wikibase_repo = wikibase.data_repository()
 wikibase_repo.login()
 
-cutoff = int(sys.argv[1])
-LIMIT = 5000
+sparql = SPARQLWrapper("https://query.sparq.ulb.be/bigdata/namespace/wdq/sparql")
+
+cutoff = sys.argv[1]
+if "-" in cutoff:
+    start = int(cutoff.split("-")[0])
+    end = int(cutoff.split("-")[1])
+else:
+    start = 0
+    end = int(cutoff)
+
+FILE = "BDD-final2024_bon_juillet31.xlsx.clean.json"
+LIMIT = 15000
 
 def format_date(date_string):
     if len(date_string) == 10:
@@ -32,12 +43,12 @@ def format_date(date_string):
         target = pywikibot.WbTime(site=wikibase_repo, year=int(year))
     return target
 
-with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf-8") as json_file:
+with open(f"data/json/{FILE}", encoding="utf-8") as json_file:
     collection = json.load(json_file)
     nb = len(collection)
     print(f"\n{nb} journalists found")
 
-    for entry in [collection[f"{n}"] for n in range(cutoff)]:
+    for entry in [collection[f"{n}"] for n in range(start, end)]:
 
         data = {}
         label = entry['full name']
@@ -45,12 +56,8 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
 
         item = pywikibot.ItemPage(wikibase_repo)
         data['labels'] = {'en': label, 'fr': label}
-        if entry['country'] == "Belgique":
-            en_desc = "Belgian journalist"
-            fr_desc = "journaliste belge"
-        else:
-            en_desc = "journalist"
-            fr_desc = "journaliste"
+        en_desc = "journalist"
+        fr_desc = "journaliste"
         data['aliases'] = {'en': []}
         aliases = entry['alias']
         if aliases:
@@ -73,9 +80,11 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
         new_claims.append(claim.toJSON())
 
         # given name as string
-        claim = pywikibot.Claim(wikibase_repo, "P6098", datatype='string')
-        claim.setTarget(entry['given name'])
-        new_claims.append(claim.toJSON())
+        given = entry['given name']
+        if given: # some people have only a family name (e.g. "Allaer")
+            claim = pywikibot.Claim(wikibase_repo, "P6098", datatype='string')
+            claim.setTarget(given)
+            new_claims.append(claim.toJSON())
 
         # family name as string
         claim = pywikibot.Claim(wikibase_repo, "P6099", datatype='string')
@@ -84,27 +93,48 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
 
         # sex or gender
         claim = pywikibot.Claim(wikibase_repo, "P87", datatype='wikibase-item')
-        if entry['sex'] == "male":
-            value = pywikibot.ItemPage(wikibase_repo, "Q1173")
-            claim.setTarget(value)
-            new_claims.append(claim.toJSON())
-        elif entry['sex'] == "female":
-            value = pywikibot.ItemPage(wikibase_repo, "Q1179")
-            claim.setTarget(value)
-            new_claims.append(claim.toJSON())
-        else:
-            print(f"Unknown gender: {entry['sex']}")
+        sex = entry['sex']
+        if sex:
+            if sex == "male":
+                value = pywikibot.ItemPage(wikibase_repo, "Q1173")
+                claim.setTarget(value)
+                new_claims.append(claim.toJSON())
+            elif sex == "female":
+                value = pywikibot.ItemPage(wikibase_repo, "Q1179")
+                claim.setTarget(value)
+                new_claims.append(claim.toJSON())
+            else:
+                print(f"Unknown gender: {sex}")
+                sys.exit()
 
         # country of citizenship
         claim = pywikibot.Claim(wikibase_repo, "P89", datatype='wikibase-item')
         country = entry['country']
         if country:
-            if  country == "Belgique":
-                value = pywikibot.ItemPage(wikibase_repo, "Q4")
+            query = f"""select * where {{
+                        ?country wdt:P3 wd:Q1605 .
+                        ?country rdfs:label "{country}"@fr .
+                    }}"""
+            sparql.setQuery(query)
+            sparql.setReturnFormat(JSON)
+            results = sparql.query().convert()
+
+            bindings = results['results']['bindings']
+            qids = []
+            for result in bindings:
+                qid = result['country']['value'].replace("https://sparq.ulb.be/entity/", "")
+                qids.append(qid)
+            if len(qids) == 0:
+                print(f"No QID found for {country}")
+                sys.exit()
+            elif len(qids) > 1 : 
+                print(f"More than one QID found for {country}: {qids}")
+                sys.exit()
+            else:
+                country_qid = qids[0]         
+                value = pywikibot.ItemPage(wikibase_repo, country_qid)
                 claim.setTarget(value)
                 new_claims.append(claim.toJSON())
-            else:
-                print(f"Unknown country: {country}")
 
         # ISNI number: problem in BDD file!
         """isni_number = entry['ISNI']
@@ -115,13 +145,14 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
 
         # occupations
         occupations = entry['occupation']
-        if occupations:
+        if occupations: 
             for occupation in occupations:
+                role = occupation["role"]
                 claim = pywikibot.Claim(wikibase_repo, "P6100", datatype='string')
-                claim.setTarget(occupation)
+                claim.setTarget(role)
                 new_claims.append(claim.toJSON())
 
-        # medias
+        # media
         medias = entry['media']
         if medias:
             for media in medias:
@@ -134,6 +165,17 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                     target = pywikibot.ItemPage(wikibase_repo, "Q9743") # presumably
                     qualifier.setTarget(target)
                     claim.addQualifier(qualifier)
+                med_role = media["role"]
+                if med_role:
+                    qualifier = pywikibot.Claim(wikibase_repo, "P8681")
+                    qualifier.setTarget(med_role)
+                    claim.addQualifier(qualifier)
+                med_periods = media["period"]
+                if med_periods:
+                    for med_period in med_periods:
+                        qualifier = pywikibot.Claim(wikibase_repo, "P6157")
+                        qualifier.setTarget(med_period)
+                        claim.addQualifier(qualifier)
                 new_claims.append(claim.toJSON())
 
         # works
@@ -144,6 +186,9 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                     claim = pywikibot.Claim(wikibase_repo, "P8683", datatype='string')
                     claim.setTarget(work)
                     new_claims.append(claim.toJSON())
+                else:
+                    print(f"Work is longer than {LIMIT} chars, aborting")
+                    sys.exit()
 
         # notice
         notices = entry['notice']
@@ -153,6 +198,8 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                     claim = pywikibot.Claim(wikibase_repo, "P8684", datatype='string')
                     claim.setTarget(notice)
                     new_claims.append(claim.toJSON())
+                else:
+                    print(f"Notice is longer than {LIMIT} chars, skipping")
 
         # sources
         sources = entry['source']
@@ -202,12 +249,12 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
             new_claims.append(claim.toJSON())
 
         # work period
-        periods = entry['work period']
+        """periods = entry['work period']
         if periods:
             for period in periods:
                 claim = pywikibot.Claim(wikibase_repo, "P6157", datatype='string')
                 claim.setTarget(period)
-                new_claims.append(claim.toJSON())
+                new_claims.append(claim.toJSON())"""
 
         # affiliations
         affiliations = entry['affiliation']
@@ -215,6 +262,8 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
             for affiliation in affiliations:
                 claim = pywikibot.Claim(wikibase_repo, "P8680", datatype='string')
                 aff_name = affiliation["name"]
+                if not aff_name: # handle edge case when role known but not assoc
+                    aff_name = "inconnu"
                 claim.setTarget(aff_name)
                 aff_role = affiliation["role"]
                 if aff_role:
@@ -238,20 +287,27 @@ with open("data/json/BDD-final2024_bon_juillet31.xlsx.clean.json", encoding="utf
                 print("QID not found")
                 sys.exit()
             else:
-                qid =  x[-1].replace("[[Item:", "").split("|")[0]
-                print(f"{label} already exists as {qid}\n")
-                existing_item = pywikibot.ItemPage(wikibase_repo, qid)
-                if data["aliases"]["en"]:
-                    existing_item.editEntity({'aliases': data["aliases"]}, summary=f"adding aliases")
-                added_claims = []
-                for claim in new_claims:
-                    property = claim['mainsnak']['property']
-                    if property in existing_item.claims:
-                        pass
-                        # print(f"{property} already present for {label}")
-                        # compare claims to check if changed and merge if needed
-                    else:
-                        print(f"{property} is a new claim for {label}, adding")
-                        existing_item.editEntity({'claims': [claim]}, summary=f"adding {property}")
+                if "-1" in x [-1]: # error not due to item already created
+                    print(data)
+                    sys.exit()
+                else:
+                    qid =  x[-1].replace("[[Item:", "").split("|")[0]
+                    print(f"{label} already exists as {qid}\n")
+                    existing_item = pywikibot.ItemPage(wikibase_repo, qid)
+                    if data["aliases"]["en"]:
+                        existing_item.editEntity({'aliases': data["aliases"]}, summary=f"adding aliases")
+                    added_claims = []
+                    for claim in new_claims:
+                        property = claim['mainsnak']['property']
+                        if property in existing_item.claims:
+                            #print(f"{property} already present for {label}\n")
+                            value = claim['mainsnak']['datavalue']['value']
+                            existing_values = [c.toJSON().get('mainsnak').get('datavalue').get('value') for c in existing_item.claims[property]]
+                            if value not in existing_values and len(value) > 1:
+                                print(f"{value} is a new value for {property}, adding")
+                                existing_item.editEntity({'claims': [claim]}, summary=f"adding {property}")
+                        else:
+                            print(f"{property} is a new property for {label}, adding")
+                            existing_item.editEntity({'claims': [claim]}, summary=f"adding {property}")
 
     print("")

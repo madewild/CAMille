@@ -1,4 +1,4 @@
-"""Example script for removing duplicate claims"""
+"""Script for removing duplicate claims"""
 
 import sys
 import pywikibot

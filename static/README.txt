@@ -1,11 +1,11 @@
 CAMille (Centre d'archives sur les médias et l'information, ULB-KBR)
 
 ### USAGES AUTORISÉS ###
-Les documents de ce dossier ont été téléchargés sur la plateforme CAMille (https://camille-ulb-kbr.be/). L'usage de ces documents est exclusivement réservé à des fins scientifiques ou d'illustration de l'enseignement.
+Les documents de ce dossier ont été téléchargés sur la plateforme CAMille (https://camille.ulb.be/). L'usage de ces documents est exclusivement réservé à des fins scientifiques ou d'illustration de l'enseignement.
 
 Toute publication de résultats de recherche devra faire mention explicite de la plateforme CAMille et des deux institutions qui soutiennent le projet : KBR et l'Université libre de Bruxelles.
 
-L'équipe de CAMille invite les chercheurs et chercheuses à partager avec elle tout éventuel enrichissement apporté aux données brutes (contact@camille-ulb-kbr.be).
+L'équipe de CAMille invite les chercheurs et chercheuses à partager avec elle tout éventuel enrichissement apporté aux données brutes.
 
 ### CONTENU DU DOSSIER ###
 Ce dossier contient les fichiers textes des pages correspondant aux résultats de la requête lancée sur la plateforme. Lorsque les résultats de la requête excèdent 1000 résultats, le dossier téléchargé ne contient que les 1000 premiers documents selon l'ordre de pertinence sélectionné. Les noms de fichiers livrent des informations importantes sur la nature des documents (voir la section NOMS DE FICHIERS).
