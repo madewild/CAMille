@@ -72,10 +72,16 @@ def write_to_es(path_with_year, txt_file):
 if __name__ == "__main__":
     
     code = sys.argv[1]
+    try:
+        start_year = sys.argv[2]
+    except IndexError:
+        start_year = "1800"
     path = f"/mnt/data/TXT/{code}"
     years = os.listdir(path)
     
     for year in sorted(years):
+        if year >= start_year:
+            continue
         print(f"Processing {year}...")
         path_with_year = f"{path}/{year}"
         txt_files = os.listdir(path_with_year)
