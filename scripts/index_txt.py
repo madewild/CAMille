@@ -80,7 +80,7 @@ if __name__ == "__main__":
     years = os.listdir(path)
     
     for year in sorted(years):
-        if year >= start_year:
+        if year < start_year:
             continue
         print(f"Processing {year}...")
         path_with_year = f"{path}/{year}"
