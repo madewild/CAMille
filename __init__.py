@@ -41,7 +41,10 @@ oidc = oauth.register(
     client_id=secrets['client_id'],
     client_secret=secrets['client_secret'],
     server_metadata_url=f"{secrets['issuer']}/.well-known/openid-configuration",
-    client_kwargs={'scope': 'openid email profile'}
+    client_kwargs={'scope': 'openid email profile'},
+    access_token_url=secrets['token_uri'],
+    authorize_url=secrets['auth_uri'],
+    userinfo_endpoint=secrets['userinfo_uri']
 )
 
 @app.template_filter()
