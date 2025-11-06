@@ -10,7 +10,7 @@ from shutil import copy
 import shutil
 from zipfile import ZipFile
 
-from flask import Flask, request, render_template, send_file
+from flask import Flask, request, render_template, send_file, session
 #from flask_htpasswd import HtPasswdAuth
 from flask_oidc import OpenIDConnect
 
@@ -331,6 +331,7 @@ def hello():
 
     else:
         page = request.args.get("page")
+        username = session["oidc_auth_profile"].get('email')
         if page:
             if page == "about":
                 html = render_template("about.html")
@@ -341,7 +342,7 @@ def hello():
             else:
                 html = render_template("404.html")
         else:
-            html = render_template("search.html")
+            html = render_template("search.html", username=username)
     return html
 
 if __name__ == "__main__":
