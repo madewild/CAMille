@@ -32,12 +32,12 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 #app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
 #app.config['FLASK_AUTH_ALL'] = True
 #htpasswd = HtPasswdAuth(app)
-oidc = OpenIDConnect(app)
 app.config.update({
     'OIDC_CLIENT_SECRETS': 'client_secrets.json',
     'OIDC_SCOPES': ['openid', 'email', 'profile'],
     'OIDC_RESOURCE_SERVER_ONLY': False
 })
+oidc = OpenIDConnect(app)
 
 @app.template_filter()
 def strip_param(long_url, param):
