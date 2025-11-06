@@ -10,8 +10,9 @@ from shutil import copy
 import shutil
 from zipfile import ZipFile
 
-from flask import Flask, request, render_template, send_file, redirect
+from flask import Flask, request, render_template, send_file
 #from flask_htpasswd import HtPasswdAuth
+from flask_oidc import OpenIDConnect
 
 import pandas as pd
 from unidecode import unidecode
@@ -31,6 +32,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 #app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
 #app.config['FLASK_AUTH_ALL'] = True
 #htpasswd = HtPasswdAuth(app)
+oidc = OpenIDConnect(app)
 
 @app.template_filter()
 def strip_param(long_url, param):
@@ -39,6 +41,7 @@ def strip_param(long_url, param):
     return new_url
 
 @app.route("/")
+@oidc.require_login
 def hello():
     """Main Flask function"""
     query = request.args.get("query")
@@ -331,8 +334,6 @@ def hello():
         if page:
             if page == "about":
                 html = render_template("about.html")
-            elif page == "resources":
-                html = render_template("resources.html")
             elif page == "contact":
                 html = render_template("contact.html")
             elif page == "help":
