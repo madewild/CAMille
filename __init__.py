@@ -40,7 +40,7 @@ oidc = oauth.register(
     name='ULB SSO',
     client_id=secrets['client_id'],
     client_secret=secrets['client_secret'],
-    authorize_url=secrets['auth_uri'],
+    server_metadata_url=f"{secrets['issuer']}/.well-known/openid-configuration",
     client_kwargs={'scope': 'openid email profile'}
 )
 
