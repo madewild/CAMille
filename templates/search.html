@@ -36,7 +36,7 @@
                     <img src="{{ url_for('static', filename='images/camille.png') }}" alt="">
                 </div>
                 <form class="search-form">
-                    <input type="text" class="search-box" placeholder="Recherchez un ou plusieurs termes" 
+                    <input type="text" class="search-box" placeholder="Bonjour {{ username }}, recherchez un ou plusieurs termes" 
                         id="query" name="query" value="{{term}}">
                     <button type="submit" class="search-btn">
                     <img src="{{ url_for('static', filename='images/loupe.svg') }}">
