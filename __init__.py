@@ -5,14 +5,15 @@ from collections import defaultdict
 import json
 import locale
 import math
+import os
 from pathlib import Path
 from shutil import copy
 import shutil
 from zipfile import ZipFile
 
-from flask import Flask, request, render_template, send_file, session
+from flask import Flask, request, render_template, send_file, session, url_for, redirect
 #from flask_htpasswd import HtPasswdAuth
-from flask_oidc import OpenIDConnect
+from authlib.integrations.flask_client import OAuth
 
 import pandas as pd
 from unidecode import unidecode
@@ -32,12 +33,15 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 #app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
 #app.config['FLASK_AUTH_ALL'] = True
 #htpasswd = HtPasswdAuth(app)
-app.config.update({
-    'OIDC_CLIENT_SECRETS': '/var/www/camille/dev/client_secrets.json',
-    'OIDC_SCOPES': ['openid', 'email', 'profile'],
-    'OIDC_RESOURCE_SERVER_ONLY': False
-})
-oidc = OpenIDConnect(app)
+with open(os.path.join(os.path.dirname(__file__), 'client_secrets.json')) as f:
+    secrets = json.load(f)
+oauth = OAuth(app)
+oidc = oauth.register(
+    name='ULB SSO',
+    client_id=secrets['client_id'],
+    client_secret=secrets['client_secret'],
+    client_kwargs={'scope': 'openid email profile'}
+)
 
 @app.template_filter()
 def strip_param(long_url, param):
@@ -46,9 +50,13 @@ def strip_param(long_url, param):
     return new_url
 
 @app.route("/")
-@oidc.require_login
-def hello():
+def index():
     """Main Flask function"""
+    if 'user' not in session:
+        redirect_uri = url_for('auth_callback', _external=True)
+        return oidc.authorize_redirect(redirect_uri)
+    
+    username = session['user']
     query = request.args.get("query")
     if query:
 
@@ -336,7 +344,6 @@ def hello():
 
     else:
         page = request.args.get("page")
-        username = session["oidc_auth_profile"].get('email')
         if page:
             if page == "about":
                 html = render_template("about.html")
@@ -349,6 +356,13 @@ def hello():
         else:
             html = render_template("search.html", username=username)
     return html
+
+@app.route('/auth/callback')
+def auth_callback():
+    token = oidc.authorize_access_token()
+    userinfo = oidc.parse_id_token(token)
+    session['user'] = userinfo
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run(debug=True)
