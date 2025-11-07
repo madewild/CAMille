@@ -37,7 +37,7 @@ with open(os.path.join(os.path.dirname(__file__), 'client_secrets.json')) as f:
     secrets = json.load(f)
 oauth = OAuth(app)
 oidc = oauth.register(
-    name='ULB SSO',
+    name='ULB OIDC',
     client_id=secrets['client_id'],
     client_secret=secrets['client_secret'],
     server_metadata_url=f"{secrets['issuer']}/.well-known/openid-configuration",
@@ -361,7 +361,7 @@ def index():
 @app.route('/auth/callback')
 def auth_callback():
     token = oidc.authorize_access_token()
-    userinfo = oidc.parse_id_token(token)
+    userinfo = oidc.userinfo()
     session['user'] = userinfo
     return redirect(url_for('index'))
 
