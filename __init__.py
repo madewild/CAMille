@@ -56,8 +56,7 @@ def index():
     if 'user' not in session:
         redirect_uri = url_for('auth_callback', _external=True)
         return oidc.authorize_redirect(redirect_uri)
-    
-    username = session['user']
+
     query = request.args.get("query")
     if query:
 
@@ -355,6 +354,7 @@ def index():
             else:
                 html = render_template("404.html")
         else:
+            username = session['user']['name']
             html = render_template("search.html", username=username)
     return html
 
