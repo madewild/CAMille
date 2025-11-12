@@ -4,4 +4,4 @@
 
 A simple flask search engine querying an Elasticsearch cluster.
 
-Code moved to [https://gitlab.ulb.be/madewild/CAMille/]
+Code moved to <https://gitlab.ulb.be/madewild/CAMille/>
