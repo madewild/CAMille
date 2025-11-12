@@ -11,3 +11,4 @@ urllib3==2.5.0
 pandas==2.3.3
 pywikibot==9.3.1
 elasticsearch==9.1.1
+authlib==1.6.5

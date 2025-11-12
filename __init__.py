@@ -5,14 +5,15 @@ from collections import defaultdict
 import json
 import locale
 import math
+import os
 from pathlib import Path
 from shutil import copy
 import shutil
-import sys
 from zipfile import ZipFile
 
-from flask import Flask, request, render_template, send_file, redirect
-from flask_htpasswd import HtPasswdAuth
+from flask import Flask, request, render_template, send_file, session, url_for, redirect
+#from flask_htpasswd import HtPasswdAuth
+from authlib.integrations.flask_client import OAuth
 
 import pandas as pd
 from unidecode import unidecode
@@ -29,9 +30,19 @@ locale.setlocale(locale.LC_ALL, 'fr_BE.utf8')
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 # comment next 3 lines to disable htpasswd (e.g. if CAS is enabled)
-app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
-app.config['FLASK_AUTH_ALL'] = True
-htpasswd = HtPasswdAuth(app)
+#app.config['FLASK_HTPASSWD_PATH'] = '/etc/apache2/.htpasswd'
+#app.config['FLASK_AUTH_ALL'] = True
+#htpasswd = HtPasswdAuth(app)
+with open(os.path.join(os.path.dirname(__file__), 'client_secrets.json')) as f:
+    secrets = json.load(f)
+oauth = OAuth(app)
+oidc = oauth.register(
+    name='ULB OIDC',
+    client_id=secrets['client_id'],
+    client_secret=secrets['client_secret'],
+    server_metadata_url=f"{secrets['issuer']}/.well-known/openid-configuration",
+    client_kwargs={'scope': 'openid email profile'}
+)
 
 @app.template_filter()
 def strip_param(long_url, param):
@@ -40,8 +51,12 @@ def strip_param(long_url, param):
     return new_url
 
 @app.route("/")
-def hello():
+def index():
     """Main Flask function"""
+    if 'user' not in session:
+        redirect_uri = url_for('auth_callback', _external=True)
+        return oidc.authorize_redirect(redirect_uri)
+
     query = request.args.get("query")
     if query:
 
@@ -332,8 +347,6 @@ def hello():
         if page:
             if page == "about":
                 html = render_template("about.html")
-            elif page == "resources":
-                html = render_template("resources.html")
             elif page == "contact":
                 html = render_template("contact.html")
             elif page == "help":
@@ -341,8 +354,16 @@ def hello():
             else:
                 html = render_template("404.html")
         else:
-            html = render_template("search.html")
+            username = session['user']['name']
+            html = render_template("search.html", username=username)
     return html
+
+@app.route('/auth/callback')
+def auth_callback():
+    token = oidc.authorize_access_token()
+    userinfo = oidc.userinfo()
+    session['user'] = userinfo
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     app.run(debug=True)
